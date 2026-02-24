@@ -1,0 +1,167 @@
+<div class="register-container d-flex align-items-center justify-content-center py-5">
+  <div class="register-card shadow-lg p-4 animate-fade-in">
+    <div class="text-center mb-4">
+      <h2 class="fw-bold gradient-text">Create Account</h2>
+      <p class="text-muted">Join Examflow and start managing your exams.</p>
+    </div>
+
+    @if (authFacade.errorMessage()) {
+      <div class="alert alert-danger border-0 shadow-sm mb-4" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i>
+        {{ authFacade.errorMessage() }}
+      </div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="row">
+        <!-- Full Name -->
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-semibold">Full Name</label>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="John Doe"
+            formControlName="fullName"
+            [class.is-invalid]="form.get('fullName')?.invalid && form.get('fullName')?.touched"
+          />
+        </div>
+
+        <!-- Email -->
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-semibold">Email</label>
+          <input
+            type="email"
+            class="form-control"
+            placeholder="john@example.com"
+            formControlName="email"
+            [class.is-invalid]="form.get('email')?.invalid && form.get('email')?.touched"
+          />
+        </div>
+      </div>
+
+      <div class="row">
+        <!-- National ID -->
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-semibold">National ID</label>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="ID Number"
+            formControlName="nationalId"
+            [class.is-invalid]="form.get('nationalId')?.invalid && form.get('nationalId')?.touched"
+          />
+        </div>
+
+        <!-- Phone Number -->
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-semibold">Phone Number</label>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="+1 234 567 890"
+            formControlName="phoneNumber"
+            [class.is-invalid]="
+              form.get('phoneNumber')?.invalid && form.get('phoneNumber')?.touched
+            "
+          />
+        </div>
+      </div>
+
+      <div class="row">
+        <!-- University Code -->
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-semibold">University Code</label>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Code"
+            formControlName="universityCode"
+            [class.is-invalid]="
+              form.get('universityCode')?.invalid && form.get('universityCode')?.touched
+            "
+          />
+        </div>
+
+        <!-- Job Title -->
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-semibold">Job Title</label>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Professor/Student"
+            formControlName="jobTitle"
+            [class.is-invalid]="form.get('jobTitle')?.invalid && form.get('jobTitle')?.touched"
+          />
+        </div>
+      </div>
+
+      <div class="row">
+        <!-- Academic Rank -->
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-semibold">Academic Rank</label>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Rank"
+            formControlName="academicRank"
+            [class.is-invalid]="
+              form.get('academicRank')?.invalid && form.get('academicRank')?.touched
+            "
+          />
+        </div>
+
+        <!-- Academic Level -->
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-semibold">Academic Level</label>
+          <input
+            type="number"
+            class="form-control"
+            formControlName="academicLevel"
+            [class.is-invalid]="
+              form.get('academicLevel')?.invalid && form.get('academicLevel')?.touched
+            "
+          />
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="mb-4">
+        <label class="form-label fw-semibold">Password</label>
+        <input
+          type="password"
+          class="form-control"
+          placeholder="••••••••"
+          formControlName="password"
+          [class.is-invalid]="form.get('password')?.invalid && form.get('password')?.touched"
+        />
+        @if (form.get('password')?.invalid && form.get('password')?.touched) {
+          <div class="invalid-feedback">Password must be at least 6 characters.</div>
+        }
+      </div>
+
+      <button
+        type="submit"
+        class="btn btn-primary w-100 py-2 fw-bold register-btn"
+        [disabled]="authFacade.isLoading()"
+      >
+        @if (authFacade.isLoading()) {
+          <span
+            class="spinner-border spinner-border-sm me-2"
+            role="status"
+            aria-hidden="true"
+          ></span>
+          Creating account...
+        } @else {
+          Register
+        }
+      </button>
+
+      <div class="text-center mt-4">
+        <p class="mb-0 text-muted">
+          Already have an account?
+          <a routerLink="/login" class="text-primary fw-bold text-decoration-none">Login</a>
+        </p>
+      </div>
+    </form>
+  </div>
+</div>
