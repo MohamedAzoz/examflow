@@ -21,7 +21,7 @@
   width: 80vw !important;
   max-width: 1150px !important;
   border-radius: 0;
-  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.15);
+  box-shadow: 0 2px 16px var(--black);
   overflow: hidden;
   background: var(--form);
   padding: 0 !important;
