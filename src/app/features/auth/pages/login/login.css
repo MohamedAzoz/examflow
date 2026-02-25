@@ -1,11 +1,14 @@
-:root{
+:host {
 --form:#F3F4F6;
 --primary:#3D8B9E;
 --primary-hover:#2D6B7E;
 --background:#f4f7f6;
-}
+--black :#706D79;
+--input:#F3F4F6;
 
-:host {
+--header-font: 'Jura', sans-serif;
+--body-font: 'Inter', sans-serif;
+
   display: flex;
   justify-content: center;
   align-items: center;
@@ -54,12 +57,42 @@
   margin-bottom: 40px;
   transform: translateX(-10px);
 }
-.hr-custom {
-/* Gray
-padding: 0;
-margin: 20px 0; */
-border: 1px solid #CED4DA;
 
+.brand-logo {
+  width: 37px;
+  height: auto;
+  margin-right: 12px;
+  padding-bottom: 1rem;
+}
+
+.brand-name {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #111827;
+  margin: 0;
+  letter-spacing: 2px;
+  padding-bottom: 1rem;
+}
+
+.welcome-section {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.welcome-title {
+  font-size: 1.5rem;
+  font-family: var(--body-font);
+  font-weight: 500;
+  color: #111827;
+  margin-bottom: 10px;
+}
+
+.welcome-subtitle {
+  font-size: 0.9rem;
+  font-weight: 500;
+  font-family: var(--body-font);
+  color: #706D79;
+  margin: 0;
 }
 .input-wrapper {
   position: relative;
@@ -78,52 +111,22 @@ border: 1px solid #CED4DA;
 
 .input-icon {
   padding: 0 15px;
-  color: #adb5bd;
+  color: var(--black);
 }
 
 .form-input {
   border: none !important;
   box-shadow: none !important;
   padding: 12px 10px 12px 0;
+  background: var(--input);
   font-size: 14px;
+}
+.color {
+  background-color: var(--form) !important;
 }
 
 .is-invalid-group {
   border-color: #dc3545 !important;
-}
-
-.brand-logo {
-  width: 40px;
-  height: auto;
-  margin-right: 12px;
-  padding-bottom: 30px;
-}
-
-.brand-name {
-  font-size: 22px;
-  font-weight: 700;
-  color: #111827;
-  margin: 0;
-  letter-spacing: 2px;
-  padding-bottom: 30px;
-}
-
-.welcome-section {
-  text-align: center;
-  margin-bottom: 40px;
-}
-
-.welcome-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #111827;
-  margin-bottom: 10px;
-}
-
-.welcome-subtitle {
-  font-size: 14px;
-  color: #6b7280;
-  margin: 0;
 }
 
 .forgot-password-section {
@@ -143,9 +146,11 @@ border: 1px solid #CED4DA;
 .btn-login {
   background: #3d8b9e;
   color: #fff;
-  padding: 14px;
-  border-radius: 10px;
-  font-weight: 600;
+  padding: 12px;
+  border-radius: 12px;
+  font-weight: 500;
+  font-size: 16px;
+  font-family: var(--body-font);
   border: none;
   transition: 0.3s;
 }
@@ -176,16 +181,12 @@ border: 1px solid #CED4DA;
     display: flex;
       justify-content: center;
       align-items: center;
-
   }
   .brand-name {
     font-size: 18px;
   }
   .brand-logo {
     width: 30px;
-    height: auto;
-    margin-right: 8px;
-    padding-bottom: 20px;
   }
 
   .main-card > .row {
