@@ -167,7 +167,9 @@
 /* responsive */
 @media (max-height: 600px) {
   .main-card {
+    height: 90% !important;
     width: 90vw !important;
+    padding: 1rem 0.4rem !important;
     border-radius: 10px !important;
   }
   .form-section {
@@ -183,10 +185,16 @@
       align-items: center;
   }
   .brand-name {
-    font-size: 18px;
+    font-size: 1rem;
   }
   .brand-logo {
     width: 30px;
+  }
+  .welcome-title {
+    font-size: 1.3rem;
+  }
+  .welcome-subtitle {
+    font-size: 0.8rem;
   }
 
   .main-card > .row {
@@ -200,7 +208,9 @@
 
 @media (max-width: 768px) {
   .main-card {
+    height: 90% !important;
     width: 90vw !important;
+    padding: 1.5rem 0.5rem !important;
     border-radius: 10px !important;
   }
   .main-card > .row {
