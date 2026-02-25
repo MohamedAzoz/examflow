@@ -1,13 +1,16 @@
+:root{
+--form:#F3F4F6;
+--primary:#3D8B9E;
+--primary-hover:#2D6B7E;
+--background:#f4f7f6;
+}
+
 :host {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: #f4f7f6;
-}
-
-.login-page {
-  height: 100%;
+  background: var(--background);
 }
 
 .main-card {
@@ -17,7 +20,7 @@
   border-radius: 0;
   box-shadow: 0 20px 60px rgba(15, 23, 42, 0.15);
   overflow: hidden;
-  background: #ffffff;
+  background: var(--form);
   padding: 0 !important;
 }
 
@@ -38,7 +41,7 @@
 }
 
 .form-section {
-  background: #ffffff;
+  background: var(--form);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -56,6 +59,11 @@
   gap: 10px;
   transform: translateX(-10px);
 }
+.hr-custom {
+/* Gray */
+border: 1px solid #CED4DA;
+
+}
 .input-wrapper {
   position: relative;
   display: flex;
@@ -67,7 +75,7 @@
 }
 
 .input-wrapper:focus-within {
-  border-color: #3d8b9e;
+  border-color: var(--primary);
   box-shadow: 0 0 0 4px rgba(61, 139, 158, 0.1);
 }
 
@@ -109,7 +117,7 @@
 }
 
 .welcome-title {
-  font-size: 32px;
+  font-size: 1.5rem;
   font-weight: 700;
   color: #111827;
   margin-bottom: 10px;
@@ -146,7 +154,7 @@
 }
 
 .btn-login:hover:not(:disabled) {
-  background: #2d6b7e;
+  background: var(--primary-hover);
   transform: translateY(-2px);
 }
 
@@ -157,7 +165,50 @@
 /* responsive */
 @media (max-height: 600px) {
   .main-card {
-    height: 100vh;
-    border-radius: 0;
+    width: 90vw !important;
+    border-radius: 10px !important;
   }
+  /* .form-section {
+    width: 100% !important;
+  } */
+
+  .brand-section {
+    transform: translateX(0);
+    width: 100%;
+    display: flex;
+      justify-content: center;
+      align-items: center;
+
+  }
+  .brand-name {
+    font-size: 18px;
+  }
+  .brand-logo {
+    width: 30px;
+    height: auto;
+    margin-right: 8px;
+    padding-bottom: 20px;
+  }
+
+  .main-card > .row {
+  height: auto;
 }
+
+.main-card > .row > [class^="col"] {
+  height: auto;
+}
+}
+
+@media (max-width: 768px) {
+  .main-card {
+    width: 90vw !important;
+    border-radius: 10px !important;
+  }
+  .main-card > .row {
+  height: 100%;
+}
+.main-card > .row > [class^="col"] {
+  height: 100%;
+}
+}
+
