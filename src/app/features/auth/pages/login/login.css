@@ -42,10 +42,6 @@
 
 .form-section {
   background: var(--form);
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
   padding-top: 10px;
   height: 100%;
   border-radius: 0;
@@ -56,11 +52,12 @@
   align-items: center;
   justify-content: center;
   margin-bottom: 40px;
-  gap: 10px;
   transform: translateX(-10px);
 }
 .hr-custom {
-/* Gray */
+/* Gray
+padding: 0;
+margin: 20px 0; */
 border: 1px solid #CED4DA;
 
 }
@@ -168,9 +165,10 @@ border: 1px solid #CED4DA;
     width: 90vw !important;
     border-radius: 10px !important;
   }
-  /* .form-section {
-    width: 100% !important;
-  } */
+  .form-section {
+    padding: 0 10px !important;
+    height: auto !important;
+  }
 
   .brand-section {
     transform: translateX(0);
