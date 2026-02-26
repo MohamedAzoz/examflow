@@ -16,7 +16,6 @@ export class AuthFacade {
   private localStorage = inject(LocalStorage);
   private jwt = inject(JWT);
 
-  // Signals for state management
   userToken = signal<string | null>(this.localStorage.get('token'));
   isLoading = signal<boolean>(false);
   errorMessage = signal<string | null>(null);
@@ -30,7 +29,6 @@ export class AuthFacade {
       next: (response) => {
         this.localStorage.set('token', response.token);
         const decodedToken = this.jwt.decodeToken(response.token);
-        console.log('Decoded Token:', decodedToken as IJWT);
         this.localStorage.set('name', (decodedToken as IJWT).unique_name);
         this.localStorage.set('role', (decodedToken as IJWT).role);
         this.localStorage.set('userId', (decodedToken as IJWT).nameid);
@@ -39,7 +37,11 @@ export class AuthFacade {
         this.localStorage.set('nbf', (decodedToken as IJWT).nbf.toString());
         this.userToken.set(response.token);
         this.isLoading.set(false);
-        this.router.navigate(['home']);
+        if ((decodedToken as IJWT).role === 'Admin') {
+          this.router.navigate(['user-managment']);
+        } else {
+          this.router.navigate(['home']);
+        }
       },
       error: (error) => {
         this.isLoading.set(false);

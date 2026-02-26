@@ -6,7 +6,19 @@
   box-sizing: border-box;
 }
 
+:root {
+  --main-bg-color: #E8E7E7;
+  --success-color: #299E5B;
+  --primary-color: #357B85;
+  --danger-color: #BC3E3E;
+  --gray-color: #CED4DA;
+  --grades-color: #F3F4F6;
+  --text-gray-color: #706D79; 
+  --text-dark-color: #000000;
+  --text-white-color: #FFFFFF;
+}
+
 body {
   /* font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; */
-  background: #E8E7E7;
+  background: var(--main-bg-color);
 }
