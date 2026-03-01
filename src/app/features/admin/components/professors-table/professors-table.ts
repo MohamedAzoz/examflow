@@ -10,8 +10,14 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { IProfessorResponse, Professor } from '../../../../data/services/professor';
 import { FilterConfig, FilterModal, FilterResult } from '../filter-modal/filter-modal';
-import { getInitials, getAvatarColor, getAvatarText, getJobColor, getJobText } from '../../../../shared/utils/avatar.util';
-import { AddProfessorModalComponent } from "../add-professor-modal/add-professor-modal";
+import {
+  getInitials,
+  getAvatarColor,
+  getAvatarText,
+  getJobColor,
+  getJobText,
+} from '../../../../shared/utils/avatar.util';
+import { AddProfessorModalComponent } from '../add-professor-modal/add-professor-modal';
 /*
  "id": "32aed284-65e2-43ca-d542-08de77577cb6",
       "nationalId": "12345678910112",
@@ -39,8 +45,8 @@ interface ProfessorRow {
 @Component({
   selector: 'app-professors-table',
   imports: [FilterModal, AddProfessorModalComponent],
-  templateUrl:  './professors-table.html',
-  styleUrls:['../shard-style.css', './professors-table.css'],
+  templateUrl: './professors-table.html',
+  styleUrls: ['../shard-style.css', './professors-table.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfessorsTable implements OnInit {
@@ -127,7 +133,7 @@ export class ProfessorsTable implements OnInit {
   protected onUploadExcel(): void {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = '.xlsx,.xls,.csv';
+    input.accept = '.xlsx';
 
     input.onchange = () => {
       const file = input.files?.[0];
@@ -175,22 +181,25 @@ export class ProfessorsTable implements OnInit {
           const total: number = res.totalSize;
 
           this.professors.set(
-            items.map((p: any) => (
-              this.index.set(this.index() + 1),
-              {
-              id: p.id,
-              initials: getInitials(p.fullName),
-              avatarColor: getAvatarColor(this.index()),
-              avatarText: getAvatarText(this.index()),
-              fullName: p.fullName,
-              nationalId: p.nationalId ?? '',
-              email: p.email ?? '',
-              phone: p.phoneNumber ?? '',
-              academicRank: p.academicRank ?? '',
-              academicRankColor: getJobColor(this.index()),
-              academicRankText: getJobText(this.index()),
-              universityCode: p.universityCode ?? '',
-            })),
+            items.map(
+              (p: any) => (
+                this.index.set(this.index() + 1),
+                {
+                  id: p.id,
+                  initials: getInitials(p.fullName),
+                  avatarColor: getAvatarColor(this.index()),
+                  avatarText: getAvatarText(this.index()),
+                  fullName: p.fullName,
+                  nationalId: p.nationalId ?? '',
+                  email: p.email ?? '',
+                  phone: p.phoneNumber ?? '',
+                  academicRank: p.academicRank ?? '',
+                  academicRankColor: getJobColor(this.index()),
+                  academicRankText: getJobText(this.index()),
+                  universityCode: p.universityCode ?? '',
+                }
+              ),
+            ),
           );
           this.totalCount.set(total);
           this.loading.set(false);

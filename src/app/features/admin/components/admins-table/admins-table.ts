@@ -43,7 +43,7 @@ export class AdminsTableComponent implements OnInit {
   protected readonly searchQuery = signal('');
   protected readonly currentPage = signal(1);
   protected readonly totalCount = signal(0);
-  protected readonly pageSize = 2;
+  protected readonly pageSize = 5;
   protected readonly index = signal(0);
   protected readonly loading = signal(false);
   protected readonly showAddModal = signal(false);
