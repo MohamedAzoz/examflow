@@ -1,0 +1,80 @@
+<!-- Backdrop -->
+<div class="filter-backdrop" (click)="onBackdropClick()">
+
+  <!-- Modal Box -->
+  <div class="filter-box" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+
+    <!-- Header -->
+    <div class="filter-header">
+      <h3 class="filter-title">{{ config().title }}</h3>
+      <button type="button" class="filter-close" (click)="closed.emit()" aria-label="Close">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="filter-body">
+
+      <!-- Sort By -->
+      <div class="filter-section">
+        <label class="filter-label">Sort By</label>
+        <div class="select-wrap">
+          <select
+            class="filter-select"
+            [ngModel]="selectedSort()"
+            (ngModelChange)="selectedSort.set($event)">
+            @for (opt of config().sortOptions; track opt.value) {
+              <option [ngValue]="opt.value">{{ opt.label }}</option>
+            }
+          </select>
+          <i class="bi bi-chevron-down select-arrow"></i>
+        </div>
+      </div>
+
+      <!-- Academic Level -->
+      @if (config().showAcademicLevel && config().academicLevels.length > 0) {
+        <div class="filter-section">
+          <label class="filter-label">Academic Level</label>
+          <div class="chip-group">
+            @for (level of config().academicLevels; track level) {
+              <button
+                type="button"
+                class="chip"
+                [class.chip-active]="isLevelSelected(level)"
+                [ngClass]="'chip-level-' + level"
+                (click)="toggleLevel(level)">
+                Level {{ level }}
+              </button>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Department -->
+      @if (config().showDepartment && config().departments.length > 0) {
+        <div class="filter-section">
+          <label class="filter-label">Department</label>
+          <div class="chip-group">
+            @for (dept of config().departments; track dept.id) {
+              <button
+                type="button"
+                class="chip"
+                [class.chip-active]="isDeptSelected(dept.id)"
+                (click)="toggleDept(dept.id)">
+                {{ dept.code }}
+              </button>
+            }
+          </div>
+        </div>
+      }
+
+    </div>
+
+    <!-- Footer -->
+    <div class="filter-footer">
+      <button type="button" class="btn-reset" (click)="onReset()">Reset</button>
+      <button type="button" class="btn-show-results" (click)="onApply()">Show Results</button>
+    </div>
+
+  </div>
+</div>

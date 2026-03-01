@@ -1,0 +1,64 @@
+<aside
+  class="sidebar"
+  [class.sidebar-visible]="!isMobile()"
+  [class.sidebar-mobile]="isMobile()"
+  [class.sidebar-mobile-open]="isMobile() && toggle.value()"
+  role="complementary"
+  aria-label="Sidebar navigation">
+
+  <!-- Close Button (mobile only) -->
+  @if (isMobile()) {
+    <div class="close-btn-container">
+      <button
+        type="button"
+        class="btn-close-sidebar"
+        (click)="onCloseClick()"
+        aria-label="Close sidebar">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+  }
+
+  <!-- Brand -->
+  <div class="sidebar-brand">
+    <span class="brand-text">EXAMFLOW</span>
+  </div>
+
+  <!-- User Profile -->
+  <div class="user-profile">
+    <div class="user-avatar">
+      <i class="bi bi-person-fill"></i>
+    </div>
+    <div class="user-info">
+      <p class="user-name">{{ userName() }}</p>
+      <p class="user-role-label">{{ userRole() }}</p>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="sidebar-nav" role="navigation" aria-label="Main navigation">
+    <ul class="nav-list">
+      @for (item of navItems(); track item.route) {
+        <li class="nav-item">
+          <button
+            type="button"
+            class="nav-link"
+            [class.active]="activeRoute() === item.route"
+            (click)="onNavClick(item.route)"
+            [attr.aria-current]="activeRoute() === item.route ? 'page' : null">
+            <i class="bi nav-icon" [ngClass]="item.icon"></i>
+            <span class="nav-label">{{ item.label }}</span>
+          </button>
+        </li>
+      }
+    </ul>
+  </nav>
+
+  <!-- Footer -->
+  <div class="sidebar-footer">
+    <button type="button" class="logout-btn">
+      <i class="bi bi-box-arrow-left"></i>
+      <span>Logout</span>
+    </button>
+  </div>
+</aside>

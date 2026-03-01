@@ -1,0 +1,90 @@
+<div class="modal-backdrop" (click)="closed.emit()">
+  <div class="modal-box" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+
+    <!-- Header -->
+    <div class="modal-header">
+      <h2 class="modal-title">Add New Professor</h2>
+      <button type="button" class="modal-close-btn" (click)="closed.emit()" aria-label="Close">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <!-- Form Body -->
+    <form class="modal-body" (ngSubmit)="submit()" novalidate>
+
+      <!-- Row 1: National ID + University Code -->
+      <div class="form-row two-col">
+        <div class="form-field">
+          <label class="field-label" for="prof-nid">National ID</label>
+          <input id="prof-nid" type="text" class="field-input"
+            [(ngModel)]="form.nationalId" name="nationalId"
+            placeholder="Enter National ID" required autocomplete="off" />
+        </div>
+        <div class="form-field">
+          <label class="field-label" for="prof-univcode">University Code</label>
+          <input id="prof-univcode" type="text" class="field-input"
+            [(ngModel)]="form.universityCode" name="universityCode"
+            placeholder="e.g. U2023..." required autocomplete="off" />
+        </div>
+      </div>
+
+      <!-- Row 2: Full Name -->
+      <div class="form-row one-col">
+        <div class="form-field">
+          <label class="field-label" for="prof-fullname">Full Name</label>
+          <input id="prof-fullname" type="text" class="field-input"
+            [(ngModel)]="form.fullName" name="fullName"
+            placeholder="First Last" required autocomplete="off" />
+        </div>
+      </div>
+
+      <!-- Row 3: Academic Rank -->
+      <div class="form-row one-col">
+        <div class="form-field">
+          <label class="field-label" for="prof-rank">Academic Rank</label>
+          <div class="select-wrap">
+            <select id="prof-rank" class="field-select"
+              [(ngModel)]="form.academicRank" name="academicRank" required>
+              @for (rank of academicRanks; track rank) {
+                <option [value]="rank">{{ rank }}</option>
+              }
+            </select>
+            <i class="bi bi-chevron-down select-arrow"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 4: Email + Phone -->
+      <div class="form-row two-col">
+        <div class="form-field">
+          <label class="field-label" for="prof-email">Email Address</label>
+          <input id="prof-email" type="email" class="field-input"
+            [(ngModel)]="form.email" name="email"
+            placeholder="professor@univ.edu" required autocomplete="off" />
+        </div>
+        <div class="form-field">
+          <label class="field-label" for="prof-phone">Phone Number</label>
+          <input id="prof-phone" type="tel" class="field-input"
+            [(ngModel)]="form.phoneNumber" name="phoneNumber"
+            placeholder="+20 xxx xxx xxxx" autocomplete="off" />
+        </div>
+      </div>
+
+    </form>
+
+    <!-- Footer --> 
+    <div class="modal-footer">
+      <button type="button" class="btn-cancel" (click)="closed.emit()">Cancel</button>
+      <button type="button" class="btn-create"
+        [disabled]="!isFormValid() || submitting()"
+        (click)="submit()">
+        @if (submitting()) {
+          <span>Creating...</span>
+        } @else {
+          <span>Create Professor</span>
+        }
+      </button>
+    </div>
+
+  </div>
+</div>

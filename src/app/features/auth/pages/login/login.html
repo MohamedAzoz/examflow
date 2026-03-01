@@ -21,7 +21,7 @@
 
         @if (authFacade.errorMessage()) {
           <div class="alert alert-danger py-2 small border-0 mb-3">
-            <i class="fa-solid fa-circle-exclamation me-2"></i>
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
             {{ authFacade.errorMessage() }}
           </div>
         }
@@ -30,7 +30,7 @@
 
           <div class="mb-1 mb-lg-3">
             <div class="input-wrapper gap-2" [class.is-invalid-group]="loginForm.get('identifier')?.touched && loginForm.get('identifier')?.invalid">
-              <i class="fa-solid fa-user input-icon"></i>
+              <i class="bi bi-person-fill mx-2"></i>
               <input type="text" formControlName="identifier" class="form-control form-input" placeholder="Username or ID">
             </div>
             @if (loginForm.get('identifier')?.touched && loginForm.get('identifier')?.errors?.['required']) {
@@ -40,9 +40,9 @@
 
           <div class="mb-1 mb-lg-3">
             <div class="input-wrapper gap-2" [class.is-invalid-group]="loginForm.get('password')?.touched && loginForm.get('password')?.invalid">
-              <i class="fa-solid fa-lock input-icon"></i>
+              <i class="bi bi-lock-fill mx-2"></i>
               <input [type]="showPassword() ? 'text' : 'password'" formControlName="password" class="form-control form-input" placeholder="Password">
-              <i [class]="showPassword() ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye'" class="toggle-password me-2" (click)="togglePassword()"></i>
+              <i [class]="showPassword() ? 'bi bi-eye-slash-fill' : 'bi bi-eye-fill'" class="toggle-password mx-2" (click)="togglePassword()"></i>
             </div>
 
             @if (loginForm.get('password')?.touched && loginForm.get('password')?.errors?.['required']) {

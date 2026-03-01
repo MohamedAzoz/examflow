@@ -27,7 +27,7 @@ export class AuthFacade {
     this.errorMessage.set(null);
     this.authService.login(body).subscribe({
       next: (response) => {
-        this.localStorage.set('token', response.token);
+        this.localStorage.set('access_token', response.token);
         const decodedToken = this.jwt.decodeToken(response.token);
         this.localStorage.set('name', (decodedToken as IJWT).unique_name);
         this.localStorage.set('role', (decodedToken as IJWT).role);
@@ -38,9 +38,9 @@ export class AuthFacade {
         this.userToken.set(response.token);
         this.isLoading.set(false);
         if ((decodedToken as IJWT).role === 'Admin') {
-          this.router.navigate(['user-managment']);
+          this.router.navigate(['main/user-managment']);
         } else {
-          this.router.navigate(['home']);
+          this.router.navigate(['main/home']);
         }
       },
       error: (error) => {

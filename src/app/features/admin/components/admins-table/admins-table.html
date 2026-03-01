@@ -1,0 +1,132 @@
+<div class="table-card">
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="search-wrap">
+      <i class="bi bi-search search-icon"></i>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Search admins..."
+        [value]="searchQuery()"
+        (input)="onSearch($any($event.target).value)"
+        autocomplete="off"
+      />
+    </div>
+
+    <div class="toolbar-actions">
+      <button type="button" class="btn-action btn-filter" (click)="toggleFilter()">
+        <i class="bi bi-filter"></i>
+        <span>Filter</span>
+      </button>
+      <button type="button" class="btn-action btn-excel" (click)="onUploadExcel()">
+        <img src="Vector.svg" alt="">
+        <span>Upload Excel</span>
+      </button>
+      <button type="button" class="btn-action btn-add" (click)="showAddModal.set(true)">
+        <i class="bi bi-plus-lg"></i>
+        <span>Add Admin</span>
+      </button>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-bar"></div>
+  }
+
+  <div class="table-responsive">
+    <table class="data-table" aria-label="Admins table">
+      <thead>
+        <tr>
+          <th>Full Name</th>
+          <th>National ID</th>
+          <th>Univ. Code</th>
+          <th>Job Title</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th class="actions-col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (admin of admins(); track admin.id) {
+          <tr class="data-row">
+            <td>
+              <div class="name-cell">
+                <div class="avatar" [style.background]="admin.avatarColor">
+                  <span class="avatar-initials">{{ admin.initials }}</span>
+                </div>
+                <span class="cell-name">{{ admin.fullName }}</span>
+              </div>
+            </td>
+            <td class="mono-text">{{ admin.nationalId }}</td>
+            <td>{{ admin.univCode }}</td>
+            <td>{{ admin.jobTitle }}</td>
+            <td class="email-text">{{ admin.email }}</td>
+            <td>{{ admin.phone }}</td>
+            <td class="actions-col">
+              <div class="row-actions">
+                <button
+                  type="button"
+                  class="action-btn edit-btn"
+                  (click)="editAdmin(admin)"
+                  title="Edit"
+                >
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button
+                  type="button"
+                  class="action-btn delete-btn"
+                  (click)="deleteAdmin(admin)"
+                  title="Delete"
+                >
+                  <i class="bi bi-trash3"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        }
+
+        @if (admins().length === 0 && !loading()) {
+          <tr>
+            <td colspan="7" class="empty-state">
+              <i class="bi bi-inbox"></i>
+              <p>No admins found</p>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="table-footer">
+    <p class="result-info">
+      Showing <strong>{{ showingFrom() }}</strong> to <strong>{{ showingTo() }}</strong> of
+      <strong>{{ totalCount() }}</strong> results
+    </p>
+    <div class="pagination-btns">
+      <button type="button" class="page-btn" [disabled]="currentPage() === 1" (click)="prevPage()">
+        <i class="bi bi-chevron-left"></i>
+      </button>
+      <button
+        type="button"
+        class="page-btn"
+        [disabled]="currentPage() >= totalPages()"
+        (click)="nextPage()"
+      >
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+@if (showFilter()) {
+  <app-filter-modal
+    [config]="filterConfig"
+    (applied)="onFilterApply($event)"
+    (reset)="onFilterReset()"
+    (closed)="showFilter.set(false)"
+  />
+}
+
+@if (showAddModal()) {
+  <app-add-admin-modal (closed)="showAddModal.set(false)" (adminAdded)="onAdminAdded()" />
+}

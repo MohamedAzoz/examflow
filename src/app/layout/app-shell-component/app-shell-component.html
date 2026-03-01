@@ -1,6 +1,6 @@
 <div class="app-shell">
 
-  <!-- Overlay: mobile only, when sidebar open -->
+  <!-- Overlay (mobile only, when sidebar is open) -->
   @if (toggle.value() && isMobile()) {
     <div
       class="sidebar-overlay"
@@ -9,7 +9,7 @@
     </div>
   }
 
-  <!-- Sidebar: always in DOM, visibility controlled by CSS -->
+  <!-- Sidebar -->
   <app-sidebar
     [navItems]="navItems()"
     [userName]="userName()"
@@ -18,30 +18,32 @@
     [isMobile]="isMobile()"
     (navItemSelected)="onNavItemSelected($event)" />
 
-  <!-- Main content area -->
+  <!-- Main Area -->
   <div
     class="main-area"
-    [class.sidebar-expanded]="!isMobile()">
+    [class.sidebar-expanded]="!isMobile() && toggle.value()"
+    [class.sidebar-always-visible]="!isMobile()">
 
-    <!-- Top header bar -->
+    <!-- Top Header -->
     <header class="top-header">
       <div class="header-left">
-        <!-- Hamburger: mobile only -->
-        @if (isMobile()) {
-          <button
-            type="button"
-            class="hamburger-btn"
-            (click)="toggle.toggle()"
-            aria-label="Toggle menu">
-            <i class="bi bi-list"></i>
-          </button>
-        }
+        <button
+          type="button"
+          class="hamburger-btn"
+          (click)="toggle.toggle()"
+          [attr.aria-expanded]="toggle.value()"
+          aria-label="Toggle sidebar">
+          <i class="bi bi-list"></i>
+        </button>
         <h1 class="page-title">{{ pageTitle() }}</h1>
       </div>
 
       @if (showNotifications()) {
         <div class="header-right">
-          <button type="button" class="btn-icon" aria-label="Notifications">
+          <button
+            type="button"
+            class="btn-icon"
+            aria-label="Notifications">
             <i class="bi bi-bell"></i>
             <span class="notif-dot"></span>
           </button>
@@ -49,7 +51,7 @@
       }
     </header>
 
-    <!-- Page content -->
+    <!-- Page Content -->
     <main class="page-content">
       <router-outlet />
     </main>

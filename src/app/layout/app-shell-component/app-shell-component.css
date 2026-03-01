@@ -12,11 +12,11 @@
   display: block;
 }
 
-/* ─── Shell ─── */
+/* ─── Shell Container ─── */
 .app-shell {
   min-height: 100vh;
   min-height: 100dvh;
-  background: var(--sidebar-bg);
+  background: var(--bg-page);
   position: relative;
 }
 
@@ -24,15 +24,16 @@
 .sidebar-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: var(--primary);
+  opacity: 0.2;
   z-index: 299;
   cursor: pointer;
-  animation: overlayIn var(--speed) var(--ease);
+  animation: overlayFadeIn var(--speed) var(--ease);
 }
 
-@keyframes overlayIn {
+@keyframes overlayFadeIn {
   from { opacity: 0; }
-  to { opacity: 1; }
+  to { opacity: 0.2; }
 }
 
 /* ─── Main Area ─── */
@@ -42,12 +43,18 @@
   min-height: 100vh;
   min-height: 100dvh;
   transition: margin-left var(--speed) var(--ease);
-  margin-left: 0;
 }
 
-/* Desktop: push content to the right when sidebar is visible */
-.main-area.sidebar-expanded {
+/* Desktop: sidebar is visible, push content */
+.main-area.sidebar-always-visible {
   margin-left: var(--sidebar-width);
+}
+
+/* Desktop: when sidebar is toggled off (hidden) */
+.main-area.sidebar-always-visible:not(.sidebar-expanded) {
+  /* Sidebar visible by default on desktop, no extra margin needed 
+     This class combo doesn't apply since sidebar-always-visible 
+     already handles it. See note below. */
 }
 
 /* ─── Top Header ─── */
@@ -57,7 +64,7 @@
   justify-content: space-between;
   padding: 0 24px;
   height: var(--header-height);
-  background: var(--sidebar-bg);
+  background: #ffffff;
   border-bottom: 1px solid var(--border-color);
   position: sticky;
   top: 0;
@@ -87,6 +94,13 @@
 
 .hamburger-btn:hover {
   background: var(--primary-light);
+}
+
+/* Hide hamburger on desktop when sidebar is always visible */
+@media (min-width: 769px) {
+  .hamburger-btn {
+    display: none;
+  }
 }
 
 .page-title {
@@ -138,14 +152,18 @@
   padding: 24px;
 }
 
-/* ─── Mobile ─── */
-@media (max-width: 991.98px) {
+/* ─── Mobile Adjustments ─── */
+@media (max-width: 768px) {
   .main-area {
     margin-left: 0 !important;
   }
 
   .top-header {
     padding: 0 16px;
+  }
+
+  .hamburger-btn {
+    display: flex;
   }
 
   .page-content {

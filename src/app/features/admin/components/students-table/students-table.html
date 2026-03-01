@@ -1,0 +1,142 @@
+<div class="table-card">
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="search-wrap">
+      <i class="bi bi-search search-icon"></i>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Search users..."
+        [value]="searchQuery()"
+        (input)="onSearch($any($event.target).value)"
+        autocomplete="off" />
+    </div>
+
+    <div class="toolbar-actions">
+      <button type="button" class="btn-action btn-filter" (click)="toggleFilter()">
+        <i class="bi bi-filter"></i>
+        <span>Filter</span>
+      </button>
+      <button type="button" class="btn-action btn-excel" (click)="onUploadExcel()">
+       <img src="Vector.svg" alt="">
+        <span>Upload Excel</span>
+      </button>
+      <button type="button" class="btn-action btn-add" (click)="showAddModal.set(true)">
+        <i class="bi bi-plus-lg"></i>
+        <span>Add Student</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="loading-bar"></div>
+  }
+
+  <!-- Table -->
+  <div class="table-responsive">
+    <table class="data-table" aria-label="Students table">
+      <thead>
+        <tr>
+          <th>Full Name</th>
+          <th>National ID</th>
+          <th>Univ. Code</th>
+          <th>Academic Level</th>
+          <th>Dept</th>
+          <th>Email</th>
+          <th class="actions-col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (student of students(); track $index) {
+          <tr class="data-row">
+            <td>
+              <div class="name-cell">
+                <div class="avatar" [style.background]="student.avatarColor">
+                  <span class="avatar-initials">{{ student.initials }}</span>
+                </div>
+                <span class="cell-name">{{ student.fullName }}</span>
+              </div>
+            </td>
+            <td class="mono-text">{{ student.nationalId }}</td>
+            <td>
+              <span class="univ-code">{{ student.univCode }}</span>
+            </td>
+            <td>
+              <span class="level-badge" [ngClass]="getLevelClass(student.level)">
+                Level {{ student.level }}
+              </span>
+            </td>
+            <td class="dept-text">{{ student.dept }}</td>
+            <td class="email-text">{{ student.email }}</td>
+            <td class="actions-col">
+              <div class="row-actions">
+                <button type="button" class="action-btn edit-btn" (click)="editStudent(student)" title="Edit">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button type="button" class="action-btn delete-btn" (click)="deleteStudent(student)" title="Delete">
+                  <i class="bi bi-trash3"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        }
+
+        @if (students().length === 0 && !loading()) {
+          <tr>
+            <td colspan="7" class="empty-state">
+              <i class="bi bi-inbox"></i>
+              <p>No students found</p>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div class="table-footer">
+    <p class="result-info">
+      Showing <strong>{{ showingFrom() }}</strong> to
+      <strong>{{ showingTo() }}</strong> of
+      <strong>{{ totalCount() }}</strong> results
+    </p>
+    <div class="pagination-btns">
+      <button
+        type="button"
+        class="page-btn"
+        [disabled]="currentPage() === 1"
+        (click)="prevPage()"
+        aria-label="Previous page">
+        <i class="bi bi-chevron-left"></i>
+      </button>
+      <button
+        type="button"
+        class="page-btn"
+        [disabled]="currentPage() >= totalPages()"
+        (click)="nextPage()"
+        aria-label="Next page">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Filter Modal -->
+@if (showFilter()) {
+  <app-filter-modal
+    [config]="filterConfig"
+    (applied)="onFilterApply($event)"
+    (reset)="onFilterReset()"
+    (closed)="showFilter.set(false)" />
+}
+
+<!-- Add Student Modal -->
+@if (showAddModal()) {
+  <app-add-student-modal
+   [config]="filterConfig"
+    (closed)="showAddModal.set(false)"
+    (studentAdded)="onStudentAdded()" />
+}

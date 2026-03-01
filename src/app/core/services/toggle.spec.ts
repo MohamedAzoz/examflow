@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { Auth } from './auth';
+import { Toggle } from './toggle';
 
-describe('Auth', () => {
-  let service: Auth;
+describe('Toggle', () => {
+  let service: Toggle;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(Auth);
+    service = TestBed.inject(Toggle);
   });
 
   it('should be created', () => {

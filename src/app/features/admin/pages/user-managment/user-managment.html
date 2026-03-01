@@ -1,0 +1,31 @@
+<div class="um-container">
+
+  <!-- Tabs -->
+  <div class="tab-bar">
+    @for (tab of tabs; track tab) {
+      <button
+        type="button"
+        class="tab-btn"
+        [class.active]="activeTab() === tab"
+        (click)="setTab(tab)">
+        {{ tab }}
+      </button>
+    }
+  </div>
+
+  <!-- Tab Content -->
+  <div class="tab-content">
+    @switch (activeTab()) {
+      @case ('Students') {
+        <app-students-table />
+      }
+      @case ('Professors') {
+        <app-professors-table />
+      }
+      @case ('Admins') {
+        <app-admins-table />
+      }
+    }
+  </div>
+
+</div>

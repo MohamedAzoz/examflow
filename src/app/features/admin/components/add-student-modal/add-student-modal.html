@@ -1,0 +1,95 @@
+<div class="modal-backdrop" (click)="closed.emit()">
+  <div class="modal-box" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+
+    <div class="modal-header">
+      <h2 class="modal-title">Add New Student</h2>
+      <button type="button" class="modal-close-btn" (click)="closed.emit()" aria-label="Close">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <form class="modal-body" (ngSubmit)="submit()" novalidate>
+
+      <div class="form-row two-col">
+        <div class="form-field">
+          <label class="field-label" for="asm-nid">National ID</label>
+          <input id="asm-nid" type="text" class="field-input"
+            [(ngModel)]="form.nationalId" name="nationalId"
+            placeholder="Enter National ID" required autocomplete="off" />
+        </div>
+        <div class="form-field">
+          <label class="field-label" for="asm-univcode">University Code</label>
+          <input id="asm-univcode" type="text" class="field-input"
+            [(ngModel)]="form.univCode" name="univCode"
+            placeholder="e.g. U2023..." required autocomplete="off" />
+        </div>
+      </div>
+
+      <div class="form-row one-col">
+        <div class="form-field">
+          <label class="field-label" for="asm-fullname">Full Name</label>
+          <input id="asm-fullname" type="text" class="field-input"
+            [(ngModel)]="form.fullName" name="fullName"
+            placeholder="First Last" required autocomplete="off" />
+        </div>
+      </div>
+
+      <div class="form-row two-col">
+        <div class="form-field">
+          <label class="field-label" for="asm-level">Academic Level</label>
+          <div class="select-wrap">
+            <select id="asm-level" class="field-select"
+              [(ngModel)]="form.level" name="level" required>
+              @for (lvl of academicLevels; track lvl.value) {
+                <option [ngValue]="lvl.value">{{ lvl.label }}</option>
+              }
+            </select>
+            <i class="bi bi-chevron-down select-arrow"></i>
+          </div>
+        </div>
+        <div class="form-field">
+          <label class="field-label" for="asm-dept">Department</label>
+          <div class="select-wrap">
+            <select id="asm-dept" class="field-select"
+              [(ngModel)]="form.deptId" name="deptId" required>
+              @for (d of departments; track d.id) {
+                <option [ngValue]="d.id">{{ d.label }}</option>
+              }
+            </select>
+            <i class="bi bi-chevron-down select-arrow"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row two-col">
+        <div class="form-field">
+          <label class="field-label" for="asm-email">Email Address</label>
+          <input id="asm-email" type="email" class="field-input"
+            [(ngModel)]="form.email" name="email"
+            placeholder="student@univ.edu" required autocomplete="off" />
+        </div>
+        <div class="form-field">
+          <label class="field-label" for="asm-phone">Phone Number</label>
+          <input id="asm-phone" type="tel" class="field-input"
+            [(ngModel)]="form.phone" name="phone"
+            placeholder="+20 xxx xxx xxxx" autocomplete="off" />
+        </div>
+      </div>
+
+    </form>
+
+    <div class="modal-footer">
+      <button type="button" class="btn-cancel" (click)="closed.emit()">Cancel</button>
+      <button type="button" class="btn-create"
+        [disabled]="!isFormValid() || submitting()"
+        (click)="submit()">
+        @if (submitting()) {
+          <span>Creating...</span>
+        } @else {
+          <span>Create Student</span>
+        }
+      </button>
+    </div>
+
+  </div>
+</div>

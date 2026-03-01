@@ -1,0 +1,86 @@
+<div class="modal-backdrop" (click)="closed.emit()">
+  <div class="modal-box" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+
+    <!-- Header -->
+    <div class="modal-header">
+      <h2 class="modal-title">Add New Admin</h2>
+      <button type="button" class="modal-close-btn" (click)="closed.emit()" aria-label="Close">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <!-- Form Body -->
+    <form class="modal-body" (ngSubmit)="submit()" novalidate>
+
+      <!-- Row 1: National ID + University Code -->
+      <div class="form-row two-col">
+        <div class="form-field">
+          <label class="field-label" for="adm-nid">National ID</label>
+          <input id="adm-nid" type="text" class="field-input"
+            [(ngModel)]="form.nationalId" name="nationalId"
+            placeholder="Enter National ID" required autocomplete="off" />
+        </div>
+        <div class="form-field">
+          <label class="field-label" for="adm-univcode">University Code</label>
+          <input id="adm-univcode" type="text" class="field-input"
+            [(ngModel)]="form.universityCode" name="universityCode"
+            placeholder="e.g. U2023..." required autocomplete="off" />
+        </div>
+      </div>
+
+      <!-- Row 2: Full Name -->
+      <div class="form-row one-col">
+        <div class="form-field">
+          <label class="field-label" for="adm-fullname">Full Name</label>
+          <input id="adm-fullname" type="text" class="field-input"
+            [(ngModel)]="form.fullName" name="fullName"
+            placeholder="First Last" required autocomplete="off" />
+        </div>
+      </div>
+
+      <!-- Row 3: Job Title -->
+      <div class="form-row one-col">
+        <div class="form-field">
+          <label class="field-label" for="adm-job">Job Title</label>
+          <!-- <div class="select-wrap"> -->
+            <input id="adm-job" type="text" class="field-input"
+              [(ngModel)]="form.jobTitle" name="jobTitle" required
+              placeholder="Enter Job Title" autocomplete="off" />
+          <!-- </div> -->
+        </div>
+      </div>
+
+      <!-- Row 4: Email + Phone -->
+      <div class="form-row two-col">
+        <div class="form-field">
+          <label class="field-label" for="adm-email">Email Address</label>
+          <input id="adm-email" type="email" class="field-input"
+            [(ngModel)]="form.email" name="email"
+            placeholder="admin@univ.edu" required autocomplete="off" />
+        </div>
+        <div class="form-field">
+          <label class="field-label" for="adm-phone">Phone Number</label>
+          <input id="adm-phone" type="tel" class="field-input"
+            [(ngModel)]="form.phoneNumber" name="phoneNumber"
+            placeholder="+20 xxx xxx xxxx" autocomplete="off" />
+        </div>
+      </div>
+
+    </form>
+
+    <!-- Footer -->
+    <div class="modal-footer">
+      <button type="button" class="btn-cancel" (click)="closed.emit()">Cancel</button>
+      <button type="button" class="btn-create"
+        [disabled]="!isFormValid() || submitting()"
+        (click)="submit()">
+        @if (submitting()) {
+          <span>Creating...</span>
+        } @else {
+          <span>Create Admin</span>
+        }
+      </button>
+    </div>
+
+  </div>
+</div>
