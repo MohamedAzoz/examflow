@@ -27,7 +27,7 @@ export class Main implements OnInit {
   /** Set the role — في الواقع هتجيبها من AuthService */
   protected readonly userRole = signal<'admin' | 'student'>('admin');
 
-  protected readonly activeRoute = signal('dashboard');
+  protected readonly activeRoute = signal('manage-users');
   protected readonly isMobile = signal(false);
 
   /** Derived values from role */
@@ -58,7 +58,7 @@ export class Main implements OnInit {
       results: 'Results',
       settings: 'Settings',
     };
-    return titles[this.activeRoute()] ?? 'Dashboard';
+    return titles[this.activeRoute()] ?? 'User Management';
   });
 
   protected readonly showNotifications = computed(

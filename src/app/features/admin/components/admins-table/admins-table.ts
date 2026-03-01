@@ -9,18 +9,21 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FilterConfig, FilterModal, FilterResult } from '../filter-modal/filter-modal';
-import { Admin, IAdminSearch } from '../../../../data/services/admin';
-import { getInitials, getAvatarColor } from '../../../../shared/utils/avatar.util';
+import { Admin, IAdminResponse, IAdminSearch } from '../../../../data/services/admin';
+import { getInitials, getAvatarColor, getAvatarText, getJobColor, getJobText } from '../../../../shared/utils/avatar.util';
 import { AddAdminModalComponent } from "../add-admin-modal/add-admin-modal";
 
 interface AdminRow {
   id: string;
   initials: string;
   avatarColor: string;
+  avatarText: string;
   fullName: string;
   nationalId: string;
   univCode: string;
   jobTitle: string;
+  jobColor: string;
+  jobText: string;
   email: string;
   phone: string;
 }
@@ -41,6 +44,7 @@ export class AdminsTableComponent implements OnInit {
   protected readonly currentPage = signal(1);
   protected readonly totalCount = signal(0);
   protected readonly pageSize = 2;
+  protected readonly index = signal(0);
   protected readonly loading = signal(false);
   protected readonly showAddModal = signal(false);
   protected readonly showFilter = signal(false);
@@ -165,19 +169,24 @@ export class AdminsTableComponent implements OnInit {
       .getAllAdmins(search)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (res: any) => {
-          const items = res.data ?? res.items ?? res;
-          const total: number = res.totalCount ?? res.total ?? items.length;
+        next: (res: IAdminResponse) => {
+          const items = res.data;
+          const total: number = res.totalSize;
 
           this.admins.set(
-            items.map((a: any) => ({
+            items.map((a: any) => (
+              this.index.set(this.index() + 1),
+              {
               id: a.id,
               initials: getInitials(a.fullName),
-              avatarColor: getAvatarColor(a.fullName),
+              avatarColor: getAvatarColor(this.index()),
+              avatarText: getAvatarText(this.index()),
               fullName: a.fullName,
               nationalId: a.nationalId ?? '',
               univCode: a.universityCode ?? '',
               jobTitle: a.jobTitle ?? '',
+              jobColor: getJobColor(this.index()),
+              jobText: getJobText(this.index()),
               email: a.email ?? '',
               phone: a.phoneNumber ?? '',
             }))

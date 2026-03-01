@@ -3,7 +3,7 @@ import { NavItem } from '../../layout/nav-item';
 export const ADMIN_NAV_ITEMS: readonly NavItem[] = [
   { label: 'Dashboard', icon: 'bi-grid-1x2', route: 'dashboard' },
   { label: 'Manage Users', icon: 'bi-people', route: 'manage-users' },
-  { label: 'Manage Academic Years', icon: 'bi-calendar3', route: 'academic-years' },
+  { label: 'Manage Academic Years', icon: 'bi-calendar4', route: 'academic-years' },
   { label: 'Configure Courses', icon: 'bi-book', route: 'configure-courses' },
   { label: 'Add Department', icon: 'bi-building', route: 'add-department' },
   { label: 'Assign Courses', icon: 'bi-diagram-3', route: 'assign-courses' },

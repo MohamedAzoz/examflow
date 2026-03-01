@@ -8,20 +8,32 @@ import {
   DestroyRef,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Professor } from '../../../../data/services/professor';
+import { IProfessorResponse, Professor } from '../../../../data/services/professor';
 import { FilterConfig, FilterModal, FilterResult } from '../filter-modal/filter-modal';
-import { getInitials, getAvatarColor } from '../../../../shared/utils/avatar.util';
+import { getInitials, getAvatarColor, getAvatarText, getJobColor, getJobText } from '../../../../shared/utils/avatar.util';
 import { AddProfessorModalComponent } from "../add-professor-modal/add-professor-modal";
-
+/*
+ "id": "32aed284-65e2-43ca-d542-08de77577cb6",
+      "nationalId": "12345678910112",
+      "fullName": "د. احمد على",
+      "universityCode": "10234",
+      "academicRank": "Professor",
+      "email": "Ah.professor@examflow.edu.eg",
+      "phoneNumber": "+201012354678"
+*/
 interface ProfessorRow {
   id: string;
   initials: string;
   avatarColor: string;
+  avatarText: string;
   fullName: string;
   nationalId: string;
   email: string;
   phone: string;
-  department: string;
+  academicRank: string;
+  academicRankColor: string;
+  academicRankText: string;
+  universityCode: string;
 }
 
 @Component({
@@ -39,7 +51,8 @@ export class ProfessorsTable implements OnInit {
   protected readonly searchQuery = signal('');
   protected readonly currentPage = signal(1);
   protected readonly totalCount = signal(0);
-  protected readonly pageSize = 10;
+  protected readonly pageSize = 5;
+  protected readonly index = signal(0);
   protected readonly loading = signal(false);
   protected readonly showAddModal = signal(false);
   protected readonly showFilter = signal(false);
@@ -157,20 +170,26 @@ export class ProfessorsTable implements OnInit {
       .getAllProfessors(this.searchQuery(), this.sortOption(), this.pageSize, this.currentPage())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (res: any) => {
-          const items = res.data ?? res.items ?? res;
-          const total: number = res.totalCount ?? res.total ?? items.length;
+        next: (res: IProfessorResponse) => {
+          const items = res.data;
+          const total: number = res.totalSize;
 
           this.professors.set(
-            items.map((p: any) => ({
+            items.map((p: any) => (
+              this.index.set(this.index() + 1),
+              {
               id: p.id,
               initials: getInitials(p.fullName),
-              avatarColor: getAvatarColor(p.fullName),
+              avatarColor: getAvatarColor(this.index()),
+              avatarText: getAvatarText(this.index()),
               fullName: p.fullName,
               nationalId: p.nationalId ?? '',
               email: p.email ?? '',
               phone: p.phoneNumber ?? '',
-              department: p.departmentCode ?? p.department ?? '',
+              academicRank: p.academicRank ?? '',
+              academicRankColor: getJobColor(this.index()),
+              academicRankText: getJobText(this.index()),
+              universityCode: p.universityCode ?? '',
             })),
           );
           this.totalCount.set(total);

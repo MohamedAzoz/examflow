@@ -19,7 +19,7 @@
         <span>Filter</span>
       </button>
       <button type="button" class="btn-action btn-excel" (click)="onUploadExcel()">
-        <img src="Vector.svg" alt="">
+        <img src="Vector.svg" alt="" />
         <span>Upload Excel</span>
       </button>
       <button type="button" class="btn-action btn-add" (click)="showAddModal.set(true)">
@@ -52,16 +52,22 @@
             <td>
               <div class="name-cell">
                 <div class="avatar" [style.background]="admin.avatarColor">
-                  <span class="avatar-initials">{{ admin.initials }}</span>
+                  <span class="avatar-initials" [style.color]="admin.avatarText">{{
+                    admin.initials
+                  }}</span>
                 </div>
                 <span class="cell-name">{{ admin.fullName }}</span>
               </div>
             </td>
             <td class="mono-text">{{ admin.nationalId }}</td>
-            <td>{{ admin.univCode }}</td>
-            <td>{{ admin.jobTitle }}</td>
+            <td class="mono-text">{{ admin.univCode }}</td>
+            <td>
+              <span class="badge" [style.background]="admin.jobColor" [style.color]="admin.jobText">
+                {{ admin.jobTitle }}
+              </span>
+            </td>
             <td class="email-text">{{ admin.email }}</td>
-            <td>{{ admin.phone }}</td>
+            <td class="mono-text">{{ admin.phone }}</td>
             <td class="actions-col">
               <div class="row-actions">
                 <button

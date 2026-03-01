@@ -165,10 +165,10 @@
 }
 
 /* Level chip colors when active */
-.chip-level-1.chip-active { background: #ef4444; border-color: #ef4444; }
-.chip-level-2.chip-active { background: #2d7a7a; border-color: #2d7a7a; }
-.chip-level-3.chip-active { background: #6366f1; border-color: #6366f1; }
-.chip-level-4.chip-active { background: #f59e0b; border-color: #f59e0b; }
+/* .chip-level.chip-active { background: #ef4444; border-color: #ef4444; } */
+.chip-level.chip-active { background: #2d7a7a; border-color: #2d7a7a; }
+/* .chip-level.chip-active { background: #6366f1; border-color: #6366f1; }
+.chip-level.chip-active { background: #f59e0b; border-color: #f59e0b; } */
 
 /* ─── Footer ─── */
 .filter-footer {

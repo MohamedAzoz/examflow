@@ -10,15 +10,15 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgClass } from '@angular/common';
 import { IStudentSearch, IStudentResponse, Student } from '../../../../data/services/student';
-import { getInitials, getAvatarColor } from '../../../../shared/utils/avatar.util';
+import { getInitials, getAvatarColor, getAvatarText } from '../../../../shared/utils/avatar.util';
 import { AddStudentModal } from '../add-student-modal/add-student-modal';
 import { FilterConfig, FilterModal, FilterResult } from '../filter-modal/filter-modal';
-
 
 interface StudentRow {
   id: string;
   initials: string;
   avatarColor: string;
+  avatarText: string;
   fullName: string;
   nationalId: string;
   univCode: string;
@@ -31,7 +31,7 @@ interface StudentRow {
   selector: 'app-students-table',
   imports: [NgClass, FilterModal, AddStudentModal],
   templateUrl: './students-table.html',
-  styleUrls:['../shard-style.css', './students-table.css'],
+  styleUrls: ['../shard-style.css', './students-table.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StudentsTable implements OnInit {
@@ -43,7 +43,8 @@ export class StudentsTable implements OnInit {
   protected readonly searchQuery = signal('');
   protected readonly currentPage = signal(1);
   protected readonly totalCount = signal(0);
-  protected readonly pageSize = 10;
+  protected readonly pageSize = 5;
+  protected readonly index = signal(0);
   protected readonly loading = signal(false);
   protected readonly showAddModal = signal(false);
   protected readonly showFilter = signal(false);
@@ -54,7 +55,7 @@ export class StudentsTable implements OnInit {
   protected readonly filterDeptId = signal(0);
 
   // Filter config for the modal
-  protected readonly filterConfig:FilterConfig = {
+  protected readonly filterConfig: FilterConfig = {
     title: 'Filter Students',
     sortOptions: [
       { label: 'Name (A-Z)', value: 0 },
@@ -77,16 +78,16 @@ export class StudentsTable implements OnInit {
   };
 
   // Computed
-  protected readonly totalPages = computed(() =>
-    Math.ceil(this.totalCount() / this.pageSize) || 1
+  protected readonly totalPages = computed(
+    () => Math.ceil(this.totalCount() / this.pageSize) || 1,
   );
 
   protected readonly showingFrom = computed(() =>
-    this.totalCount() === 0 ? 0 : (this.currentPage() - 1) * this.pageSize + 1
+    this.totalCount() === 0 ? 0 : (this.currentPage() - 1) * this.pageSize + 1,
   );
 
   protected readonly showingTo = computed(() =>
-    Math.min(this.currentPage() * this.pageSize, this.totalCount())
+    Math.min(this.currentPage() * this.pageSize, this.totalCount()),
   );
 
   ngOnInit(): void {
@@ -102,14 +103,14 @@ export class StudentsTable implements OnInit {
   protected prevPage(): void {
     if (this.currentPage() > 1) {
       this.currentPage.update((p) => p - 1);
-      this.loadStudents();
+      this.loadStudents(this.currentPage());
     }
   }
 
   protected nextPage(): void {
     if (this.currentPage() < this.totalPages()) {
       this.currentPage.update((p) => p + 1);
-      this.loadStudents();
+      this.loadStudents(this.currentPage());
     }
   }
 
@@ -123,7 +124,7 @@ export class StudentsTable implements OnInit {
     this.filterDeptId.set(result.departmentId ?? 0);
     this.currentPage.set(1);
     this.showFilter.set(false);
-    this.loadStudents();
+    this.loadStudents(this.currentPage());
   }
 
   protected onFilterReset(): void {
@@ -165,7 +166,7 @@ export class StudentsTable implements OnInit {
   protected onStudentAdded(): void {
     this.showAddModal.set(false);
     this.currentPage.set(1);
-    this.loadStudents();
+    this.loadStudents(this.currentPage());
   }
 
   protected editStudent(student: StudentRow): void {
@@ -182,7 +183,7 @@ export class StudentsTable implements OnInit {
     return `badge-level-${level}`;
   }
 
-  private loadStudents(): void {
+  private loadStudents(pageIndex: number = 1): void {
     this.loading.set(true);
 
     const search: IStudentSearch = {
@@ -191,30 +192,32 @@ export class StudentsTable implements OnInit {
       academicLevel: this.filterLevel(),
       studentSortingOption: this.sortOption(),
       pageSize: this.pageSize,
-      pageIndex: this.currentPage(),
+      pageIndex: pageIndex,
     };
 
     this.studentService
       .getAllStudents(search)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (res: any) => {
+        next: (res: IStudentResponse) => {
           // Adapt response — adjust based on actual API shape
-          const items: IStudentResponse[] = res.data ?? res.items ?? res;
-          const total: number = res.totalCount ?? res.total ?? items.length;
-
+          const items = res.data;
+          const total: number = res.totalSize;
           this.students.set(
-            items.map((s) => ({
+            items.map((s) => {
+              this.index.set(this.index() + 1);
+              return {
               id: s.id,
               initials: getInitials(s.fullName),
-              avatarColor: getAvatarColor(s.fullName),
+              avatarColor: getAvatarColor(this.index()),
+              avatarText: getAvatarText(this.index()),
               fullName: s.fullName,
               nationalId: s.nationalId,
               univCode: s.universityCode,
               level: s.academicLevel,
               dept: s.departmentCode,
               email: s.email,
-            }))
+            }}),
           );
           this.totalCount.set(total);
           this.loading.set(false);

@@ -8,20 +8,22 @@
 
 /* ─── Tabs ─── */
 .tab-bar {
+  width: 100%;
   display: flex;
   gap: 0;
-  border-bottom: 2px solid #e5e7eb;
+  border-bottom: 0.5px solid #e5e7eb;
   margin-bottom: 20px;
+  
 }
 
 .tab-btn {
-  padding: 10px 24px;
+  padding: 0.6rem 1.2rem;
   background: none;
   border: none;
   border-bottom: 2px solid transparent;
   margin-bottom: -2px;
   color: #6b7280;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 500;
   font-family: inherit;
   cursor: pointer;

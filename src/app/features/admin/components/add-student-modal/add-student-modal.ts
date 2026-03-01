@@ -6,12 +6,15 @@ import {
   DestroyRef,
   signal,
   Input,
+  OnInit,
+  effect,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Student } from '../../../../data/services/student';
 import { IStudentRequest } from '../../../../data/services/student';
 import { FilterConfig } from '../filter-modal/filter-modal';
+import { DepartmentFacade } from '../../services/department-facade';
 
 @Component({
   selector: 'app-add-student-modal',
@@ -20,10 +23,16 @@ import { FilterConfig } from '../filter-modal/filter-modal';
   styleUrls: ['../shard-model.css', './add-student-modal.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AddStudentModal{
+export class AddStudentModal {
   private readonly studentService = inject(Student);
   private readonly destroyRef = inject(DestroyRef);
-
+  public readonly departmentService = inject(DepartmentFacade);
+  
+ constructor() {
+  effect(() => {
+    this.departmentService.getDepartments();
+  })
+  }
   readonly closed = output<void>();
   readonly studentAdded = output<void>();
 
@@ -46,17 +55,8 @@ export class AddStudentModal{
     { label: 'Level 2', value: 2 },
     { label: 'Level 3', value: 3 },
     { label: 'Level 4', value: 4 },
-    { label: 'Level 5 (Graduate)', value: 5 },
   ];
 
-  protected readonly departments = [
-    { label: 'Computer Science', id: 1 },
-    { label: 'Electrical Engineering', id: 2 },
-    { label: 'Mathematics', id: 3 },
-    { label: 'Physics', id: 4 },
-    { label: 'Biology', id: 5 },
-    { label: 'Chemistry', id: 6 },
-  ];
 
   protected isFormValid(): boolean {
     return !!(

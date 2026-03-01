@@ -52,8 +52,8 @@
           <div class="select-wrap">
             <select id="asm-dept" class="field-select"
               [(ngModel)]="form.deptId" name="deptId" required>
-              @for (d of departments; track d.id) {
-                <option [ngValue]="d.id">{{ d.label }}</option>
+              @for (d of departmentService.departments(); track $index) {
+                <option [ngValue]="d.id">{{ d.name }}</option>
               }
             </select>
             <i class="bi bi-chevron-down select-arrow"></i>

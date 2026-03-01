@@ -4,9 +4,12 @@ import {
   output,
   signal,
   ChangeDetectionStrategy,
+  inject,
+  effect,
 } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { DepartmentFacade } from '../../services/department-facade';
 
 export interface SortOption {
   label: string;
@@ -41,6 +44,7 @@ export interface FilterResult {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FilterModal {
+  public readonly departmentService = inject(DepartmentFacade);
   readonly config = input.required<FilterConfig>();
 
   readonly closed = output<void>();
@@ -50,6 +54,12 @@ export class FilterModal {
   protected readonly selectedSort = signal(0);
   protected readonly selectedLevel = signal(0);
   protected readonly selectedDeptId = signal(0);
+
+  constructor() {
+    effect(() => {
+      this.departmentService.getDepartments();
+    })
+  }
 
   protected toggleLevel(level: number): void {
     this.selectedLevel.update((curr) => (curr === level ? 0 : level));

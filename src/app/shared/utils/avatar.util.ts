@@ -1,12 +1,9 @@
 const AVATAR_COLORS = [
-  '#dbeafe',
-  '#d1fae5',
-  '#fce7f3',
-  '#ede9fe',
-  '#fef3c7',
-  '#fee2e2',
-  '#e0f2fe',
-  '#f0fdf4',
+  '#E0E7FF',
+  '#FFEDD5',
+  '#F3E8FF',
+  '#CCFBF1',
+  '#FCE7F3',
 ] as const;
 
 export function getInitials(fullName: string): string {
@@ -16,8 +13,36 @@ export function getInitials(fullName: string): string {
     .map((n) => n[0]?.toUpperCase() ?? '')
     .join('');
 }
+// this function return the color of the avatar index 
+export function getAvatarColor(index: number): string {
+  return AVATAR_COLORS[index % AVATAR_COLORS.length];
+}
+const AVATAR_TEXT = [  
+  '#4F46E5',
+  '#EA580C',
+  '#9333EA',
+  '#0D9488',
+  '#DB2777',
+] as const;
+// I want to return the color of the avatar by cycle of the index
+export function getAvatarText(index: number): string {
+  return AVATAR_TEXT[index % AVATAR_TEXT.length];
+}
 
-export function getAvatarColor(fullName: string): string {
-  const index = fullName.charCodeAt(0) % AVATAR_COLORS.length;
-  return AVATAR_COLORS[index];
+const JOBE_COLOR =[
+  `#DBEAFE`,
+  `#DCFCE7`,
+] as const;
+
+export function getJobColor(index: number): string {
+  return JOBE_COLOR[index % JOBE_COLOR.length];
+}
+
+const JOBE_TEXT = [
+  '#1E40AF',
+  `#166534`,
+] as const;
+
+export function getJobText(index: number): string {
+  return JOBE_TEXT[index % JOBE_TEXT.length];
 }

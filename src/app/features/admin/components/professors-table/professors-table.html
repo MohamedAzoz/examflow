@@ -35,29 +35,35 @@
 
   <div class="table-responsive">
     <table class="data-table" aria-label="Professors table">
-      <thead>
+      <thead class="table-header">
         <tr>
           <th>Full Name</th>
           <th>National ID</th>
-          <th>Department</th>
+          <th>University Code</th>
+          <th>Academic Rank</th>
           <th>Email</th>
           <th>Phone</th>
           <th class="actions-col"></th>
         </tr>
       </thead>
       <tbody>
-        @for (prof of professors(); track prof.id) {
+        @for (prof of professors(); track $index) {
           <tr class="data-row">
             <td>
               <div class="name-cell">
                 <div class="avatar" [style.background]="prof.avatarColor">
-                  <span class="avatar-initials">{{ prof.initials }}</span>
+                  <span class="avatar-initials" [style.color]="prof.avatarText">{{ prof.initials }}</span>
                 </div>
                 <span class="cell-name">{{ prof.fullName }}</span>
               </div>
             </td>
             <td class="mono-text">{{ prof.nationalId }}</td>
-            <td class="dept-text">{{ prof.department }}</td>
+            <td class="mono-text">{{ prof.universityCode }}</td>
+            <td>
+              <span class="badge" [style.background]="prof.academicRankColor" [style.color]="prof.academicRankText">
+                {{ prof.academicRank }}
+              </span>
+            </td>
             <td class="email-text">{{ prof.email }}</td>
             <td>{{ prof.phone }}</td>
             <td class="actions-col">

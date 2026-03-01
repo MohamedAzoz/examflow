@@ -11,14 +11,21 @@ export interface IStudentSearch {
   pageIndex: number;
 }
 export interface IStudentResponse {
-  id: string;
-  nationalId: string;
-  fullName: string;
-  universityCode: string;
-  academicLevel: number;
-  departmentCode: string;
-  email: string;
-  phoneNumber: string;
+  pageSize: number;
+  pageIndex: number;
+  totalSize: number;
+  data: [
+    {
+      id: string;
+      nationalId: string;
+      fullName: string;
+      universityCode: string;
+      academicLevel: number;
+      departmentCode: string;
+      email: string;
+      phoneNumber: string;
+    },
+  ];
 }
 export interface IStudentRequest {
   nationalId: string;
@@ -50,7 +57,6 @@ export class Student {
 
   // GET: /api/Student
   getAllStudents(student: IStudentSearch) {
-    console.log(student);
     // filtration on the query if the value is 0 or null or empty string
     var search: any = {
       nameSearch: student.nameSearch,
@@ -72,9 +78,9 @@ export class Student {
     if (student.nameSearch === '') {
       delete search.nameSearch;
     }
-   
-    return this.http.get<IStudentResponse[]>(`${environment.apiUrl}/Student`, {
-      params:search,
+
+    return this.http.get<IStudentResponse>(`${environment.apiUrl}/Student`, {
+      params: search,
     });
   }
 }

@@ -23,7 +23,7 @@
             class="filter-select"
             [ngModel]="selectedSort()"
             (ngModelChange)="selectedSort.set($event)">
-            @for (opt of config().sortOptions; track opt.value) {
+            @for (opt of config().sortOptions; track $index) {
               <option [ngValue]="opt.value">{{ opt.label }}</option>
             }
           </select>
@@ -36,12 +36,12 @@
         <div class="filter-section">
           <label class="filter-label">Academic Level</label>
           <div class="chip-group">
-            @for (level of config().academicLevels; track level) {
+            @for (level of config().academicLevels; track $index) {
               <button
                 type="button"
                 class="chip"
                 [class.chip-active]="isLevelSelected(level)"
-                [ngClass]="'chip-level-' + level"
+                [ngClass]="'chip-level'"
                 (click)="toggleLevel(level)">
                 Level {{ level }}
               </button>
@@ -51,17 +51,17 @@
       }
 
       <!-- Department -->
-      @if (config().showDepartment && config().departments.length > 0) {
+      @if (departmentService.departments().length > 0) {
         <div class="filter-section">
           <label class="filter-label">Department</label>
           <div class="chip-group">
-            @for (dept of config().departments; track dept.id) {
+            @for (dept of departmentService.departments(); track $index) {
               <button
                 type="button"
                 class="chip"
                 [class.chip-active]="isDeptSelected(dept.id)"
                 (click)="toggleDept(dept.id)">
-                {{ dept.code }}
+                {{ dept.name }}
               </button>
             }
           </div>

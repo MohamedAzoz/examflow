@@ -75,13 +75,14 @@
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
+  
 }
 
 .btn-action {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 16px;
+  padding: 8px 14px;
   border-radius: var(--radius-sm);
   font-size: 13px;
   font-weight: 600;
@@ -92,7 +93,7 @@
 }
 
 .btn-filter {
-  background: #fff;
+  /* background: #fff; */
   border: 1px solid var(--border-color);
   color: var(--text-primary);
 }
@@ -104,13 +105,12 @@
 }
 
 .btn-excel {
-  background: #fff;
   border: 1px solid var(--primary);
   color: var(--primary);
+  background-color: var(--primary-light);
 }
 
 .btn-excel:hover {
-  background: var(--primary-light);
   box-shadow: 0 2px 6px rgba(45, 122, 122, 0.15);
 }
 
@@ -149,18 +149,19 @@
 
 .data-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: collapse; 
   white-space: nowrap;
 }
-
+.table-header {
+  border-radius: 16px;
+}
 .data-table thead th {
-  padding: 12px 16px;
-  font-size: 11px;
+  padding: 12px 20px;
+  font-size: 12px;
   font-weight: 700;
-  text-transform: uppercase;
   letter-spacing: 0.5px;
   color: var(--text-secondary);
-  background: #f9fafb;
+  background: var(--grades-color);
   border-bottom: 1px solid var(--border-color);
   text-align: left;
 }
@@ -170,14 +171,14 @@
 }
 
 .data-table tbody tr:hover {
-  background: #f9fafb;
+  background: var(--grades-color);
 }
 
 .data-table tbody td {
   padding: 14px 16px;
   font-size: 13px;
   color: var(--text-primary);
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--border-color);
   vertical-align: middle;
 }
 
@@ -199,7 +200,7 @@
 }
 
 .avatar-initials {
-  font-size: 11px;
+  /* font-size: 11px; */
   font-weight: 700;
   color: var(--text-primary);
 }
@@ -233,39 +234,37 @@
 }
 
 /* ─── Level Badges ─── */
-.level-badge {
+.badge {
   display: inline-block;
-  padding: 3px 12px;
+  padding: 3px 8px;
   border-radius: 20px;
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  width: fit-content;
   letter-spacing: 0.3px;
 }
 
 .badge-level-1 {
-  background: #d1fae5;
-  color: #065f46;
+  background: #F3E8FF;
+  color: #682FBE;
 }
 
 .badge-level-2 {
-  background: #dbeafe;
-  color: #1e40af;
+  background: #CCFBF1;
+  color: #13C49E;
 }
 
 .badge-level-3 {
-  background: #ede9fe;
-  color: #5b21b6;
+  background: #DBEAFE;
+  color: #1E40AF;
 }
 
 .badge-level-4 {
-  background: #fef3c7;
-  color: #92400e;
+  background: #FCE7F3;
+  color: #D8539F;
 }
 
-.badge-level-5 {
-  background: #fce7f3;
-  color: #9d174d;
-}
 
 /* ─── Actions Column ─── */
 .actions-col {

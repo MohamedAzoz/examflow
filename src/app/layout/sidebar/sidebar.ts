@@ -22,7 +22,7 @@ export class SidebarComponent {
   readonly navItems = input.required<readonly NavItem[]>();
   readonly userName = input<string>('User');
   readonly userRole = input<string>('');
-  readonly activeRoute = input<string>('dashboard');
+  readonly activeRoute = input<string>('User Management');
   readonly isMobile = input<boolean>(false);
 
   readonly navItemSelected = output<string>();
