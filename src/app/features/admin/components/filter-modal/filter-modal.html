@@ -51,17 +51,17 @@
       }
 
       <!-- Department -->
-      @if (departmentService.departments().length > 0) {
+      @if (config().departments.length > 0) {
         <div class="filter-section">
           <label class="filter-label">Department</label>
           <div class="chip-group">
-            @for (dept of departmentService.departments(); track $index) {
+            @for (dept of config().departments; track $index) {
               <button
                 type="button"
                 class="chip"
                 [class.chip-active]="isDeptSelected(dept.id)"
                 (click)="toggleDept(dept.id)">
-                {{ dept.name }}
+                {{ dept.code }}
               </button>
             }
           </div>

@@ -56,18 +56,18 @@
                     admin.initials
                   }}</span>
                 </div>
-                <span class="cell-name">{{ admin.fullName }}</span>
+                <span class="cell-name" title="{{ admin.fullName }}">{{ admin.fullName | cut: 15 }}</span>
               </div>
             </td>
-            <td class="mono-text">{{ admin.nationalId }}</td>
-            <td class="mono-text">{{ admin.univCode }}</td>
+            <td class="mono-text" title="{{ admin.nationalId }}">{{ admin.nationalId | cut: 7 }}</td>
+            <td class="mono-text" title="{{ admin.univCode }}">{{ admin.univCode | cut: 3 }}</td>
             <td>
               <span class="badge" [style.background]="admin.jobColor" [style.color]="admin.jobText">
-                {{ admin.jobTitle }}
+                {{ admin.jobTitle | cut: 7 }}
               </span>
             </td>
-            <td class="email-text">{{ admin.email }}</td>
-            <td class="mono-text">{{ admin.phone }}</td>
+            <td class="email-text" title="{{ admin.email }}">{{ admin.email | cut: 20 }}</td>
+            <td class="mono-text" title="{{ admin.phone }}">{{ admin.phone | cut: 8 }}</td>
             <td class="actions-col">
               <div class="row-actions">
                 <button

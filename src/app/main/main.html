@@ -1,58 +1,51 @@
 <div class="app-shell">
-
   <!-- Overlay: mobile only, when sidebar open -->
-  @if (toggle.value() && isMobile()) {
-    <div
-      class="sidebar-overlay"
-      (click)="onOverlayClick()"
-      aria-hidden="true">
-    </div>
+  @if (toggle.value()) {
+    <div class="sidebar-overlay" (click)="onOverlayClick()" aria-hidden="true"></div>
   }
 
-  <!-- Sidebar: always in DOM, visibility controlled by CSS -->
-  <app-sidebar
-    [navItems]="navItems()"
-    [userName]="userName()"
-    [userRole]="userRoleLabel()"
-    [activeRoute]="activeRoute()"
-    [isMobile]="isMobile()"
-    (navItemSelected)="onNavItemSelected($event)" />
+  <div class="app-shell" [class.is-toggled]="toggle.value()">
+    @if (toggle.value()) {
+      <div class="sidebar-overlay" (click)="onOverlayClick()" aria-hidden="true"></div>
+    }
 
-  <!-- Main content area -->
-  <div
-    class="main-area"
-    [class.sidebar-expanded]="!isMobile()">
+    <app-sidebar
+      [navItems]="navItems()"
+      [userName]="userName()"
+      [userRole]="userRoleLabel()"
+      [activeRoute]="activeRoute()"
+      (navItemSelected)="onNavItemSelected($event)"
+    />
 
-    <!-- Top header bar -->
-    <header class="top-header">
-      <div class="header-left">
-        <!-- Hamburger: mobile only -->
-        @if (isMobile()) {
+    <div class="main-area">
+      <header class="top-header">
+        <div class="header-left">
           <button
+            [hidden]="!toggle.value() && !isMobile()"
             type="button"
             class="hamburger-btn"
             (click)="toggle.toggle()"
-            aria-label="Toggle menu">
-            <i class="bi bi-list"></i>
+            aria-label="Toggle menu"
+          >
+            <i class="bi bi-list" style="font-weight: bold; font-size: 1.5rem"></i>
           </button>
-        }
-        <h1 class="page-title">{{ pageTitle() }}</h1>
-      </div>
 
-      @if (showNotifications()) {
-        <div class="header-right">
-          <button type="button" class="btn-icon" aria-label="Notifications">
-            <i class="bi bi-bell"></i>
-            <span class="notif-dot"></span>
-          </button>
+          <h1 class="page-title">{{ pageTitle() }}</h1>
         </div>
-      }
-    </header>
+        @if (showNotifications()) {
+          <div class="header-right">
+            <button type="button" class="btn-icon" aria-label="Notifications">
+              <i class="bi bi-bell"></i>
+              <span class="notif-dot"></span>
+            </button>
+          </div>
+        }
+      </header>
 
-    <!-- Page content -->
-    <main class="page-content">
-      <router-outlet />
-    </main>
+      <!-- Page content -->
+      <main class="page-content">
+        <router-outlet />
+      </main>
+    </div>
   </div>
-
 </div>

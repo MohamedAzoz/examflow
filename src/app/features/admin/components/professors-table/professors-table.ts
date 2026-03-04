@@ -18,6 +18,7 @@ import {
   getJobText,
 } from '../../../../shared/utils/avatar.util';
 import { AddProfessorModalComponent } from '../add-professor-modal/add-professor-modal';
+import { CutPipe } from "../../../../shared/pipes/cut-pipe";
 /*
  "id": "32aed284-65e2-43ca-d542-08de77577cb6",
       "nationalId": "12345678910112",
@@ -44,7 +45,7 @@ interface ProfessorRow {
 
 @Component({
   selector: 'app-professors-table',
-  imports: [FilterModal, AddProfessorModalComponent],
+  imports: [FilterModal, AddProfessorModalComponent, CutPipe],
   templateUrl: './professors-table.html',
   styleUrls: ['../shard-style.css', './professors-table.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -67,10 +68,8 @@ export class ProfessorsTable implements OnInit {
   protected readonly filterConfig: FilterConfig = {
     title: 'Filter Professors',
     sortOptions: [
-      { label: 'Name (A-Z)', value: 1 },
-      { label: 'Name (Z-A)', value: 2 },
-      { label: 'Newest First', value: 3 },
-      { label: 'Oldest First', value: 4 },
+      { label: 'Name (A-Z)', value: 0 },
+      { label: 'Name (Z-A)', value: 1 },
     ],
     showAcademicLevel: false,
     academicLevels: [],

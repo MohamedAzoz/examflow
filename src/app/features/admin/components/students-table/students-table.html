@@ -58,20 +58,20 @@
                     student.initials
                   }}</span>
                 </div>
-                <span class="cell-name">{{ student.fullName }}</span>
+                <span class="cell-name" title="{{ student.fullName }}">{{ student.fullName | cut: 15 }}</span>
               </div>
             </td>
-            <td class="mono-text">{{ student.nationalId }}</td>
+            <td class="mono-text" title="{{ student.nationalId }}">{{ student.nationalId | cut: 7 }}</td>
             <td>
-              <span class="univ-code">{{ student.univCode }}</span>
+              <span class="univ-code" title="{{ student.univCode }}">{{ student.univCode | cut: 3 }}</span>
             </td>
             <td>
               <span class="badge" [ngClass]="getLevelClass(student.level)">
                 Level {{ student.level }}
               </span>
             </td>
-            <td class="dept-text">{{ student.dept }}</td>
-            <td class="email-text">{{ student.email }}</td>
+            <td class="dept-text" title="{{ student.dept }}">{{ student.dept | cut: 10 }}</td>
+            <td class="email-text" title="{{ student.email }}">{{ student.email | cut: 20 }}</td>
             <td class="actions-col">
               <div class="row-actions">
                 <button

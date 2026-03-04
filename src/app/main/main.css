@@ -22,14 +22,18 @@
 
 /* ─── Overlay ─── */
 .sidebar-overlay {
-  position: fixed;
+ 
+}
+@media (max-width: 992px) {
+  .sidebar-overlay {
+    position: fixed;
   inset: 0;
   background-color: rgba(0, 0, 0, 0.3);
   z-index: 299;
   cursor: pointer;
   animation: overlayIn var(--speed) var(--ease);
+  }
 }
-
 @keyframes overlayIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -42,7 +46,19 @@
   min-height: 100vh;
   min-height: 100dvh;
   transition: margin-left var(--speed) var(--ease);
+  margin-left: 250px; /* عرض السايدبار */
+  transition: margin-left 0.3s ease-in-out;
+}
+
+/* لما يختفي السايدبار، المساحة تتمدد */
+.app-shell.is-toggled .main-area {
   margin-left: 0;
+}
+
+@media (max-width: 992px) {
+  .main-area {
+    margin-left: 0; /* في الموبايل مفيش margin */
+  }
 }
 
 /* Desktop: push content to the right when sidebar is visible */

@@ -61,19 +61,64 @@
   border-radius: 4px;
 }
 
-/* ─── Close Button ─── */
 .close-btn-container {
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
   padding: 12px 12px 0;
 }
+/* =========================================
+   شاشات الديسكتوب الكبيرة (الوضع الافتراضي)
+   ========================================= */
 
+/* الـ Sidebar ظاهر بشكل افتراضي */
+.sidebar {
+  transform: translateX(0);
+  transition: transform 0.3s ease-in-out;
+  /* width: 250px; (أو العرض الذي تستخدمه) */
+}
+
+/* عندما نضغط على الزر في الديسكتوب (is-toggled = true)، يختفي الـ Sidebar */
+.sidebar.is-toggled {
+  transform: translateX(-100%);
+}
+
+/* إخفاء الـ Overlay في الشاشات الكبيرة حتى لو كان  في الـ DOM */
+.sidebar-overlay {
+  display: none;
+}
+
+/* =========================================
+   شاشات الموبايل والتابلت (أقل من 992px)
+   ========================================= */
+@media (max-width: 992px) {
+  
+  /* الـ Sidebar مخفي بشكل افتراضي */
+  .sidebar {
+    transform: translateX(-100%);
+    position: fixed;
+    z-index: 1000;
+  }
+
+  /* عندما نضغط على الزر في الموبايل (is-toggled = true)، يظهر الـ Sidebar */
+  .sidebar.is-toggled {
+    transform: translateX(0);
+  }
+
+  /* إظهار الـ Overlay فقط في الشاشات الصغيرة */
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+  }
+}
 .btn-close-sidebar {
   background: none;
   border: none;
   color: var(--primary);
   cursor: pointer;
-  padding: 4px 8px;
+  padding: 2px 8px;
   border-radius: var(--radius-sm);
   transition: background var(--speed) var(--ease);
   line-height: 1;
@@ -90,11 +135,11 @@
 
 /* ─── Brand ─── */
 .sidebar-brand {
-  padding: 16px 20px 12px;
+  padding: 10px 20px 7px;
 }
 
 .brand-text {
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   font-weight: 800;
   color: var(--primary);
   letter-spacing: 1.5px;
@@ -234,13 +279,17 @@
   cursor: pointer;
   transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
 }
-
+.logout-btn span{
+  font-weight: 500;
+  font-size: 1rem;
+}
 .logout-btn:hover {
   background: #fff5f5;
-  border-color: #fca5a5;
+  border-color: #BC3E3E;
   box-shadow: 0 2px 8px rgba(239, 68, 68, 0.12);
 }
 
-.logout-btn i {
-  font-size: 1rem;
+.logout-btn .logout-icon {
+  width: 14px;
+  height: 14px;
 }

@@ -1,17 +1,11 @@
-import {
-  Component,
-  inject,
-  input,
-  output,
-  ChangeDetectionStrategy,
-} from '@angular/core';
-import { NgClass } from '@angular/common';
+import { Component, inject, input, output, ChangeDetectionStrategy } from '@angular/core';
+import { NgOptimizedImage } from '@angular/common';
 import { Toggle } from '../../core/services/toggle';
 import { NavItem } from '../nav-item';
 
 @Component({
   selector: 'app-sidebar',
-  imports: [NgClass],
+  imports: [NgOptimizedImage],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -23,19 +17,19 @@ export class SidebarComponent {
   readonly userName = input<string>('User');
   readonly userRole = input<string>('');
   readonly activeRoute = input<string>('User Management');
-  readonly isMobile = input<boolean>(false);
 
   readonly navItemSelected = output<string>();
 
   protected onNavClick(route: string): void {
     this.navItemSelected.emit(route);
 
-    if (this.isMobile()) {
+    // نعيده للوضع الافتراضي عند اختيار عنصر (ليختفي في الموبايل)
+    if (this.toggle.value()) {
       this.toggle.closeSidebar();
     }
   }
 
   protected onCloseClick(): void {
-    this.toggle.closeSidebar();
+    this.toggle.toggle(); // استخدمنا toggle لتعكس الحالة
   }
 }

@@ -12,6 +12,7 @@ import { FilterConfig, FilterModal, FilterResult } from '../filter-modal/filter-
 import { Admin, IAdminResponse, IAdminSearch } from '../../../../data/services/admin';
 import { getInitials, getAvatarColor, getAvatarText, getJobColor, getJobText } from '../../../../shared/utils/avatar.util';
 import { AddAdminModalComponent } from "../add-admin-modal/add-admin-modal";
+import { CutPipe } from '../../../../shared/pipes/cut-pipe';
 
 interface AdminRow {
   id: string;
@@ -30,7 +31,7 @@ interface AdminRow {
 
 @Component({
   selector: 'app-admins-table',
-  imports: [FilterModal, AddAdminModalComponent],
+  imports: [FilterModal, AddAdminModalComponent, CutPipe], 
   templateUrl: './admins-table.html',
   styleUrls:['../shard-style.css', './admins-table.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,

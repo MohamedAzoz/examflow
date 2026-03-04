@@ -1,23 +1,19 @@
 <aside
   class="sidebar"
-  [class.sidebar-visible]="!isMobile()"
-  [class.sidebar-mobile]="isMobile()"
-  [class.sidebar-mobile-open]="isMobile() && toggle.value()"
+  [class.is-toggled]="toggle.value()"
   role="complementary"
-  aria-label="Sidebar navigation">
-
-  <!-- Close Button (mobile only) -->
-  @if (isMobile()) {
-    <div class="close-btn-container">
-      <button
-        type="button"
-        class="btn-close-sidebar"
-        (click)="onCloseClick()"
-        aria-label="Close sidebar">
-        <i class="bi bi-x-lg"></i>
-      </button>
-    </div>
-  }
+  aria-label="Sidebar navigation"
+>
+  <div class="close-btn-container">
+    <button
+      type="button"
+      class="btn-close-sidebar"
+      (click)="onCloseClick()"
+      aria-label="Toggle sidebar"
+    >
+      <i class="bi bi-list" style="font-weight: bold; font-size: 1.5rem"></i>
+    </button>
+  </div>
 
   <!-- Brand -->
   <div class="sidebar-brand">
@@ -45,8 +41,15 @@
             class="nav-link"
             [class.active]="activeRoute() === item.route"
             (click)="onNavClick(item.route)"
-            [attr.aria-current]="activeRoute() === item.route ? 'page' : null">
-            <i class="bi nav-icon" [ngClass]="item.icon"></i>
+            [attr.aria-current]="activeRoute() === item.route ? 'page' : null"
+          >
+            <img
+              ngSrc="{{ item.icon }}"
+              width="24"
+              height="24"
+              alt="{{ item.label }}"
+              class="nav-icon"
+            />
             <span class="nav-label">{{ item.label }}</span>
           </button>
         </li>
@@ -57,7 +60,7 @@
   <!-- Footer -->
   <div class="sidebar-footer">
     <button type="button" class="logout-btn">
-      <i class="bi bi-box-arrow-left"></i>
+      <img ngSrc="Logout.svg" width="14" height="14" alt="Logout" class="logout-icon" />
       <span>Logout</span>
     </button>
   </div>

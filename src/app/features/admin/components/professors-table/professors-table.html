@@ -1,5 +1,4 @@
 <div class="table-card">
-
   <!-- Toolbar -->
   <div class="toolbar">
     <div class="search-wrap">
@@ -10,7 +9,8 @@
         placeholder="Search professors..."
         [value]="searchQuery()"
         (input)="onSearch($any($event.target).value)"
-        autocomplete="off" />
+        autocomplete="off"
+      />
     </div>
 
     <div class="toolbar-actions">
@@ -19,7 +19,7 @@
         <span>Filter</span>
       </button>
       <button type="button" class="btn-action btn-excel" (click)="onUploadExcel()">
-        <img src="Vector.svg" alt="">
+        <img src="Vector.svg" alt="" />
         <span>Upload Excel</span>
       </button>
       <button type="button" class="btn-action btn-add" (click)="showAddModal.set(true)">
@@ -52,26 +52,50 @@
             <td>
               <div class="name-cell">
                 <div class="avatar" [style.background]="prof.avatarColor">
-                  <span class="avatar-initials" [style.color]="prof.avatarText">{{ prof.initials }}</span>
+                  <span
+                    class="avatar-initials"
+                    [style.color]="prof.avatarText"
+                    title="{{ prof.initials }}"
+                    >{{ prof.initials | cut: 2 }}</span
+                  >
                 </div>
-                <span class="cell-name">{{ prof.fullName }}</span>
+                <span class="cell-name" title="{{ prof.fullName }}">{{
+                  prof.fullName | cut: 15
+                }}</span>
               </div>
             </td>
-            <td class="mono-text">{{ prof.nationalId }}</td>
-            <td class="mono-text">{{ prof.universityCode }}</td>
+            <td class="mono-text" title="{{ prof.nationalId }}">{{ prof.nationalId | cut: 7 }}</td>
+            <td class="mono-text" title="{{ prof.universityCode }}">
+              {{ prof.universityCode | cut: 3 }}
+            </td>
             <td>
-              <span class="badge" [style.background]="prof.academicRankColor" [style.color]="prof.academicRankText">
-                {{ prof.academicRank }}
+              <span
+                class="badge"
+                [style.background]="prof.academicRankColor"
+                [style.color]="prof.academicRankText"
+                title="{{ prof.academicRank }}"
+              >
+                {{ prof.academicRank | cut: 7 }}
               </span>
             </td>
-            <td class="email-text">{{ prof.email }}</td>
-            <td>{{ prof.phone }}</td>
+            <td class="email-text" title="{{ prof.email }}">{{ prof.email | cut: 20 }}</td>
+            <td class="mono-text" title="{{ prof.phone }}">{{ prof.phone | cut: 8 }}</td>
             <td class="actions-col">
               <div class="row-actions">
-                <button type="button" class="action-btn edit-btn" (click)="editProfessor(prof)" title="Edit">
+                <button
+                  type="button"
+                  class="action-btn edit-btn"
+                  (click)="editProfessor(prof)"
+                  title="Edit"
+                >
                   <i class="bi bi-pencil"></i>
                 </button>
-                <button type="button" class="action-btn delete-btn" (click)="deleteProfessor(prof)" title="Delete">
+                <button
+                  type="button"
+                  class="action-btn delete-btn"
+                  (click)="deleteProfessor(prof)"
+                  title="Delete"
+                >
                   <i class="bi bi-trash3"></i>
                 </button>
               </div>
@@ -94,20 +118,23 @@
   <!-- Pagination -->
   <div class="table-footer">
     <p class="result-info">
-      Showing <strong>{{ showingFrom() }}</strong> to
-      <strong>{{ showingTo() }}</strong> of
+      Showing <strong>{{ showingFrom() }}</strong> to <strong>{{ showingTo() }}</strong> of
       <strong>{{ totalCount() }}</strong> results
     </p>
     <div class="pagination-btns">
       <button type="button" class="page-btn" [disabled]="currentPage() === 1" (click)="prevPage()">
         <i class="bi bi-chevron-left"></i>
       </button>
-      <button type="button" class="page-btn" [disabled]="currentPage() >= totalPages()" (click)="nextPage()">
+      <button
+        type="button"
+        class="page-btn"
+        [disabled]="currentPage() >= totalPages()"
+        (click)="nextPage()"
+      >
         <i class="bi bi-chevron-right"></i>
       </button>
     </div>
   </div>
-
 </div>
 
 @if (showFilter()) {
@@ -115,12 +142,14 @@
     [config]="filterConfig"
     (applied)="onFilterApply($event)"
     (reset)="onFilterReset()"
-    (closed)="showFilter.set(false)" />
+    (closed)="showFilter.set(false)"
+  />
 }
 
 @if (showAddModal()) {
   <app-add-professor-modal
-  [config]="filterConfig"
+    [config]="filterConfig"
     (closed)="showAddModal.set(false)"
-    (professorAdded)="onProfessorAdded()" />
+    (professorAdded)="onProfessorAdded()"
+  />
 }

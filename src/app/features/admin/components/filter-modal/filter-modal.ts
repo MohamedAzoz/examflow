@@ -44,7 +44,7 @@ export interface FilterResult {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FilterModal {
-  public readonly departmentService = inject(DepartmentFacade);
+  // public readonly departmentService = inject(DepartmentFacade);
   readonly config = input.required<FilterConfig>();
 
   readonly closed = output<void>();
@@ -54,12 +54,6 @@ export class FilterModal {
   protected readonly selectedSort = signal(0);
   protected readonly selectedLevel = signal(0);
   protected readonly selectedDeptId = signal(0);
-
-  constructor() {
-    effect(() => {
-      this.departmentService.getDepartments();
-    })
-  }
 
   protected toggleLevel(level: number): void {
     this.selectedLevel.update((curr) => (curr === level ? 0 : level));

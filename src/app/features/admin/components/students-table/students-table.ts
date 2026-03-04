@@ -6,6 +6,7 @@ import {
   OnInit,
   ChangeDetectionStrategy,
   DestroyRef,
+  effect,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgClass } from '@angular/common';
@@ -13,6 +14,8 @@ import { IStudentSearch, IStudentResponse, Student } from '../../../../data/serv
 import { getInitials, getAvatarColor, getAvatarText } from '../../../../shared/utils/avatar.util';
 import { AddStudentModal } from '../add-student-modal/add-student-modal';
 import { FilterConfig, FilterModal, FilterResult } from '../filter-modal/filter-modal';
+import { DepartmentFacade } from '../../services/department-facade';
+import { CutPipe } from "../../../../shared/pipes/cut-pipe";
 
 interface StudentRow {
   id: string;
@@ -29,13 +32,14 @@ interface StudentRow {
 
 @Component({
   selector: 'app-students-table',
-  imports: [NgClass, FilterModal, AddStudentModal],
+  imports: [NgClass, FilterModal, AddStudentModal, CutPipe],
   templateUrl: './students-table.html',
   styleUrls: ['../shard-style.css', './students-table.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StudentsTable implements OnInit {
   private readonly studentService = inject(Student);
+  private readonly departmentService = inject(DepartmentFacade);
   private readonly destroyRef = inject(DestroyRef);
 
   // State
@@ -54,6 +58,12 @@ export class StudentsTable implements OnInit {
   protected readonly filterLevel = signal(0);
   protected readonly filterDeptId = signal(0);
 
+  constructor() {
+    effect(() => {
+      this.departmentService.getDepartments();
+      this.filterConfig.departments = this.departmentService.departments();
+    });
+  }
   // Filter config for the modal
   protected readonly filterConfig: FilterConfig = {
     title: 'Filter Students',
@@ -68,19 +78,11 @@ export class StudentsTable implements OnInit {
     showAcademicLevel: true,
     academicLevels: [1, 2, 3, 4],
     showDepartment: true,
-    departments: [
-      { id: 1, code: 'CS' },
-      { id: 2, code: 'IT' },
-      { id: 3, code: 'IS' },
-      { id: 4, code: 'DS' },
-      { id: 5, code: 'CK' },
-    ],
+    departments: this.departmentService.departments(),
   };
 
   // Computed
-  protected readonly totalPages = computed(
-    () => Math.ceil(this.totalCount() / this.pageSize) || 1,
-  );
+  protected readonly totalPages = computed(() => Math.ceil(this.totalCount() / this.pageSize) || 1);
 
   protected readonly showingFrom = computed(() =>
     this.totalCount() === 0 ? 0 : (this.currentPage() - 1) * this.pageSize + 1,
@@ -207,17 +209,18 @@ export class StudentsTable implements OnInit {
             items.map((s) => {
               this.index.set(this.index() + 1);
               return {
-              id: s.id,
-              initials: getInitials(s.fullName),
-              avatarColor: getAvatarColor(this.index()),
-              avatarText: getAvatarText(this.index()),
-              fullName: s.fullName,
-              nationalId: s.nationalId,
-              univCode: s.universityCode,
-              level: s.academicLevel,
-              dept: s.departmentCode,
-              email: s.email,
-            }}),
+                id: s.id,
+                initials: getInitials(s.fullName),
+                avatarColor: getAvatarColor(this.index()),
+                avatarText: getAvatarText(this.index()),
+                fullName: s.fullName,
+                nationalId: s.nationalId,
+                univCode: s.universityCode,
+                level: s.academicLevel,
+                dept: s.departmentCode,
+                email: s.email,
+              };
+            }),
           );
           this.totalCount.set(total);
           this.loading.set(false);
