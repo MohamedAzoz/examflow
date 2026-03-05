@@ -35,105 +35,113 @@
   }
 
   <!-- Table -->
-  <div class="table-responsive">
-    <table class="data-table" aria-label="Students table">
-      <thead>
-        <tr>
-          <th>Full Name</th>
-          <th>National ID</th>
-          <th>Univ. Code</th>
-          <th>Academic Level</th>
-          <th>Dept</th>
-          <th>Email</th>
-          <th class="actions-col"></th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (student of students(); track $index) {
-          <tr class="data-row">
-            <td>
-              <div class="name-cell">
-                <div class="avatar" [style.background]="student.avatarColor">
-                  <span class="avatar-initials" [style.color]="student.avatarText">{{
-                    student.initials
+  @if (students().length > 0) {
+    <div class="table-responsive">
+      <table class="data-table" aria-label="Students table">
+        <thead>
+          <tr>
+            <th class="head-text">Full Name</th>
+            <th class="head-text">National ID</th>
+            <th class="head-text">Univ. Code</th>
+            <th class="head-text">Academic Level</th>
+            <th class="head-text">Dept</th>
+            <th class="head-text">Email</th>
+            <th class="actions-col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (student of students(); track $index) {
+            <tr class="data-row">
+              <td>
+                <div class="name-cell">
+                  <div class="avatar" [style.background]="student.avatarColor">
+                    <span class="avatar-initials" [style.color]="student.avatarText">{{
+                      student.initials
+                    }}</span>
+                  </div>
+                  <span class="cell-name" title="{{ student.fullName }}">{{
+                    student.fullName | cut: 15
                   }}</span>
                 </div>
-                <span class="cell-name" title="{{ student.fullName }}">{{ student.fullName | cut: 15 }}</span>
-              </div>
-            </td>
-            <td class="mono-text" title="{{ student.nationalId }}">{{ student.nationalId | cut: 7 }}</td>
-            <td>
-              <span class="univ-code" title="{{ student.univCode }}">{{ student.univCode | cut: 3 }}</span>
-            </td>
-            <td>
-              <span class="badge" [ngClass]="getLevelClass(student.level)">
-                Level {{ student.level }}
-              </span>
-            </td>
-            <td class="dept-text" title="{{ student.dept }}">{{ student.dept | cut: 10 }}</td>
-            <td class="email-text" title="{{ student.email }}">{{ student.email | cut: 20 }}</td>
-            <td class="actions-col">
-              <div class="row-actions">
-                <button
-                  type="button"
-                  class="action-btn edit-btn"
-                  (click)="editStudent(student)"
-                  title="Edit"
-                >
-                  <i class="bi bi-pencil"></i>
-                </button>
-                <button
-                  type="button"
-                  class="action-btn delete-btn"
-                  (click)="deleteStudent(student)"
-                  title="Delete"
-                >
-                  <i class="bi bi-trash3"></i>
-                </button>
-              </div>
-            </td>
-          </tr>
-        }
+              </td>
+              <td class="mono-text" title="{{ student.nationalId }}">
+                {{ student.nationalId | cut: 7 }}
+              </td>
+              <td>
+                <span class="univ-code" title="{{ student.univCode }}">{{
+                  student.univCode | cut: 3
+                }}</span>
+              </td>
+              <td>
+                <span class="badge" [ngClass]="getLevelClass(student.level)">
+                  Level {{ student.level }}
+                </span>
+              </td>
+              <td class="dept-text" title="{{ student.dept }}">{{ student.dept | cut: 10 }}</td>
+              <td class="email-text" title="{{ student.email }}">{{ student.email | cut: 20 }}</td>
+              <td class="actions-col">
+                <div class="row-actions">
+                  <button
+                    type="button"
+                    class="action-btn edit-btn"
+                    (click)="editStudent(student)"
+                    title="Edit"
+                  >
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button
+                    type="button"
+                    class="action-btn delete-btn"
+                    (click)="deleteStudent(student)"
+                    title="Delete"
+                  >
+                    <i class="bi bi-trash3"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
 
-        @if (students().length === 0 && !loading()) {
-          <tr>
-            <td colspan="7" class="empty-state">
-              <i class="bi bi-inbox"></i>
-              <p>No students found</p>
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Pagination -->
-  <div class="table-footer">
-    <p class="result-info">
-      Showing <strong>{{ showingFrom() }}</strong> to <strong>{{ showingTo() }}</strong> of
-      <strong>{{ totalCount() }}</strong> results
-    </p>
-    <div class="pagination-btns">
-      <button
-        type="button"
-        class="page-btn"
-        [disabled]="currentPage() === 1"
-        (click)="prevPage()"
-        aria-label="Previous page"
-      >
-        <i class="bi bi-chevron-left"></i>
-      </button>
-      <button
-        type="button"
-        class="page-btn"
-        [disabled]="currentPage() >= totalPages()"
-        (click)="nextPage()"
-        aria-label="Next page"
-      >
-        <i class="bi bi-chevron-right"></i>
-      </button>
+          @if (students().length === 0 && !loading()) {
+            <tr>
+              <td colspan="7" class="empty-state">
+                <i class="bi bi-inbox"></i>
+                <p>No students found</p>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
     </div>
-  </div>
+
+    <!-- Pagination -->
+    <div class="table-footer">
+      <p class="result-info">
+        Showing <strong>{{ showingFrom() }}</strong> to <strong>{{ showingTo() }}</strong> of
+        <strong>{{ totalCount() }}</strong> results
+      </p>
+      <div class="pagination-btns">
+        <button
+          type="button"
+          class="page-btn"
+          [disabled]="currentPage() === 1"
+          (click)="prevPage()"
+          aria-label="Previous page"
+        >
+          <i class="bi bi-chevron-left"></i>
+        </button>
+        <button
+          type="button"
+          class="page-btn"
+          [disabled]="currentPage() >= totalPages()"
+          (click)="nextPage()"
+          aria-label="Next page"
+        >
+          <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  }
 </div>
 
 <!-- Filter Modal -->

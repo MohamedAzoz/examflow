@@ -5,7 +5,10 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class CutPipe implements PipeTransform {
 
-  transform(value: string, length: number): string {
+  transform(value: string | null | undefined, length: number): string {
+    if (!value) {
+      return '';
+    }
     return value.length > length ? value.slice(0, length) + '...' : value;
   }
 

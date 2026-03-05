@@ -1,0 +1,9 @@
+// add configuration for the extansion Bootstrap 5
+{
+  "bootstrapIntelliSense": {
+    "enable": true,
+    "bsVersion": "5.3.7",
+    "showSuggestions": true,
+    "autoComplete": true
+  }
+}

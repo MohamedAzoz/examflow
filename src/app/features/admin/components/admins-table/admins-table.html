@@ -37,12 +37,12 @@
     <table class="data-table" aria-label="Admins table">
       <thead>
         <tr>
-          <th>Full Name</th>
-          <th>National ID</th>
-          <th>Univ. Code</th>
-          <th>Job Title</th>
-          <th>Email</th>
-          <th>Phone</th>
+          <th class="head-text">Full Name</th>
+          <th class="head-text">National ID</th>
+          <th class="head-text">Univ. Code</th>
+          <th class="head-text">Job Title</th>
+          <th class="head-text">Email</th>
+          <th class="head-text">Phone</th>
           <th class="actions-col"></th>
         </tr>
       </thead>
@@ -56,13 +56,22 @@
                     admin.initials
                   }}</span>
                 </div>
-                <span class="cell-name" title="{{ admin.fullName }}">{{ admin.fullName | cut: 15 }}</span>
+                <span class="cell-name" title="{{ admin.fullName }}">{{
+                  admin.fullName | cut: 15
+                }}</span>
               </div>
             </td>
-            <td class="mono-text" title="{{ admin.nationalId }}">{{ admin.nationalId | cut: 7 }}</td>
+            <td class="mono-text" title="{{ admin.nationalId }}">
+              {{ admin.nationalId | cut: 7 }}
+            </td>
             <td class="mono-text" title="{{ admin.univCode }}">{{ admin.univCode | cut: 3 }}</td>
             <td>
-              <span class="badge" [style.background]="admin.jobColor" [style.color]="admin.jobText">
+              <span
+                class="badge"
+                [style.background]="admin.jobColor"
+                [style.color]="admin.jobText"
+                title="{{ admin.jobTitle }}"
+              >
                 {{ admin.jobTitle | cut: 7 }}
               </span>
             </td>
