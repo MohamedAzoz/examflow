@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { roleGuard } from './core/guards/role-guard';
 
 export const routes: Routes = [
   {
@@ -8,6 +9,7 @@ export const routes: Routes = [
   },
   {
     path: 'login',
+    title: 'Login',
     loadComponent: () => import('./features/auth/pages/login/login').then((m) => m.Login),
   },
   {
@@ -15,21 +17,22 @@ export const routes: Routes = [
     loadComponent: () => import('./main/main').then((m) => m.Main),
     children: [
       {
-        path: 'register',
-        loadComponent: () =>
-          import('./features/auth/pages/register/register').then((m) => m.Register),
-      },
-      {
-        path: 'home',
-        loadComponent: () => import('./features/home/home').then((m) => m.Home),
-      },
-      {
-        path: 'user-managment',
-        loadComponent: () =>
-          import('./features/admin/pages/user-managment/user-managment').then(
-            (m) => m.UserManagementComponent,
-          ),
+        path: '',
+        // data: { role: 'Admin' },
+        // canActivate: [roleGuard],
+        loadChildren: () => import('./features/admin/admin.routes').then((m) => m.adminRoles),
       },
     ],
+  },
+  {
+    path: 'access-denied',
+    title: 'Access Denied',
+    loadComponent: () =>
+      import('./shared/components/access-denied/access-denied').then((m) => m.AccessDenied),
+  },
+  {
+    path: '**',
+    title: 'Not Found',
+    loadComponent: () => import('./shared/components/not-found/not-found').then((m) => m.NotFound),
   },
 ];

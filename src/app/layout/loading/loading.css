@@ -1,0 +1,86 @@
+/* الألوان المستوحاة من الشعار */
+:root {
+  --ef-teal: #005f56;    /* لون الدائرة في الشعار */
+  --ef-orange: #f39c12;  /* لون المؤشر داخل الشعار */
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: rgba(255, 255, 255, 0.95); /* خلفية بيضاء شفافة قليلاً */
+  z-index: 9999;
+  backdrop-filter: blur(5px); /* تأثير ضبابي للخلفية */
+}
+
+.loader-wrapper {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logo-box {
+  width: 80px;
+  height: 80px;
+  z-index: 10;
+  animation: pulse 2s infinite ease-in-out;
+}
+
+.loading-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* الحلقات المتحركة */
+.ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 4px solid transparent;
+  animation: rotate 2s linear infinite;
+}
+
+.ring-teal {
+  width: 130px;
+  height: 130px;
+  border-top-color: var(--ef-teal);
+  border-bottom-color: var(--ef-teal);
+}
+
+.ring-orange {
+  width: 110px;
+  height: 110px;
+  border-right-color: var(--ef-orange);
+  border-left-color: var(--ef-orange);
+  animation-duration: 1.5s;
+  animation-direction: reverse;
+}
+
+.loading-text {
+  color: var(--ef-teal);
+  letter-spacing: 2px;
+  animation: fadeInOut 1.5s infinite;
+}
+
+/* حركة الدوران */
+@keyframes rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* حركة النبض للشعار */
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* حركة اختفاء وظهور النص */
+@keyframes fadeInOut {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}

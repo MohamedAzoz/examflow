@@ -1,7 +1,8 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment.development';
 import { Observable } from 'rxjs';
+import { SkipLoading } from '../../core/interceptors/loading-interceptor';
 
 export interface IAdmin {
   nationalId: string;
@@ -44,6 +45,7 @@ export class Admin {
         pageIndex: admin.pageIndex,
         pageSize: admin.pageSize,
       },
+      context: new HttpContext().set(SkipLoading, true)
     });
   }
   // /api/Admin/import-admins

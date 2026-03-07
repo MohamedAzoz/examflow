@@ -4,7 +4,6 @@ import {
   inject,
   signal,
   computed,
-  OnInit,
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { RouterOutlet } from '@angular/router';

@@ -6,6 +6,7 @@ import { Iregister } from '../../../data/models/auth/iregister';
 import { LocalStorage } from '../../../core/services/local-storage';
 import { JWT } from '../../../core/services/jwt';
 import { IJWT } from '../../../data/models/auth/ijwt';
+import { IResponseAuth } from '../../../data/models/auth/iresponse-auth';
 
 @Injectable({
   providedIn: 'root',
@@ -17,6 +18,7 @@ export class AuthFacade {
   private jwt = inject(JWT);
 
   userToken = signal<string | null>(this.localStorage.get('token'));
+  user = signal<IResponseAuth | null>(null);
   isLoading = signal<boolean>(false);
   errorMessage = signal<string | null>(null);
 

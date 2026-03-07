@@ -39,8 +39,8 @@
           <button
             type="button"
             class="nav-link"
-            [class.active]="activeRoute() === item.route"
             (click)="onNavClick(item.route)"
+            [class.active]="activeRoute() === item.route"
             [attr.aria-current]="activeRoute() === item.route ? 'page' : null"
           >
             <img
@@ -49,7 +49,8 @@
               height="24"
               alt="{{ item.label }}"
               class="nav-icon"
-            />
+              />
+              <!-- priority="height" -->
             <span class="nav-label">{{ item.label }}</span>
           </button>
         </li>

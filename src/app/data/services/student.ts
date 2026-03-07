@@ -1,6 +1,7 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
+import { SkipLoading } from '../../core/interceptors/loading-interceptor';
 
 export interface IStudentSearch {
   nameSearch: string;
@@ -81,6 +82,7 @@ export class Student {
 
     return this.http.get<IStudentResponse>(`${environment.apiUrl}/Student`, {
       params: search,
+      context: new HttpContext().set(SkipLoading, true)
     });
   }
 }

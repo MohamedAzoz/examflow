@@ -1,17 +1,11 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment.development';
-
-export interface IDepartment {
-  name: string;
-  code: string;
-}
-
-export interface IDepartmentById {
-  id: number;
-  name: string;
-  code: string;
-}
+import { SkipLoading } from '../../core/interceptors/loading-interceptor';
+import { IAssignCourses } from '../models/department/iassign-courses';
+import { IReqAssignCourses } from '../models/department/ireq-assign-courses';
+import { IDepartmentById } from '../models/department/idepartment-by-id';
+import { IDepartment } from '../models/department/idepartment';
 
 @Injectable({
   providedIn: 'root',
@@ -21,13 +15,13 @@ export class Department {
 
   // Get : /api/Department/departments
   getDepartments() {
-    return this.http.get<IDepartmentById[]>(`${environment.apiUrl}/Department/departments`);
+    return this.http.get<IDepartmentById[]>(`${environment.apiUrl}/Department/departments`, {
+      context: new HttpContext().set(SkipLoading, true),
+    });
   }
   // Get : /api/Department/department this grt id by query
   getDepartmentById(id: number) {
-    return this.http.get<IDepartmentById>(
-      `${environment.apiUrl}/Department/department?id=${id}`,
-    );
+    return this.http.get<IDepartmentById>(`${environment.apiUrl}/Department/department?id=${id}`);
   }
 
   // Post : /api/Department
@@ -43,5 +37,16 @@ export class Department {
   // Delete : /api/Department this delete department
   deleteDepartment(id: number) {
     return this.http.delete(`${environment.apiUrl}/Department?id=${id}`);
+  }
+
+  //PUT :/api/Department/assign-courses
+  assignCourses(data: IReqAssignCourses) {
+    return this.http.put(`${environment.apiUrl}/Department/assign-courses`, data);
+  }
+  //GET :/api/Department/assign-courses
+  getAssignCourses(id: number) {
+    return this.http.get<IAssignCourses>(
+      `${environment.apiUrl}/Department/assign-courses?id=${id}`,
+    );
   }
 }

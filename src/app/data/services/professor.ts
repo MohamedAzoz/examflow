@@ -1,7 +1,8 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment.development';
 import { Observable } from 'rxjs';
+import { SkipLoading } from '../../core/interceptors/loading-interceptor';
 
 export interface IProfessor {
   fullName: string;
@@ -58,6 +59,7 @@ export class Professor {
         pageSize: PageSize,
         pageIndex: PageIndex,
       },
+      context: new HttpContext().set(SkipLoading, true)
     });
   }
 }

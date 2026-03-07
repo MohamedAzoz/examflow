@@ -1,5 +1,7 @@
 import { inject, Injectable, signal } from '@angular/core';
-import { Department, IDepartment, IDepartmentById } from '../../../data/services/department';
+import { Department } from '../../../data/services/department';
+import { IDepartment } from '../../../data/models/department/idepartment';
+import { IDepartmentById } from '../../../data/models/department/idepartment-by-id';
 
 @Injectable({
   providedIn: 'root',

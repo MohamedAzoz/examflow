@@ -1,0 +1,23 @@
+<div class="not-found-wrapper d-flex align-items-center justify-content-center">
+  <div class="container text-center">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        
+        <div class="error-illustration mb-4">
+          <i class="bi bi-exclamation-diamond-fill error-icon"></i>
+          <h1 class="display-1 fw-bold error-code">404</h1>
+        </div>
+
+        <h2 class="mb-3 fw-bold text-dark">عذراً، الصفحة غير موجودة!</h2>
+        <p class="mb-5 error-description">
+          يبدو أنك سلكت طريقاً خاطئاً أو أن الصفحة التي تبحث عنها قد تم نقلها أو حذفها.
+        </p>
+
+        <button (click)="goBack()" class="btn btn-back d-inline-flex align-items-center gap-2">
+          <i class="bi bi-arrow-right-short fs-4"></i> <span>العودة للصفحة السابقة</span>
+        </button>
+
+      </div>
+    </div>
+  </div>
+</div>

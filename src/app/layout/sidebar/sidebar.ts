@@ -2,6 +2,7 @@ import { Component, inject, input, output, ChangeDetectionStrategy } from '@angu
 import { NgOptimizedImage } from '@angular/common';
 import { Toggle } from '../../core/services/toggle';
 import { NavItem } from '../nav-item';
+import { Router, RouterLinkActive, RouterLinkWithHref } from '@angular/router';
 
 @Component({
   selector: 'app-sidebar',
@@ -12,6 +13,7 @@ import { NavItem } from '../nav-item';
 })
 export class SidebarComponent {
   protected readonly toggle = inject(Toggle);
+  private router = inject(Router);
 
   readonly navItems = input.required<readonly NavItem[]>();
   readonly userName = input<string>('User');
@@ -21,8 +23,8 @@ export class SidebarComponent {
   readonly navItemSelected = output<string>();
 
   protected onNavClick(route: string): void {
+    this.router.navigate([route]);
     this.navItemSelected.emit(route);
-
     // نعيده للوضع الافتراضي عند اختيار عنصر (ليختفي في الموبايل)
     if (this.toggle.value()) {
       this.toggle.closeSidebar();
