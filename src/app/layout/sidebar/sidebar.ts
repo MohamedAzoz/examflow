@@ -23,7 +23,7 @@ export class SidebarComponent {
   readonly navItemSelected = output<string>();
 
   protected onNavClick(route: string): void {
-    this.router.navigate([route]);
+    this.router.navigate(['/main', route]);
     this.navItemSelected.emit(route);
     // نعيده للوضع الافتراضي عند اختيار عنصر (ليختفي في الموبايل)
     if (this.toggle.value()) {
