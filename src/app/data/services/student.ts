@@ -82,7 +82,7 @@ export class Student {
 
     return this.http.get<IStudentResponse>(`${environment.apiUrl}/Student`, {
       params: search,
-      context: new HttpContext().set(SkipLoading, true)
+      context: new HttpContext().set(SkipLoading, true),
     });
   }
 }
