@@ -39,11 +39,11 @@ export class AuthFacade {
         this.localStorage.set('nbf', (decodedToken as IJWT).nbf.toString());
         this.userToken.set(response.token);
         this.isLoading.set(false);
-        if ((decodedToken as IJWT).role === 'Admin') {
-          this.router.navigate(['main/user-managment']);
-        } else {
-          this.router.navigate(['main/home']);
-        }
+        // if ((decodedToken as IJWT).role === 'Admin') {
+        //   this.router.navigate(['main/admin/user-managment']);
+        // } else {
+        this.router.navigate(['main/student/dashboard']);
+        // }
       },
       error: (error) => {
         this.isLoading.set(false);

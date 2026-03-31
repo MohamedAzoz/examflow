@@ -17,10 +17,15 @@ export const routes: Routes = [
     loadComponent: () => import('./main/main').then((m) => m.Main),
     children: [
       {
-        path: '',
+        path: 'admin',
         // data: { role: 'Admin' },
         // canActivate: [roleGuard],
         loadChildren: () => import('./features/admin/admin.routes').then((m) => m.adminRoles),
+      },
+      {
+        path: 'student',
+        loadComponent: () =>
+          import('./features/student/pages/dashboard/dashboard').then((m) => m.DashboardComponent),
       },
     ],
   },

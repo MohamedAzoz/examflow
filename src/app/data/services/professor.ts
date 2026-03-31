@@ -3,6 +3,8 @@ import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment.development';
 import { Observable } from 'rxjs';
 import { SkipLoading } from '../../core/interceptors/loading-interceptor';
+import { IAssignCourse } from '../models/Professor/iassign-courses';
+import { IAssignCourses } from '../models/department/iassign-courses';
 
 export interface IProfessor {
   fullName: string;
@@ -59,7 +61,21 @@ export class Professor {
         pageSize: PageSize,
         pageIndex: PageIndex,
       },
-      context: new HttpContext().set(SkipLoading, true)
+      context: new HttpContext().set(SkipLoading, true),
+    });
+  }
+
+  //   PUT
+  // /api/Professor/assign-courses
+  assignCourses(data: IAssignCourse) {
+    return this.http.put(`${environment.apiUrl}/Professor/assign-courses`, data);
+  }
+
+  // GET
+  // /api/Professor/assigned-courses
+  getAssignedCourses(id: string) {
+    return this.http.get<IAssignCourses>(`${environment.apiUrl}/Professor/assigned-courses`, {
+      params: { id },
     });
   }
 }

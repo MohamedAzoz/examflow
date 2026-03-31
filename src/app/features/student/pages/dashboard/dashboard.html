@@ -1,0 +1,26 @@
+<div class="dashboard-layout">
+  <!-- Sidebar -->
+  <app-student-sidebar></app-student-sidebar>
+
+  <!-- Main Content -->
+  <main class="dashboard-main">
+    <header class="dashboard-header">
+      <h1 class="page-title">Student Dashboard</h1>
+    </header>
+
+    <div class="dashboard-grid">
+      <div class="widget-col-left">
+        <div class="widget-row mb">
+          <app-upcoming-exams [exams]="facade.upcomingExams()"></app-upcoming-exams>
+        </div>
+        <div class="widget-row">
+          <app-active-exams [exams]="facade.activeExams()" (joinExam)="onJoinExam($event)"></app-active-exams>
+        </div>
+      </div>
+      
+      <div class="widget-col-right">
+        <app-past-exams [exams]="facade.pastExams()"></app-past-exams>
+      </div>
+    </div>
+  </main>
+</div>
