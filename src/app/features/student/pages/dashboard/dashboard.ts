@@ -1,26 +1,36 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
+import { UpcomingExamsCardComponent } from '../../components/upcoming-exams-card/upcoming-exams-card';
+import { PastExamsCardComponent } from '../../components/past-exams-card/past-exams-card';
+import { ActiveExamsCardComponent } from '../../components/active-exams-card/active-exams-card';
+// import { DashboardState } from '../../state/dashboard.state';
 import { StudentExamFacade } from '../../services/student-exam-facade';
-import { Toggle } from '../../../../core/services/toggle';
-import { StudentSidebarComponent } from '../../../../layout/student-sidebar/student-sidebar.component';
-import { UpcomingExamsComponent } from '../../components/upcoming-exams/upcoming-exams.component';
-import { PastExamsComponent } from '../../components/past-exams/past-exams.component';
-import { ActiveExamsComponent } from '../../components/active-exams/active-exams.component';
 
 @Component({
-  selector: 'app-student-dashboard',
+  selector: 'app-dashboard',
+  imports: [UpcomingExamsCardComponent, PastExamsCardComponent, ActiveExamsCardComponent],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
-  imports: [StudentSidebarComponent, UpcomingExamsComponent, PastExamsComponent, ActiveExamsComponent]
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DashboardComponent implements OnInit {
-  public facade = inject(StudentExamFacade);
-  public toggle = inject(Toggle);
+export class DashboardComponent implements OnInit, OnDestroy {
+  // readonly state = inject(DashboardState);
+  readonly facade = inject(StudentExamFacade);
+  private intervalId: ReturnType<typeof setInterval> | null = null;
 
-  ngOnInit() {
+  ngOnInit(): void { 
+    // Load available exams from API
     this.facade.loadAvailableExams();
+
+    // Start countdown ticker (every second) to force reactivity in facade selectors
+    this.intervalId = setInterval(() => {
+      this.facade.updateTime();
+    }, 1000);
   }
 
-  onJoinExam(examId: number) {
-    this.facade.startExam(examId);
+  ngOnDestroy(): void {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+      this.intervalId = null;
+    }
   }
 }

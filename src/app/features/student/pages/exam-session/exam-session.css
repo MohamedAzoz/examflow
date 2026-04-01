@@ -1,0 +1,57 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background-color: var(--main-bg, #E8E7E7);
+  margin: -24px; /* Pull it flush to edge if main container has paddings from global page layout */
+}
+
+/* Base Exam Session Layout */
+.exam-session-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--main-bg, #E8E7E7);
+  padding: 0;
+}
+
+/* Content Grid Definition */
+.exam-content-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 2rem;
+  padding: 2rem 3rem;
+  flex: 1; /* allow it to grow and fill remaining height */
+  align-items: start;
+}
+
+/* Fallback loading state */
+.loading-state {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  color: #6B7280;
+  font-size: 1.25rem;
+  background: white;
+  border-radius: 0.5rem;
+  padding: 2rem;
+}
+
+/* Responsiveness */
+@media (max-width: 1024px) {
+  .exam-content-grid {
+    grid-template-columns: 1fr 280px;
+    padding: 1.5rem;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .exam-content-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    padding: 1rem;
+    gap: 1.5rem;
+  }
+}
+

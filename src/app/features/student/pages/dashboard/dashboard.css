@@ -1,77 +1,74 @@
-.dashboard-layout {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  min-height: 100dvh;
-  background-color: var(--main-bg-color, #E8E7E7);
+.dashboard-container {
+  max-width: 960px;
+  padding: 8px 0;
 }
 
-.dashboard-main {
-  flex: 1;
-  padding: 40px;
-  /* Adjust for sidebar width */
-  margin: 10px;
-  transition: margin-left 0.3s ease;
+.dashboard-title {
+  font-weight: 700;
+  font-style: italic;
+  color: #2c3e50;
+  margin-bottom: 1.75rem;
+  font-size: 1.85rem;
 }
 
-@media (max-width: 992px) {
-  .dashboard-main {
-    /* margin-left: 0;
-    padding: 20px; */
-  }
-}
-
-.dashboard-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 30px;
-}
-
-.menu-toggle {
-  display: none;
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  color: var(--primary-color);
-  cursor: pointer;
-  margin-right: 15px;
-}
-
-@media (max-width: 992px) {
-  .menu-toggle {
-    display: inline-block;
-  }
-}
-
-.page-title {
-  margin: 0;
-  font-size: 32px;
-  font-weight: 800;
-  color: var(--text-primary);
-}
-
-/* Grid layout based on the design */
+/* ─── Responsive Grid ─── */
 .dashboard-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 25px;
-  align-items: start;
+  gap: 1.5rem;
+  align-items: stretch;
 }
 
-.widget-col-left {
+/* ─── Columns ─── */
+.left-column {
   display: flex;
   flex-direction: column;
-  gap: 25px;
+  gap: 1.5rem;
 }
 
-.widget-col-right {
+.right-column {
   display: flex;
   flex-direction: column;
-  gap: 25px;
 }
 
+/* ─── Stretching Behavior ─── */
+app-past-exams-card {
+  display: block;
+  flex: 1;
+}
+
+app-upcoming-exams-card {
+  display: block;
+  flex: 1;
+}
+
+app-active-exams-card {
+  display: block;
+  flex-shrink: 0;
+}
+
+/* Ensure the inner UI card expands to fill the Host Component completely */
+::ng-deep app-past-exams-card > .exam-card,
+::ng-deep app-upcoming-exams-card > .exam-card {
+  height: 100%;
+}
+
+/* ─── Mobile: single column ─── */
 @media (max-width: 768px) {
   .dashboard-grid {
-    grid-template-columns: 2fr;
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-title {
+    font-size: 1.4rem;
+    margin-bottom: 1.25rem;
+  }
+}
+
+/* ─── Tablet ─── */
+@media (min-width: 769px) and (max-width: 992px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
   }
 }

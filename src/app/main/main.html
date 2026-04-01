@@ -14,33 +14,37 @@
       [userName]="userName()"
       [userRole]="userRoleLabel()"
       [activeRoute]="activeRoute()"
+      [isStudent]="isStudent()"
       (navItemSelected)="onNavItemSelected($event)"
     />
 
     <div class="main-area">
-      <header class="top-header">
-        <div class="header-left">
-          <button
-            [hidden]="!toggle.value() && !isMobile()"
-            type="button"
-            class="hamburger-btn"
-            (click)="toggle.toggle()"
-            aria-label="Toggle menu"
-          >
-            <i class="bi bi-list" style="font-weight: bold; font-size: 1.5rem"></i>
-          </button>
-
-          <h1 class="page-title">{{ pageTitle() }}</h1>
-        </div>
-        @if (showNotifications()) {
-          <div class="header-right">
-            <button type="button" class="btn-icon" aria-label="Notifications">
-              <i class="bi bi-bell"></i>
-              <span class="notif-dot"></span>
+      <!-- Header: hidden for students -->
+      @if (!isStudent()) {
+        <header class="top-header">
+          <div class="header-left">
+            <button
+              [hidden]="!toggle.value() && !isMobile()"
+              type="button"
+              class="hamburger-btn"
+              (click)="toggle.toggle()"
+              aria-label="Toggle menu"
+            >
+              <i class="bi bi-list" style="font-weight: bold; font-size: 1.5rem"></i>
             </button>
+
+            <h1 class="page-title">{{ pageTitle() }}</h1>
           </div>
-        }
-      </header>
+          @if (showNotifications()) {
+            <div class="header-right">
+              <button type="button" class="btn-icon" aria-label="Notifications">
+                <i class="bi bi-bell"></i>
+                <span class="notif-dot"></span>
+              </button>
+            </div>
+          }
+        </header>
+      }
 
       <!-- Page content -->
       <main class="page-content">

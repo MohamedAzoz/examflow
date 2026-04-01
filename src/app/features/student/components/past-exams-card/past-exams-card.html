@@ -1,0 +1,13 @@
+<div class="card exam-card">
+  <div class="card-body">
+    <h5 class="card-title">Past Exams</h5>
+    @for (exam of exams(); track $index) {
+      <div class="exam-item">
+        <i class="bi bi-check-circle text-success"></i>
+        <span>{{ exam.courseName }}</span>
+      </div>
+    } @empty {
+      <p class="empty-text">No past exams</p>
+    }
+  </div>
+</div>

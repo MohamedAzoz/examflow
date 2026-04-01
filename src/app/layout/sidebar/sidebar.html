@@ -1,35 +1,54 @@
 <aside
   class="sidebar"
   [class.is-toggled]="toggle.value()"
+  [class.student-mode]="isStudent()"
   role="complementary"
   aria-label="Sidebar navigation"
 >
-  <div class="close-btn-container">
-    <button
-      type="button"
-      class="btn-close-sidebar"
-      (click)="onCloseClick()"
-      aria-label="Toggle sidebar"
-    >
-      <i class="bi bi-list" style="font-weight: bold; font-size: 1.5rem"></i>
-    </button>
-  </div>
-
-  <!-- Brand -->
-  <div class="sidebar-brand">
-    <span class="brand-text">EXAMFLOW</span>
-  </div>
-
-  <!-- User Profile -->
-  <div class="user-profile">
-    <div class="user-avatar">
-      <i class="bi bi-person-fill"></i>
+  <!-- Close button (hamburger) -->
+  @if (!isStudent()) {
+    <div class="close-btn-container">
+      <button
+        type="button"
+        class="btn-close-sidebar"
+        (click)="onCloseClick()"
+        aria-label="Toggle sidebar"
+      >
+        <i class="bi bi-list" style="font-weight: bold; font-size: 1.5rem"></i>
+      </button>
     </div>
-    <div class="user-info">
-      <p class="user-name">{{ userName() }}</p>
-      <p class="user-role-label">{{ userRole() }}</p>
+
+    <!-- Brand (Admin only) -->
+    <div class="sidebar-brand">
+      <span class="brand-text">EXAMFLOW</span>
     </div>
-  </div>
+
+    <!-- Admin User Profile -->
+    <div class="user-profile">
+      <div class="user-avatar">
+        <i class="bi bi-person-fill"></i>
+      </div>
+      <div class="user-info">
+        <p class="user-name">{{ userName() }}</p>
+        <p class="user-role-label">{{ userRole() }}</p>
+      </div>
+    </div>
+  }
+
+  <!-- Student Profile (Welcome back layout) -->
+  @if (isStudent()) {
+    <div class="student-profile">
+      <div class="student-avatar-container">
+        <div class="student-avatar">
+          <i class="bi bi-person-fill"></i>
+        </div>
+      </div>
+      <div class="student-info">
+        <p class="student-welcome">Welcome back</p>
+        <p class="student-name">{{ userName() }}</p>
+      </div>
+    </div>
+  }
 
   <!-- Navigation -->
   <nav class="sidebar-nav" role="navigation" aria-label="Main navigation">
@@ -43,14 +62,17 @@
             [class.active]="activeRoute() === item.route"
             [attr.aria-current]="activeRoute() === item.route ? 'page' : null"
           >
-            <img
-              ngSrc="{{ item.icon }}"
-              width="24"
-              height="24"
-              alt="{{ item.label }}"
-              class="nav-icon"
+            @if (isStudent()) {
+              <i class="bi {{ item.icon }} nav-icon"></i>
+            } @else {
+              <img
+                ngSrc="{{ item.icon }}"
+                width="24"
+                height="24"
+                alt="{{ item.label }}"
+                class="nav-icon"
               />
-              <!-- priority="height" -->
+            }
             <span class="nav-label">{{ item.label }}</span>
           </button>
         </li>
@@ -60,7 +82,7 @@
 
   <!-- Footer -->
   <div class="sidebar-footer">
-    <button type="button" class="logout-btn">
+    <button type="button" (click)="onLogout()" class="logout-btn">
       <img ngSrc="Logout.svg" width="14" height="14" alt="Logout" class="logout-icon" />
       <span>Logout</span>
     </button>

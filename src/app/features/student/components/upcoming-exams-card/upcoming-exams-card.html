@@ -1,0 +1,13 @@
+<div class="card exam-card">
+  <div class="card-body">
+    <h5 class="card-title">Upcoming Exams</h5>
+    @for (exam of exams(); track exam.examId) {
+      <div class="exam-item">
+        <i class="bi bi-clock text-muted"></i>
+        <span>{{ exam.courseName }} - {{ exam.startTime | date: 'MMM d, h:mm a' }}</span>
+      </div>
+    } @empty {
+      <p class="empty-text">No upcoming exams</p>
+    }
+  </div>
+</div>

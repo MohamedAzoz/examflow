@@ -1,12 +1,5 @@
 :host {
-  --sidebar-width: 260px;
   --header-height: 56px;
-  --primary: #2d7a7a;
-  --primary-light: rgba(45, 122, 122, 0.08);
-  --text-primary: #1a1a2e;
-  --text-secondary: #6b7280;
-  --border-color: #e5e7eb;
-  --bg-page: #f3f4f6;
   --speed: 0.3s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
   display: block;
@@ -16,7 +9,7 @@
 .app-shell {
   min-height: 100vh;
   min-height: 100dvh;
-  background: var(--sidebar-bg);
+  background: var(--main-bg);
   position: relative;
 }
 

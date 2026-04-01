@@ -1,0 +1,13 @@
+<div class="card exam-card">
+  <div class="card-body">
+    <h5 class="card-title">Active Exams</h5>
+    @if (activeExam(); as exam) {
+      <div class="active-exam-badge" (click)="joinExam(exam.examId)">
+        <div class="exam-label">JOIN EXAM: {{ exam.courseName }} (Ending soon!)</div>
+        <div class="countdown">{{ countdown() }}</div>
+      </div>
+    } @else {
+      <p class="empty-text">No active exams</p>
+    }
+  </div>
+</div>

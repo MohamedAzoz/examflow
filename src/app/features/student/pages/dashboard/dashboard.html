@@ -1,26 +1,19 @@
-<div class="dashboard-layout">
-  <!-- Sidebar -->
-  <app-student-sidebar></app-student-sidebar>
+<div class="dashboard-container">
+  <h1 class="dashboard-title">Student Dashboard</h1>
 
-  <!-- Main Content -->
-  <main class="dashboard-main">
-    <header class="dashboard-header">
-      <h1 class="page-title">Student Dashboard</h1>
-    </header>
-
-    <div class="dashboard-grid">
-      <div class="widget-col-left">
-        <div class="widget-row mb">
-          <app-upcoming-exams [exams]="facade.upcomingExams()"></app-upcoming-exams>
-        </div>
-        <div class="widget-row">
-          <app-active-exams [exams]="facade.activeExams()" (joinExam)="onJoinExam($event)"></app-active-exams>
-        </div>
-      </div>
-      
-      <div class="widget-col-right">
-        <app-past-exams [exams]="facade.pastExams()"></app-past-exams>
-      </div>
+  <div class="dashboard-grid">
+    <!-- Left Column: Upcoming & Active -->
+    <div class="left-column">
+      <app-upcoming-exams-card [exams]="facade.futureExams()" />
+      <app-active-exams-card
+        [activeExam]="facade.activeExam()"
+        [countdown]="facade.activeExamCountdown()"
+      />
     </div>
-  </main>
+
+    <!-- Right Column: Past Exams -->
+    <div class="right-column">
+      <app-past-exams-card [exams]="facade.pastExams()" />
+    </div>
+  </div>
 </div>

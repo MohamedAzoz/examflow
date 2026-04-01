@@ -11,6 +11,7 @@ import { SidebarComponent } from '../layout/sidebar/sidebar';
 import { Toggle } from '../core/services/toggle';
 import { NavItem } from '../layout/nav-item';
 import { ADMIN_NAV_ITEMS, STUDENT_NAV_ITEMS } from '../shared/Config/sideBar.config';
+import { IdentityService } from '../core/services/identity-service';
 
 @Component({
   selector: 'app-main',
@@ -21,24 +22,29 @@ import { ADMIN_NAV_ITEMS, STUDENT_NAV_ITEMS } from '../shared/Config/sideBar.con
 })
 export class Main {
   protected readonly toggle = inject(Toggle);
+  private readonly identityService = inject(IdentityService);
 
-  /** Set the role — في الواقع هتجيبها من AuthService */
-  protected readonly userRole = signal<'admin' | 'student'>('admin');
+  /** Dynamically compute role from IdentityService */
+  protected readonly userRole = computed(() => (this.identityService.userRole()?.toLowerCase() || 'student') as 'admin' | 'student');
 
   protected readonly activeRoute = signal('manage-users');
   protected readonly isMobile = signal(false);
+
+  /** Is the user a student? */
+  protected readonly isStudent = computed(() => this.userRole() === 'student');
 
   /** Derived values from role */
   protected readonly navItems = computed<readonly NavItem[]>(() =>
     this.userRole() === 'admin' ? ADMIN_NAV_ITEMS : STUDENT_NAV_ITEMS,
   );
 
-  protected readonly userName = computed(() =>
-    this.userRole() === 'admin' ? 'Admin User' : 'Somaya',
-  );
+  protected readonly userName = computed(() => {
+    const fullName = this.identityService.userName() || 'User';
+    return fullName; 
+  });
 
-  protected readonly userRoleLabel = computed(() =>
-    this.userRole() === 'admin' ? 'System Administrator' : 'Student',
+  protected readonly userRoleLabel = computed(() => 
+    this.identityService.userRole() || (this.userRole() === 'admin' ? 'System Administrator' : 'Student')
   );
 
   protected readonly pageTitle = computed(() => {
@@ -66,8 +72,9 @@ export class Main {
   }
 
   protected onOverlayClick(): void {
-    this.toggle.closeSidebar(); // هذا كافي لإعادة الـ Sidebar لوضعه الافتراضي (مخفي للموبايل)
+    this.toggle.closeSidebar();
   }
+
   @HostListener('window:resize', ['$event'])
   protected onResize(event: Event): void {
     this.isMobile.set((event.target as Window).innerWidth <= 992);

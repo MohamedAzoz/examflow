@@ -15,16 +15,25 @@
   --danger-color: #BC3E3E;
   --gray-color: #CED4DA;
   --grades-color: #F3F4F6;
-  --text-gray-color: #706D79; 
+  --text-gray-color: #706D79;
   --text-dark-color: #000000;
   --text-white-color: #FFFFFF;
   --sidebar-bg: #F3F4F6;
   --card-bg: #E8E7E7;
   --border-color: #CED4DA;
   --bg-color: #E5E7EB;
-}
 
-body {
-  /* font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; */
-  background: var(--main-bg-color);
+  --teal: #357B85;
+  --main-bg: #E8E7E7;
+  --bg-card: #F3F4F6;
+--border-teal: #357B85;
 }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+/* .app-shell {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: var(--main-bg);
+} */

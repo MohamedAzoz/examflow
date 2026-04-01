@@ -1,9 +1,10 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment.development';
 import { IsendAnswer } from '../models/StudentExam/isend-answer';
 import { IstartExam } from '../models/StudentExam/IstartExam';
 import { IavailableExams } from '../models/StudentExam/IavailableExams';
+import { SkipLoading } from '../../core/interceptors/loading-interceptor';
 
 @Injectable({
   providedIn: 'root',
@@ -12,18 +13,32 @@ export class StudentExam {
   private http = inject(HttpClient);
 
   getAvailableExams() {
-    return this.http.get<IavailableExams[]>(`${environment.apiUrl}/StudentExam/available`);
+    return this.http.get<IavailableExams[]>(`${environment.apiUrl}/StudentExam/available`, {
+      context: new HttpContext().set(SkipLoading, true),
+    });
   }
 
   startExam(examId: number) {
-    return this.http.post<IstartExam>(`${environment.apiUrl}/StudentExam/${examId}/start`, {});
+    return this.http.post<IstartExam>(
+      `${environment.apiUrl}/StudentExam/${examId}/start`,
+      {},
+      { context: new HttpContext().set(SkipLoading, true) },
+    );
   }
 
   sendAnswer(answer: IsendAnswer) {
-    return this.http.post(`${environment.apiUrl}/StudentExam/send-answer`, answer);
+    return this.http.post(`${environment.apiUrl}/StudentExam/send-answer`, answer, {
+      context: new HttpContext().set(SkipLoading, true),
+    });
   }
 
   submitExam(examId: number) {
-    return this.http.post(`${environment.apiUrl}/StudentExam/${examId}/submit`, {});
+    return this.http.post(
+      `${environment.apiUrl}/StudentExam/${examId}/submit`,
+      {},
+      {
+        context: new HttpContext().set(SkipLoading, true),
+      },
+    );
   }
 }

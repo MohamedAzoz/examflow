@@ -1,14 +1,16 @@
 import { inject, Injectable } from '@angular/core';
-import { LocalStorage } from './local-storage';
+import { IdentityService } from './identity-service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RoleCheck {
-  private localstorige = inject(LocalStorage);
+  private readonly identityService = inject(IdentityService);
 
-  hasRole(role: string) {
-    const value = this.localstorige.get('role') ?? null;
-    return role === value;
+  hasRole(role: string): boolean {
+    // Uses the reactive signal from IdentityService
+    const currentRole = this.identityService.userRole();
+    return role === currentRole;
   }
 }
+
