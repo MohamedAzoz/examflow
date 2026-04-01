@@ -10,13 +10,13 @@
     @if (currentQuestion()) {
       <app-question-area
         [title]="currentQuestion().text"
+        [imageUrl]="currentQuestionImage()"
         [options]="currentQuestion().options"
         [selectedOptionId]="selectedOptions()[currentQuestion().questionId] || null"
         [isMarked]="markedQuestions()[currentQuestion().questionId] || false"
         [isFirst]="questionIndex() === 0"
         [isLast]="questionIndex() >= questions().length - 1"
         (optionSelected)="selectOption($event)"
-        (save)="saveCurrentAnswer()"
         (toggleMark)="toggleMark()" 
         (previous)="previous()"
         (next)="next()">

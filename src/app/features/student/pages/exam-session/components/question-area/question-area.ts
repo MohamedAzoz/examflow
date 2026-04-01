@@ -8,13 +8,19 @@ import { Component, input, output, ChangeDetectionStrategy } from '@angular/core
       <div class="card-top-bar">
         <h2 class="question-title">{{ title() }}</h2>
       </div>
+      <div class="image-container">
+       @if(imageUrl()!=='' && imageUrl()!==undefined){
+            <img class="question-image" [src]="imageUrl()">
+          }
+      </div>
 
       <div class="options">
-        @for (option of options(); track option.optionId) {
+        @for (option of options(); track $index) {
           <label 
             class="option-label" 
             [class.selected]="selectedOptionId() === option.optionId"
           >
+         
             <input 
               type="radio" 
               name="questionOption" 
@@ -38,15 +44,6 @@ import { Component, input, output, ChangeDetectionStrategy } from '@angular/core
           Previous
         </button>
 
-        <!-- save btn -->
-        <button 
-          type="button" 
-          class="btn-save"
-          (click)="save.emit()"
-          title="Save Question"
-        >
-          Save
-        </button>
         <button 
           class="btn-mark" 
           [class.marked]="isMarked()"
@@ -71,10 +68,10 @@ import { Component, input, output, ChangeDetectionStrategy } from '@angular/core
 })
 export class QuestionAreaComponent {
   readonly title = input.required<string>();
+  readonly imageUrl = input<string>();
   readonly options = input.required<any[]>();
   readonly selectedOptionId = input<number | string | null>(null);
   readonly isMarked = input<boolean>(false);
-  readonly save = output<void>();
   
   readonly isFirst = input<boolean>(false);
   readonly isLast = input<boolean>(false);

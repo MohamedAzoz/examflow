@@ -34,6 +34,7 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
   private facade = inject(StudentExamFacade);
   private toggleService = inject(Toggle);
 
+
   private readonly params = toSignal(this.route.paramMap, {
     initialValue: this.route.snapshot.paramMap,
   });
@@ -119,14 +120,18 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
   readonly questions = computed(() => this.currentExam()?.exam.liveExamQuestios ?? []);
   readonly currentQuestion = computed(() => this.questions()[this.questionIndex()] ?? null);
   readonly questionIds = computed(() => this.questions().map((q) => q.questionId));
+  readonly currentQuestionImage = computed(() => {
+    const path = this.currentQuestion()?.imagePath;
+    return path ? `https://examflow.runasp.net${path}` : '';
+  });
 
   readonly countdown = signal<string>('00:00:00');
 
   private timer: ReturnType<typeof setInterval> | null = null;
 
   ngOnInit(): void {
-    // Hide sidebar on desktop
-    this.toggleService.open();
+    // Hide sidebar definitely during exam session
+    // this.toggleService.setForceHide(true);
 
     if (!this.currentExam() && this.examId()) {
       this.facade.startExam(this.examId());
@@ -139,8 +144,8 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    // Show sidebar on desktop
-    this.toggleService.closeSidebar();
+    // Restore sidebar visibility
+    // this.toggleService.setForceHide(false);
     if (this.timer) {
       clearInterval(this.timer);
     }
@@ -201,6 +206,7 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
       return;
     }
     this.selectedOptions.update((v) => ({ ...v, [this.currentQuestion().questionId]: optionId }));
+    this.saveCurrentAnswer();
   }
 
   toggleMark(): void {
@@ -267,12 +273,13 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
         this.localStorage.remove(`marked_q_${examId}`);
     })).subscribe({
       next: () => {
-        this.toggleService.closeSidebar();
+        // Force closing the session out if submission fails (e.g. backend timestamp rejected)
+        // this.toggleService.setForceHide(false);
         this.router.navigate(['/main/student']);
       },
       error: (error) => {
         // Force closing the session out if submission fails (e.g. backend timestamp rejected)
-        this.toggleService.closeSidebar();
+        // this.toggleService.closeSidebar();
         this.router.navigate(['/main/student']);
       },
     });

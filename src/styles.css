@@ -15,18 +15,22 @@
   --danger-color: #BC3E3E;
   --gray-color: #CED4DA;
   --grades-color: #F3F4F6;
+
+
   --text-gray-color: #706D79;
   --text-dark-color: #000000;
   --text-white-color: #FFFFFF;
   --sidebar-bg: #F3F4F6;
   --card-bg: #E8E7E7;
-  --border-color: #CED4DA;
+  /* --border-color: #CED4DA; */
   --bg-color: #E5E7EB;
 
   --teal: #357B85;
   --main-bg: #E8E7E7;
   --bg-card: #F3F4F6;
---border-teal: #357B85;
+--border-teal: #62CEC2;
+--text-gray: #4D4D4E;
+--orange:#F59E0B;
 }
 * {
   box-sizing: border-box;

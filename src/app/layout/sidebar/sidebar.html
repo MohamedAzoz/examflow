@@ -1,6 +1,7 @@
 <aside
   class="sidebar"
   [class.is-toggled]="toggle.value()"
+  [class.force-hidden]="toggle.isHidden()"
   [class.student-mode]="isStudent()"
   role="complementary"
   aria-label="Sidebar navigation"

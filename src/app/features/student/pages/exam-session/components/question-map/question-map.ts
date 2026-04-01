@@ -2,7 +2,6 @@ import { Component, input, output, ChangeDetectionStrategy } from '@angular/core
 
 @Component({
   selector: 'app-question-map',
-  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <aside class="question-map">
@@ -16,7 +15,7 @@ import { Component, input, output, ChangeDetectionStrategy } from '@angular/core
             [class.marked]="!!markedIds()[qId]"
             (click)="jumpTo.emit($index)"
           >
-            {{ $index + 1 }}
+            <span class="question-number">{{ $index + 1 }}</span>
             @if (markedIds()[qId]) {
               <i class="bi bi-flag-fill flag-icon"></i>
             }
@@ -24,12 +23,7 @@ import { Component, input, output, ChangeDetectionStrategy } from '@angular/core
         }
       </div>
 
-      <button 
-        type="button" 
-        class="submit-btn" 
-        (click)="submit.emit()" 
-        [disabled]="isLoading()"
-      >
+      <button type="button" class="submit-btn" (click)="submit.emit()" [disabled]="isLoading()">
         Submit Exam
       </button>
 
@@ -38,102 +32,146 @@ import { Component, input, output, ChangeDetectionStrategy } from '@angular/core
       }
     </aside>
   `,
-  styles: [`
-    .question-map {
-      background: white;
-      border-radius: 0.5rem;
-      padding: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      height: 100%;
+  styles: [
+    `
+    * {
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
     }
+      .question-map {
+        background: var(--grades-color);
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 0.6rem;
-      flex: 1;
-      align-content: start;
-    }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.6rem;
+        flex: 1;
+        align-content: start;
+      }
 
-    .grid-item {
-      aspect-ratio: 1;
-      border: none;
-      color: #374151; /* Dark Gray */
-      font-size: 1.15rem;
-      font-weight: 500;
-      border-radius: 0.4rem;
-      background: #D1D5DB; /* Default light gray for unanswered */
-      cursor: pointer;
-      position: relative;
-      transition: all 0.15s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+      .grid-item {
+        aspect-ratio: 1/1;
+        border: none;
+        border-radius: 0.4rem;
+        background: var(--gray-color);
+        cursor: pointer;
+        position: relative;
+        transition: all 0.15s ease;
+        // padding: 16px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
 
-    /* Used for dark teal answered state, or default light gray. The design image asked for answers to be dark teal. */
-    .grid-item.answered {
-      background: #357B85;
-      color: white;
-    }
+      .question-number {
+        font-size: 1.4rem;
+        font-weight: 600;
+      }
 
-    /* The currently active question */
-    .grid-item.active {
-      background: #5FC4B6;
-      color: #111827;
-      /* Add inner border/shadow effect to differentiate */
-      box-shadow: inset 0 0 0 2px #2F6F67;
-    }
+      /* Used for dark teal answered state, or default light gray. The design image asked for answers to be dark teal. */
+      .grid-item.answered {
+        background: var(--teal);
+        color: white;
+      }
 
-    /* Marked state overrides default colors with orange */
-    .grid-item.marked {
-      background: #F59E0B;
-      color: white;
-    }
+      /* The currently active question */
+      .grid-item.active {
+        background: var(--border-teal);
+        color: var(--text-gray);
 
-    .flag-icon {
-      position: absolute;
-      top: 2px;
-      right: 4px;
-      font-size: 0.65rem;
-      color: #DC2626; /* Red internal flag on the orange box based on design */
-    }
+        /* Add inner border/shadow effect to differentiate */
+        box-shadow: inset 0 0 0 2px #2f6f67;
+        .question-number {
+          padding:0.5rem 1rem;
+          border-radius: 20%;
+          box-shadow: 0 0 0 2px var(--text-gray);
+        }
+        border: none;
+      }
 
-    .grid-item:hover {
-      filter: brightness(0.95);
-    }
+      /* Marked state overrides default colors with orange */
+      .grid-item.marked {
+        background: var(--orange);
+      }
 
-    .submit-btn {
-      width: 100%;
-      margin-top: 2rem;
-      background: #DC2626; /* Bright Red */
-      color: #fff;
-      border: none;
-      border-radius: 0.35rem;
-      padding: 1rem;
-      font-size: 1.15rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s ease;
-    }
+      .flag-icon {
+        position: absolute;
+        top: 2px;
+        right: 4px;
+        font-size: 0.65rem;
+        color: #dc2626; /* Red internal flag on the orange box based on design */
+      }
 
-    .submit-btn:hover:not(:disabled) {
-      background: #B91C1C;
-    }
+      .grid-item:hover {
+        filter: brightness(0.95);
+      }
 
-    .submit-btn:disabled {
-      opacity: 0.65;
-      cursor: not-allowed;
-    }
+      .submit-btn {
+        width: 100%;
+        margin-top: 2rem;
+        background: #dc2626; /* Bright Red */
+        color: #fff;
+        border: none;
+        border-radius: 0.35rem;
+        padding: 1rem;
+        font-size: 1.15rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s ease;
+      }
 
-    .error-msg {
-      margin-top: 1rem;
-      color: #DC2626;
-      font-weight: 600;
-      text-align: center;
-    }
-  `]
+      .submit-btn:hover:not(:disabled) {
+        background: #b91c1c;
+      }
+
+      .submit-btn:disabled {
+        opacity: 0.65;
+        cursor: not-allowed;
+      }
+
+      .error-msg {
+        margin-top: 1rem;
+        color: #dc2626;
+        font-weight: 600;
+        text-align: center;
+      }
+
+      @media (max-width: 768px) {
+        .question-map {
+          padding: 1rem;
+        }
+        .grid {
+          grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+          gap: 0.5rem;
+        }
+        .question-number {
+          font-size: 1.2rem;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .grid {
+          grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+          gap: 0.4rem;
+        }
+        .question-number {
+          font-size: 1rem;
+        }
+        .submit-btn {
+          padding: 0.75rem;
+          font-size: 1rem;
+          margin-top: 1.5rem;
+        }
+      }
+    `,
+  ],
 })
 export class QuestionMapComponent {
   readonly questionIds = input.required<number[]>();

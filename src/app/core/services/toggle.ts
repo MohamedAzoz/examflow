@@ -5,9 +5,15 @@ import { Injectable, signal, computed } from '@angular/core';
 })
 export class Toggle {
   private readonly isSidebarOpen = signal(false);
+  private readonly isForcedHidden = signal(false);
 
   /** Readonly computed for template binding */
   readonly isOpen = computed(() => this.isSidebarOpen());
+  readonly isHidden = computed(() => this.isForcedHidden());
+
+  setForceHide(val: boolean): void {
+    this.isForcedHidden.set(val);
+  }
 
   open(): void {
     this.isSidebarOpen.set(true);

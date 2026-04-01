@@ -40,6 +40,10 @@
   transform: translateX(-100%);
 }
 
+.sidebar.force-hidden {
+  display: none !important;
+}
+
 /* Scrollbar */
 .sidebar::-webkit-scrollbar {
   width: 4px;
