@@ -19,8 +19,6 @@ export class PastExamsCardComponent {
     switch (status) {
       case ExamStatus.NotStarted:
         return 'Absent';
-      case ExamStatus.InProgress:
-        return 'In Progress';
       case ExamStatus.Completed:
         return 'Submitted';
       case ExamStatus.Flushed:

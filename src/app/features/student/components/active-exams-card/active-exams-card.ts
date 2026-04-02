@@ -1,4 +1,4 @@
-import { Component, input, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input, inject, ChangeDetectionStrategy, computed } from '@angular/core';
 import { IavailableExams } from '../../../../data/models/StudentExam/IavailableExams';
 import { StudentExamFacade } from '../../services/student-exam-facade';
 
@@ -11,7 +11,7 @@ import { StudentExamFacade } from '../../services/student-exam-facade';
 export class ActiveExamsCardComponent {
   private readonly facade = inject(StudentExamFacade);
   // availableTimeToStart
-  readonly IsAvailableToStart = this.facade.availableTimeToStart() <= new Date().getTime() + 1000;
+  readonly IsAvailableToStart = computed(() => this.facade.availableTimeToStart() > 0);
 
   /** The currently active exam (null if none) */
   readonly activeExam = input<IavailableExams | null>(null);
