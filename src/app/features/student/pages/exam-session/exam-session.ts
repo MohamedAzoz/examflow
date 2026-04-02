@@ -29,6 +29,7 @@ import {
   catchError,
   of,
   takeWhile,
+  Subject,
 } from 'rxjs';
 
 @Component({
@@ -52,149 +53,20 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
   private indexInitialized = false;
 
   private readonly destroyRef = inject(DestroyRef);
-  private readonly essayTrigger = signal<{ qId: number; text: string } | null>(null);
-  private readonly syncSignal = signal<number>(0);
+  private readonly essayTrigger$ = new Subject<{ qId: number; text: string }>();
+  private readonly syncTrigger$ = new Subject<void>();
   readonly isOnline = connectivitySignal();
   private isSyncing = false;
 
   constructor() {
-    effect(
-      () => {
-        const examData = this.currentExam();
-        // Populate previously saved answers on load if they exist
-        if (examData?.savedAnswers && Array.isArray(examData.savedAnswers)) {
-          const currentOpts = untracked(this.selectedOptions);
-          if (Object.keys(currentOpts).length === 0 && examData.savedAnswers.length > 0) {
-            const initialAnswers: Record<number, number> = {};
-            const initialEssayAnswers: Record<number, string> = {};
-
-            // 1. Start with backend data
-            examData.savedAnswers.forEach((ans: any) => {
-              if (ans.selectedOptionId) {
-                initialAnswers[ans.questionId] = ans.selectedOptionId;
-              }
-              if (ans.eassayAnswer) {
-                initialEssayAnswers[ans.questionId] = ans.eassayAnswer;
-              }
-            });
-
-            // 2. Merge with local unsynced work (local takes priority)
-            const cacheKey = `answers_cache_${this.examId()}`;
-            let localCache: Record<number, { selectedOptionId: number; eassayAnswer: string }> = {};
-            try {
-              localCache = JSON.parse(this.localStorage.get(cacheKey) || '{}');
-            } catch (e) {
-              console.error('Error parsing answers cache', e);
-            }
-
-            Object.entries(localCache).forEach(([qId, data]) => {
-              const numQId = Number(qId);
-              if (data.selectedOptionId) initialAnswers[numQId] = data.selectedOptionId;
-              if (data.eassayAnswer) initialEssayAnswers[numQId] = data.eassayAnswer;
-            });
-
-            this.selectedOptions.set(initialAnswers);
-            this.essayAnswers.set(initialEssayAnswers);
-
-            // 3. Trigger sync if there's work in the queue
-            const queueKey = `sync_queue_${this.examId()}`;
-            let queue: number[] = [];
-            try {
-              queue = JSON.parse(this.localStorage.get(queueKey) || '[]');
-            } catch (e) {
-              console.error('Error parsing sync queue', e);
-            }
-
-            if (queue.length > 0) {
-              this.syncSignal.update((n: number) => n + 1);
-            }
-          }
-        }
-
-        if (examData?.exam && !this.indexInitialized) {
-          untracked(() => {
-            this.initCountdown();
-
-            let targetQId = Number(this.params().get('qId'));
-
-            // If URL is 0 (due to facade hard-redirect) or empty, check LocalStorage
-            if (!targetQId || targetQId === 0) {
-              targetQId = Number(this.localStorage.get(`last_q_${this.examId()}`));
-            }
-
-            if (targetQId && targetQId !== 0) {
-              const idx = this.questionIds().indexOf(targetQId);
-              if (idx !== -1) {
-                this.questionIndex.set(idx);
-              }
-            }
-
-            // Restore marked questions state if available
-            const savedMarks = this.localStorage.get(`marked_q_${this.examId()}`);
-            if (savedMarks) {
-              try {
-                this.markedQuestions.set(JSON.parse(savedMarks));
-              } catch (e) {
-                console.error('Error parsing marked questions', e);
-              }
-            }
-
-            this.indexInitialized = true;
-          });
-        }
-      },
-      { allowSignalWrites: true },
-    );
-
-    // Sync URL silently when question changes for high-performance session tracking
-    effect(() => {
-      const q = this.currentQuestion();
-      if (q && this.indexInitialized) {
-        // Save the last viewed question to LocalStorage for bulletproof session restoring
-        if (this.examId()) {
-          this.localStorage.set(`last_q_${this.examId()}`, q.questionId.toString());
-        }
-
-        this.router.navigate(['../', q.questionId], {
-          relativeTo: this.route,
-          replaceUrl: true,
-        });
-      }
-    });
-
-    // 1. Setup Essay Debounce Pipeline
-    toObservable(this.essayTrigger)
-      .pipe(
-        filter((v): v is { qId: number; text: string } => v !== null),
-        debounceTime(1000),
-        distinctUntilChanged(),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe((v) => {
-        if (v) this.addQuestionToSyncQueue(v.qId);
-      });
-
-    // 2. Setup Sequential Sync Pipeline
-    toObservable(this.syncSignal)
-      .pipe(
-        filter(() => !this.isSyncing && this.isOnline()),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe(() => {
-        this.processSyncQueue();
-      });
-
-    // 3. Trigger sync when coming back online
-    effect(() => {
-      if (this.isOnline()) {
-        untracked(() => this.syncSignal.update((n: number) => n + 1));
-      }
-    });
+    this.setupDataInitialization();
+    this.setupUrlSyncEffect();
+    this.setupRxjsPipelines();
+    this.setupOnlineSyncTrigger();
   }
 
   readonly currentExam = computed(() => this.facade.currentExam());
   readonly errorMessage = computed(() => this.facade.errorMessage());
-  // readonly isLoading = computed(() => this.facade.isLoading());
   readonly availableTimeToStart = computed(() => this.facade.availableTimeToStart());
 
   readonly questionIndex = signal<number>(0);
@@ -318,7 +190,7 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
     // 1. Update cache immediately so it survives refresh
     this.updateLocalCache(questionId, this.selectedOptions()[questionId] || 0, answer);
     // 2. Trigger debounced sync
-    this.essayTrigger.set({ qId: questionId, text: answer });
+    this.essayTrigger$.next({ qId: questionId, text: answer });
   }
 
   toggleMark(): void {
@@ -336,7 +208,7 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
     const examId = this.examId();
     if (!examId) return;
     const cacheKey = `answers_cache_${examId}`;
-    const cache = JSON.parse(this.localStorage.get(cacheKey) || '{}');
+    const cache = this.getParsedLocalStorage<Record<number, any>>(cacheKey, {});
     cache[qId] = { selectedOptionId: optId, eassayAnswer: essay };
     this.localStorage.set(cacheKey, JSON.stringify(cache));
   }
@@ -346,12 +218,7 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
     if (!examId) return;
 
     const queueKey = `sync_queue_${examId}`;
-    let currentQueue: number[] = [];
-    try {
-      currentQueue = JSON.parse(this.localStorage.get(queueKey) || '[]');
-    } catch (e) {
-      console.error('Error parsing sync queue for add', e);
-    }
+    let currentQueue = this.getParsedLocalStorage<number[]>(queueKey, []);
 
     if (!currentQueue.includes(qId)) {
       currentQueue.push(qId);
@@ -359,7 +226,7 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
     }
 
     // Trigger sequential sync
-    this.syncSignal.update((n: number) => n + 1);
+    this.syncTrigger$.next();
   }
 
   private processSyncQueue(): void {
@@ -367,19 +234,14 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
     if (!examId || this.isSyncing || !this.isOnline()) return;
 
     const queueKey = `sync_queue_${examId}`;
-    let queue: number[] = [];
-    try {
-      queue = JSON.parse(this.localStorage.get(queueKey) || '[]');
-    } catch (e) {
-      console.error('Error parsing sync queue for process', e);
-    }
+    let queue = this.getParsedLocalStorage<number[]>(queueKey, []);
 
     if (queue.length === 0) return;
 
     this.isSyncing = true;
 
     // Sequential process using concatMap
-    from(queue as number[])
+    from(queue)
       .pipe(
         // Stop immediately if we go offline during processing
         takeWhile(() => this.isOnline()),
@@ -399,12 +261,7 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
 
     // Read from cache to ensure we send the latest persisted state (important after refresh)
     const cacheKey = `answers_cache_${examId}`;
-    let cache: any = {};
-    try {
-      cache = JSON.parse(this.localStorage.get(cacheKey) || '{}');
-    } catch (e) {
-      console.error('Error parsing answers cache for send', e);
-    }
+    const cache = this.getParsedLocalStorage<Record<number, any>>(cacheKey, {});
     const cachedData = cache[qId];
 
     const optId = cachedData ? cachedData.selectedOptionId : this.selectedOptions()[qId] || 0;
@@ -422,21 +279,11 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
       map(() => {
         // Success: remove from local queue AND local cache
         const queueKey = `sync_queue_${examId}`;
-        let queue: number[] = [];
-        try {
-          queue = JSON.parse(this.localStorage.get(queueKey) || '[]');
-        } catch (e) {
-          console.error('Error parsing sync queue on success', e);
-        }
+        const queue = this.getParsedLocalStorage<number[]>(queueKey, []);
         const updatedQueue = queue.filter((id) => id !== qId);
         this.localStorage.set(queueKey, JSON.stringify(updatedQueue));
 
-        let updatedCache: any = {};
-        try {
-          updatedCache = JSON.parse(this.localStorage.get(cacheKey) || '{}');
-        } catch (e) {
-          console.error('Error parsing updated cache on success', e);
-        }
+        const updatedCache = this.getParsedLocalStorage<Record<number, any>>(cacheKey, {});
         delete updatedCache[qId];
         this.localStorage.set(cacheKey, JSON.stringify(updatedCache));
 
@@ -448,7 +295,6 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
         return of(null);
       }),
     );
-    
   }
 
   previous(): void {
@@ -476,5 +322,146 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
     }
 
     this.facade.submitExam(examId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
+  }
+
+  /* ---------------- Initialization Methods ---------------- */
+
+  private setupDataInitialization(): void {
+    effect(
+      () => {
+        const examData = this.currentExam();
+        if (!examData) return;
+
+        this.initializeAnswers(examData);
+        this.initializeQuestionIndex(examData);
+      },
+      { allowSignalWrites: true },
+    );
+  }
+
+  private initializeAnswers(examData: any): void {
+    // Populate previously saved answers on load if they exist
+    if (!examData.savedAnswers || !Array.isArray(examData.savedAnswers)) return;
+
+    const currentOpts = untracked(this.selectedOptions);
+    // Merge if empty, or just initialization case
+    if (Object.keys(currentOpts).length === 0 && examData.savedAnswers.length > 0) {
+      const initialAnswers: Record<number, number> = {};
+      const initialEssayAnswers: Record<number, string> = {};
+
+      // 1. Start with backend data
+      examData.savedAnswers.forEach((ans: any) => {
+        if (ans.selectedOptionId) initialAnswers[ans.questionId] = ans.selectedOptionId;
+        if (ans.eassayAnswer) initialEssayAnswers[ans.questionId] = ans.eassayAnswer;
+      });
+
+      // 2. Merge with local unsynced work (local takes priority)
+      const localCache = this.getParsedLocalStorage<Record<number, any>>(
+        `answers_cache_${this.examId()}`,
+        {},
+      );
+      Object.entries(localCache).forEach(([qId, data]) => {
+        const numQId = Number(qId);
+        if (data.selectedOptionId) initialAnswers[numQId] = data.selectedOptionId;
+        if (data.eassayAnswer) initialEssayAnswers[numQId] = data.eassayAnswer;
+      });
+
+      this.selectedOptions.set(initialAnswers);
+      this.essayAnswers.set(initialEssayAnswers);
+
+      // 3. Trigger sync if there's work in the queue
+      const queue = this.getParsedLocalStorage<number[]>(`sync_queue_${this.examId()}`, []);
+      if (queue.length > 0) {
+        this.syncTrigger$.next();
+      }
+    }
+  }
+
+  private initializeQuestionIndex(examData: any): void {
+    if (!examData.exam || this.indexInitialized) return;
+
+    untracked(() => {
+      this.initCountdown();
+
+      let targetQId = Number(this.params().get('qId'));
+
+      // If URL is 0 or empty, check LocalStorage
+      if (!targetQId || targetQId === 0) {
+        targetQId = Number(this.localStorage.get(`last_q_${this.examId()}`));
+      }
+
+      if (targetQId && targetQId !== 0) {
+        const idx = this.questionIds().indexOf(targetQId);
+        if (idx !== -1) {
+          this.questionIndex.set(idx);
+        }
+      }
+
+      // Restore marked questions state if available
+      this.markedQuestions.set(
+        this.getParsedLocalStorage<Record<number, boolean>>(`marked_q_${this.examId()}`, {}),
+      );
+
+      this.indexInitialized = true;
+    });
+  }
+
+  private setupUrlSyncEffect(): void {
+    effect(() => {
+      const q = this.currentQuestion();
+      if (q && this.indexInitialized) {
+        const examId = this.examId();
+        if (examId) {
+          this.localStorage.set(`last_q_${examId}`, q.questionId.toString());
+        }
+
+        this.router.navigate(['../', q.questionId], {
+          relativeTo: this.route,
+          replaceUrl: true,
+        });
+      }
+    });
+  }
+
+  private setupRxjsPipelines(): void {
+    // 1. Essay Debounce Pipeline
+    this.essayTrigger$
+      .pipe(
+        debounceTime(1000),
+        distinctUntilChanged((prev, curr) => prev.qId === curr.qId && prev.text === curr.text),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((v) => {
+        this.addQuestionToSyncQueue(v.qId);
+      });
+
+    // 2. Sequential Sync Pipeline
+    this.syncTrigger$
+      .pipe(
+        filter(() => !this.isSyncing && this.isOnline()),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(() => {
+        this.processSyncQueue();
+      });
+  }
+
+  private setupOnlineSyncTrigger(): void {
+    effect(() => {
+      // Upon coming back online, trigger the flush
+      if (this.isOnline()) {
+        untracked(() => this.syncTrigger$.next());
+      }
+    });
+  }
+
+  private getParsedLocalStorage<T>(key: string, defaultValue: T): T {
+    try {
+      const item = this.localStorage.get(key);
+      return item ? JSON.parse(item) : defaultValue;
+    } catch (e) {
+      console.error(`Error parsing localStorage key: ${key}`, e);
+      return defaultValue;
+    }
   }
 }

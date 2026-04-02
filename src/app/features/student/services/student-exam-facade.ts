@@ -53,7 +53,7 @@ export class StudentExamFacade {
 
   readonly availableTimeToStart = computed<number>(() => {
     const exam = this.activeExam();
-    if (!exam) return 0;
+    if (!exam || !exam.startTime) return 0;
     const start = new Date(exam.startTime).getTime();
     return Math.max(
       0,
@@ -67,7 +67,7 @@ export class StudentExamFacade {
    */
   readonly activeExamRemainingSeconds = computed<number>(() => {
     const exam = this.activeExam();
-    if (!exam) return 0;
+    if (!exam || !exam.startTime) return 0;
     const end = new Date(exam.startTime).getTime() + exam.durationMinutes * 60_000;
     return Math.max(0, Math.floor((end - this.currentTime()) / 1000));
   });
