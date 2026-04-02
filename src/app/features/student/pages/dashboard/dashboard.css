@@ -1,11 +1,11 @@
 
 .dashboard-container {
-  max-width: 960px;
+  width: 100%;
   padding-left: 16px;
 }
 
 .dashboard-title {
-  font-weight: 600;
+  font-weight: 700;
   margin-bottom: 1.75rem;
   font-size: 3rem;
   word-spacing: 0.2rem;
@@ -15,6 +15,7 @@
 
 /* ─── Responsive Grid ─── */
 .dashboard-grid {
+  width: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.5rem;
