@@ -1,4 +1,4 @@
-import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input, output, ChangeDetectionStrategy, computed } from '@angular/core';
 
 @Component({
   selector: 'app-question-map',
@@ -23,7 +23,7 @@ import { Component, input, output, ChangeDetectionStrategy } from '@angular/core
         }
       </div>
 
-      <button type="button" class="submit-btn" (click)="submit.emit()" [disabled]="isLoading()">
+      <button type="button" class="submit-btn" (click)="submit.emit()" [disabled]="isDisabled()">
         Submit Exam
       </button>
 
@@ -57,6 +57,7 @@ import { Component, input, output, ChangeDetectionStrategy } from '@angular/core
       }
 
       .grid-item {
+        width: 90%;
         aspect-ratio: 1/1;
         border: none;
         border-radius: 0.4rem;
@@ -64,7 +65,6 @@ import { Component, input, output, ChangeDetectionStrategy } from '@angular/core
         cursor: pointer;
         position: relative;
         transition: all 0.15s ease;
-        // padding: 16px 24px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -89,7 +89,8 @@ import { Component, input, output, ChangeDetectionStrategy } from '@angular/core
         /* Add inner border/shadow effect to differentiate */
         box-shadow: inset 0 0 0 2px #2f6f67;
         .question-number {
-          padding:0.5rem 1rem;
+          width: 70%;
+          height: 70%;
           border-radius: 20%;
           box-shadow: 0 0 0 2px var(--text-gray);
         }
@@ -178,9 +179,10 @@ export class QuestionMapComponent {
   readonly currentIndex = input.required<number>();
   readonly answeredIds = input.required<Record<number, number>>();
   readonly markedIds = input.required<Record<number, boolean>>();
-  readonly isLoading = input<boolean>(false);
   readonly errorMessage = input<string | null>(null);
+  readonly availableTimeToStart = input<number>(0);
 
   readonly jumpTo = output<number>();
   readonly submit = output<void>();
+  readonly isDisabled = computed(() => this.availableTimeToStart() <= (new Date().getTime() + 1000));
 }

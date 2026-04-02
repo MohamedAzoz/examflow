@@ -13,7 +13,7 @@ import { IdentityService } from '../../core/services/identity-service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidebarComponent {
-  protected readonly toggle = inject(Toggle);
+  protected readonly toggle = inject(Toggle); 
   private readonly router = inject(Router);
   private readonly identityService = inject(IdentityService);
 
@@ -26,7 +26,7 @@ export class SidebarComponent {
   readonly navItemSelected = output<string>();
 
   protected onNavClick(route: string): void {
-    this.router.navigate(['/main', route]);
+    this.router.navigate(['/main',this.userRole().toLowerCase(), route]);
     this.navItemSelected.emit(route);
     if (this.toggle.value()) {
       this.toggle.closeSidebar();
@@ -34,7 +34,7 @@ export class SidebarComponent {
   }
 
   protected onCloseClick(): void {
-    this.toggle.toggle();
+    this.toggle.closeSidebar();
   }
 
   protected onLogout(): void {

@@ -34,7 +34,6 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
   private facade = inject(StudentExamFacade);
   private toggleService = inject(Toggle);
 
-
   private readonly params = toSignal(this.route.paramMap, {
     initialValue: this.route.snapshot.paramMap,
   });
@@ -50,12 +49,19 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
           const currentOpts = untracked(this.selectedOptions);
           if (Object.keys(currentOpts).length === 0 && examData.savedAnswers.length > 0) {
             const initialAnswers: Record<number, number> = {};
+            const initialEssayAnswers: Record<number, string> = {};
+
             examData.savedAnswers.forEach((ans: any) => {
               if (ans.selectedOptionId) {
                 initialAnswers[ans.questionId] = ans.selectedOptionId;
               }
+              if (ans.eassayAnswer) {
+                initialEssayAnswers[ans.questionId] = ans.eassayAnswer;
+              }
             });
+
             this.selectedOptions.set(initialAnswers);
+            this.essayAnswers.set(initialEssayAnswers);
           }
         }
 
@@ -64,10 +70,10 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
             this.initCountdown();
 
             let targetQId = Number(this.params()?.get('qId'));
-            
+
             // If URL is 0 (due to facade hard-redirect) or empty, check LocalStorage
             if (!targetQId || targetQId === 0) {
-               targetQId = Number(this.localStorage.get(`last_q_${this.examId()}`));
+              targetQId = Number(this.localStorage.get(`last_q_${this.examId()}`));
             }
 
             if (targetQId && targetQId !== 0) {
@@ -82,7 +88,9 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
             if (savedMarks) {
               try {
                 this.markedQuestions.set(JSON.parse(savedMarks));
-              } catch(e) { console.error('Error parsing marked questions', e); }
+              } catch (e) {
+                console.error('Error parsing marked questions', e);
+              }
             }
 
             this.indexInitialized = true;
@@ -98,12 +106,12 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
       if (q && this.indexInitialized) {
         // Save the last viewed question to LocalStorage for bulletproof session restoring
         if (this.examId()) {
-           this.localStorage.set(`last_q_${this.examId()}`, q.questionId.toString());
+          this.localStorage.set(`last_q_${this.examId()}`, q.questionId.toString());
         }
 
         this.router.navigate(['../', q.questionId], {
           relativeTo: this.route,
-          replaceUrl: true
+          replaceUrl: true,
         });
       }
     });
@@ -111,10 +119,12 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
 
   readonly currentExam = computed(() => this.facade.currentExam());
   readonly errorMessage = computed(() => this.facade.errorMessage());
-  readonly isLoading = computed(() => this.facade.isLoading());
+  // readonly isLoading = computed(() => this.facade.isLoading());
+  readonly availableTimeToStart = computed(() => this.facade.availableTimeToStart());
 
   readonly questionIndex = signal<number>(0);
   readonly selectedOptions = signal<Record<number, number>>({});
+  readonly essayAnswers = signal<Record<number, string>>({});
   readonly markedQuestions = signal<Record<number, boolean>>({});
 
   readonly questions = computed(() => this.currentExam()?.exam.liveExamQuestios ?? []);
@@ -131,7 +141,7 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     // Hide sidebar definitely during exam session
-    // this.toggleService.setForceHide(true);
+    this.toggleService.examMode(true);
 
     if (!this.currentExam() && this.examId()) {
       this.facade.startExam(this.examId());
@@ -145,7 +155,7 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     // Restore sidebar visibility
-    // this.toggleService.setForceHide(false);
+    this.toggleService.examMode(false);
     if (this.timer) {
       clearInterval(this.timer);
     }
@@ -209,6 +219,14 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
     this.saveCurrentAnswer();
   }
 
+  essayAnswer(answer: string, questionId: number): void {
+    if (!this.currentQuestion()) {
+      return;
+    }
+    this.essayAnswers.update((v) => ({ ...v, [questionId]: answer }));
+    this.saveCurrentAnswer();
+  }
+
   toggleMark(): void {
     const qId = this.currentQuestion()?.questionId;
     if (qId === undefined) return;
@@ -224,26 +242,23 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
     const q = this.currentQuestion();
     if (!q) return;
 
-    const selectedOptionId = this.selectedOptions()[q.questionId];
-    if (selectedOptionId === undefined || selectedOptionId === null) return;
-
     const examId = this.currentExam()?.exam?.examId;
     const studentExamId = this.currentExam()?.studentExamId;
 
     if (!examId || !studentExamId) return;
+
+    const selectedOptionId = this.selectedOptions()[q.questionId] || 0;
+    const essayText = this.essayAnswers()[q.questionId] || '';
 
     const data: IsendAnswer = {
       examId: examId,
       studentExamId: studentExamId.toString(),
       questionId: q.questionId,
       selectedOptionId: Number(selectedOptionId),
-      eassayAnswer: '',
+      eassayAnswer: essayText,
     };
 
-    this.facade.sendAnswer(data).subscribe({
-      next: () => console.log('Answer saved for question:', q.questionId),
-      error: (err) => console.error('Failed to save answer', err),
-    });
+    this.facade.sendAnswer(data).subscribe();
   }
 
   previous(): void {
@@ -266,22 +281,18 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.facade.submitExam(examId).pipe(finalize(() => {
-        // Clean up user's local storage regardless of API outcome status so they can take the exam again cleanly
-        this.localStorage.remove(`exam_start_${examId}`);
-        this.localStorage.remove(`last_q_${examId}`);
-        this.localStorage.remove(`marked_q_${examId}`);
-    })).subscribe({
-      next: () => {
-        // Force closing the session out if submission fails (e.g. backend timestamp rejected)
-        // this.toggleService.setForceHide(false);
-        this.router.navigate(['/main/student']);
-      },
-      error: (error) => {
-        // Force closing the session out if submission fails (e.g. backend timestamp rejected)
-        // this.toggleService.closeSidebar();
-        this.router.navigate(['/main/student']);
-      },
-    });
+    this.facade
+      .submitExam(examId)
+      .pipe(
+        finalize(() => {
+          // Clean up user's local storage regardless of API outcome status so they can take the exam again cleanly
+          this.localStorage.remove(`exam_start_${examId}`);
+          this.localStorage.remove(`last_q_${examId}`);
+          this.localStorage.remove(`marked_q_${examId}`);
+          this.toggleService.examMode(false);
+          this.router.navigate(['/main/student']);
+        }),
+      )
+      .subscribe();
   }
 }

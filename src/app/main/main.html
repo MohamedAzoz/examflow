@@ -1,11 +1,11 @@
 <div class="app-shell">
   <!-- Overlay: mobile only, when sidebar open -->
-  @if (toggle.value()) {
+  @if (toggle.value() && isMobile() && !toggle.isExamMode()) {
     <div class="sidebar-overlay" (click)="onOverlayClick()" aria-hidden="true"></div>
   }
 
   <div class="app-shell" [class.is-toggled]="toggle.value()">
-    @if (toggle.value()) {
+    @if (toggle.value() && !isMobile()&& toggle.isExamMode()) {
       <div class="sidebar-overlay" (click)="onOverlayClick()" aria-hidden="true"></div>
     }
 
@@ -19,8 +19,35 @@
     />
 
     <div class="main-area">
+
       <!-- Header: hidden for students -->
       @if (!isStudent()) {
+        <header class="top-header">
+          <div class="header-left">
+            <button
+              [hidden]="!toggle.value() && !isMobile()"
+              type="button"
+              class="hamburger-btn"
+              (click)="toggle.toggle()"
+              aria-label="Toggle menu"
+            >
+              <i class="bi bi-list" style="font-weight: bold; font-size: 1.5rem"></i>
+            </button>
+
+            <h1 class="page-title">{{ pageTitle() }}</h1>
+          </div>
+          @if (showNotifications()) {
+            <div class="header-right">
+              <button type="button" class="btn-icon" aria-label="Notifications">
+                <i class="bi bi-bell"></i>
+                <span class="notif-dot"></span>
+              </button>
+            </div>
+          }
+        </header>
+      }
+
+      @if (isStudent() && isMobile() && !toggle.isExamMode()) {
         <header class="top-header">
           <div class="header-left">
             <button

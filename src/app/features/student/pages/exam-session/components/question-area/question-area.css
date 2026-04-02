@@ -26,6 +26,29 @@
   border-radius: 0.5rem;
 }
 
+.answer-area {
+  width: 100%;
+  height: 100%;
+  margin-top: 2rem;
+  padding: 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  background-color: #f9fafb;
+}
+
+.answer-area textarea {
+  width: 100%;
+  height: 100%;
+  outline: none;
+  border: none;
+  resize: none;
+  padding: 0.2rem 0.5rem;
+  font-family: inherit;
+  font-size: 1.1rem;
+  background-color: white;
+  color: #111827;
+}
+
 .question-title {
   font-size: 1.6rem;
   font-weight: 700;
@@ -180,6 +203,9 @@
     font-size: 1.1rem;
     gap: 1rem;
   }
+  .answer-area textarea {
+    font-size: 1rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -219,5 +245,8 @@
   }
   .question-image {
     width: 100%;
+  }
+  .answer-area textarea {
+    font-size: 0.9rem;
   }
 }

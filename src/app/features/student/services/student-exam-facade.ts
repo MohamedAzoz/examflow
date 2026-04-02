@@ -10,6 +10,16 @@ import { IsendAnswer } from '../../../data/models/StudentExam/isend-answer';
   providedIn: 'root',
 })
 export class StudentExamFacade {
+  // النسبة التى سيتم ضربها مع وقت الامتحان لتحديد الوقت المتاح للطالب ان يدخل الامتحان
+  private readonly percentage = 2/3;
+  // الوقت المتاح للطالب ان يدخل الامتحان
+  readonly availableTimeToStart = computed<number>(() => {
+    const exam = this.activeExam();
+    if (!exam) return 0;
+    const start = new Date(exam.startTime).getTime(); 
+    return Math.max(0, Math.floor((start + exam.durationMinutes * 60_000 * this.percentage) - this.currentTime()));
+  });
+
   private readonly studentExamService = inject(StudentExam);
   private readonly router = inject(Router);
 

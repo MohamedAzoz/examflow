@@ -1,3 +1,5 @@
+import { QuestionType } from "../../enums/question-type";
+
 export interface IstartExam {
   studentExamId: string;
   exam: Iexam;
@@ -16,7 +18,7 @@ export interface Iexam {
 export interface IliveExamQuestios {
   questionId: number;
   text: string;
-  questionType: number;
+  questionType: QuestionType;
   imagePath: string;
   options: Ioption[];
 }

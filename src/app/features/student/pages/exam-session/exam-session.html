@@ -1,8 +1,6 @@
 <div class="exam-session-layout">
   <!-- Top Bar Component -->
-  <app-exam-header 
-    [countdown]="countdown()"
-    [studentId]="currentExam()?.studentExamId || ''">
+  <app-exam-header [countdown]="countdown()" [studentId]="currentExam()?.studentExamId || ''">
   </app-exam-header>
 
   <!-- Main Content Grid -->
@@ -11,15 +9,19 @@
       <app-question-area
         [title]="currentQuestion().text"
         [imageUrl]="currentQuestionImage()"
+        [questType]="currentQuestion().questionType"
         [options]="currentQuestion().options"
         [selectedOptionId]="selectedOptions()[currentQuestion().questionId] || null"
         [isMarked]="markedQuestions()[currentQuestion().questionId] || false"
+        [essayValue]="essayAnswers()[currentQuestion().questionId] || ''"
         [isFirst]="questionIndex() === 0"
         [isLast]="questionIndex() >= questions().length - 1"
         (optionSelected)="selectOption($event)"
-        (toggleMark)="toggleMark()" 
+        (essayAnswer)="essayAnswer($event, currentQuestion().questionId)"
+        (toggleMark)="toggleMark()"
         (previous)="previous()"
-        (next)="next()">
+        (next)="next()"
+      >
       </app-question-area>
     } @else {
       <div class="loading-state">
@@ -33,10 +35,11 @@
       [currentIndex]="questionIndex()"
       [answeredIds]="selectedOptions()"
       [markedIds]="markedQuestions()"
-      [isLoading]="isLoading()"
+      [availableTimeToStart]="availableTimeToStart()"
       [errorMessage]="errorMessage()"
       (jumpTo)="jumpTo($event)"
-      (submit)="submit()">
+      (submit)="submit()"
+    >
     </app-question-map>
   </main>
 </div>

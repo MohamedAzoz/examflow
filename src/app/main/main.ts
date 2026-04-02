@@ -27,7 +27,7 @@ export class Main {
   /** Dynamically compute role from IdentityService */
   protected readonly userRole = computed(() => (this.identityService.userRole()?.toLowerCase() || 'student') as 'admin' | 'student');
 
-  protected readonly activeRoute = signal('manage-users');
+  protected readonly activeRoute = signal('dashboard');
   protected readonly isMobile = signal(false);
 
   /** Is the user a student? */
@@ -49,20 +49,26 @@ export class Main {
 
   protected readonly pageTitle = computed(() => {
     const titles: Record<string, string> = {
+      // General
       dashboard: 'Dashboard',
-      'manage-users': 'User Management',
-      'academic-years': 'Manage Academic Years',
-      'configure-courses': 'Configure Courses',
-      'add-department': 'Add Department',
-      'assign-courses': 'Assign Courses',
+
+      // Admin Management
+      'user-managment': 'User Management',
+      'academic-year-managment': 'Manage Academic Years',
+      'courses-managment': 'Configure Courses',
+      'departments-managment': 'Add Department',
+      'assign-courses-managment': 'Assign Courses',
       'reset-passwords': 'Reset Passwords',
-      'enroll-students': 'Enroll Students',
-      'system-settings': 'System Settings',
+      'enroll-students-managment': 'Enroll Students',
+      'system-settings-managment': 'System Settings',
+
+      // Student Features
       courses: 'Courses',
       results: 'Results',
       settings: 'Settings',
+      exam: 'Exam Session',
     };
-    return titles[this.activeRoute()] ?? 'User Management';
+    return titles[this.activeRoute()] ?? 'Main Panel';
   });
 
   protected readonly showNotifications = computed(() => this.userRole() === 'admin');

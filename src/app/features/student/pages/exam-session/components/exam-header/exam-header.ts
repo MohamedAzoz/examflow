@@ -19,15 +19,10 @@ import { Component, input, ChangeDetectionStrategy } from '@angular/core';
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0.5rem;
-        background: #f3f4f6;
+        padding: 0.1rem 1rem;
+        background: var(--grades-color);
       }
-      .bi-wifi-2 {
-        font-size: 3rem;
-        color: #10b981;
-         margin-bottom: 10px;
-      }
-
+      
       .status {
         display: flex;
         gap: 0.5rem;
@@ -37,29 +32,28 @@ import { Component, input, ChangeDetectionStrategy } from '@angular/core';
       .status-text {
         font-size: 1.5rem;
         font-weight: 500;
-        color: #10b981;
+        color: var(--success-color);
+      }
+      .bi-wifi-2 {
+        font-size: 3rem;
+        color: var(--success-color);
+        position: relative;
+        bottom: 0.5vw;
       }
 
       .timer {
-        font-size: 2rem;
-        font-weight: 700;
-        color: #111827;
+        font-size: 3rem;
+        font-weight: 500;
         letter-spacing: 1px;
       }
       .exam-id {
         font-weight: 500;
-        color: #374151;
-        font-size: 1.1rem;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        width: 200px;
+        font-size: 1.2rem;
       }
       
       @media (max-width: 768px) {
         .bi-wifi-2 {
           font-size: 2rem;
-          margin-bottom: 5px;
         }
         .status-text {
           font-size: 1.2rem;
@@ -69,7 +63,9 @@ import { Component, input, ChangeDetectionStrategy } from '@angular/core';
         }
         .exam-id {
           font-size: 1rem;
-          width: 150px;
+          text-wrap: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
         }
       }
 
@@ -93,10 +89,12 @@ import { Component, input, ChangeDetectionStrategy } from '@angular/core';
           width: 100%;
           text-align: center;
           font-size: 0.9rem;
+          text-wrap: nowrap;
+          text-overflow: ellipsis;
         }
         .bi-wifi-2 {
           font-size: 1.5rem;
-          margin-bottom: 0;
+        
         }
         .status-text {
           font-size: 1rem;
