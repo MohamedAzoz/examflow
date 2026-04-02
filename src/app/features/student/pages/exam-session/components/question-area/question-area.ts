@@ -7,7 +7,7 @@ import { QuestionType } from '../../../../../../data/enums/question-type';
   template: `
     <article class="question-card">
       <div class="card-top-bar">
-        <h2 class="question-title">{{ title() }}</h2>
+        <h2 class="question-title" [dir]="textDirection(title())">{{ title() }}</h2>
       </div>
 
       @if (questType() === essay) {
@@ -21,6 +21,7 @@ import { QuestionType } from '../../../../../../data/enums/question-type';
             name="answer"
             id="answer"
             rows="5"
+            [dir]="textDirection(essayValue())"
             placeholder="Write your answer here"
             [value]="essayValue()"
             (input)="essayAnswer.emit($any($event.target).value)"
@@ -38,7 +39,7 @@ import { QuestionType } from '../../../../../../data/enums/question-type';
                 (change)="optionSelected.emit(option.optionId)"
               />
               <div class="custom-radio"></div>
-              <span>{{ option.optionText }}</span>
+              <span [dir]="textDirection(option.optionText)">{{ option.optionText }}</span>
             </label>
           }
         </div>
@@ -85,4 +86,11 @@ export class QuestionAreaComponent {
   readonly next = output<void>();
 
   readonly essay = QuestionType.Essay;
+
+  textDirection(text?: string): 'rtl' | 'ltr' {
+    if (!text) return 'ltr';
+    // نطاق الحروف العربية في ال Unicode
+    const arabicPattern = /[\u0600-\u06FF]/;
+    return arabicPattern.test(text) ? 'rtl' : 'ltr';
+  }
 }

@@ -2,10 +2,10 @@
   <div class="card-body">
     <h5 class="card-title">Active Exams</h5>
     @if (activeExam(); as exam) {
-      <div class="active-exam-badge" (click)="joinExam(exam.examId)">
-        <div class="exam-label">JOIN EXAM: {{ exam.courseName }} (Ending soon!)</div>
-        <div class="countdown">{{ countdown() }}</div>
-      </div>
+      <button class="active-exam-badge" (click)="joinExam(exam.examId)" [disabled]="!IsAvailableToStart">
+        <span class="exam-label">JOIN EXAM: {{ exam.courseName }} (Ending soon!)</span>
+        <span class="countdown">{{ countdown() }}</span>
+      </button>
     } @else {
       <p class="empty-text">No active exams</p>
     }

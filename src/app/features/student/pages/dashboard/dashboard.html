@@ -3,17 +3,17 @@
 
   <div class="dashboard-grid">
     <!-- Left Column: Upcoming & Active -->
-    <div class="left-column">
+    <!-- <div class="left-column"> -->
       <app-upcoming-exams-card [exams]="facade.futureExams()" />
-      <app-active-exams-card
-        [activeExam]="facade.activeExam()"
-        [countdown]="facade.activeExamCountdown()"
-      />
-    </div>
-
+    <!-- </div> -->
+    
     <!-- Right Column: Past Exams -->
-    <div class="right-column">
+    <!-- <div class="right-column"> -->
       <app-past-exams-card [exams]="facade.pastExams()" />
-    </div>
+    <!-- </div> -->
+    <app-active-exams-card
+      [activeExam]="facade.activeExam()"
+      [countdown]="facade.activeExamCountdown()"
+    />
   </div>
-</div>
+</div> 

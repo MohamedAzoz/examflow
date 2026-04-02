@@ -17,9 +17,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   readonly facade = inject(StudentExamFacade);
   private intervalId: ReturnType<typeof setInterval> | null = null;
 
-  ngOnInit(): void { 
+  ngOnInit(): void {
     // Load available exams from API
     this.facade.loadAvailableExams();
+    this.facade.loadPastExams();
 
     // Start countdown ticker (every second) to force reactivity in facade selectors
     this.intervalId = setInterval(() => {

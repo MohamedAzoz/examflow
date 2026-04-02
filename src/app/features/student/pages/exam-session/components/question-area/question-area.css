@@ -237,7 +237,7 @@
     min-width: 80px;
     padding: 0.6rem 1rem;
     font-size: 1rem;
-    flex: 1;
+    flex: 1; 
   }
   .btn-mark {
     width: 40px;

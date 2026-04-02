@@ -2,9 +2,30 @@
   <div class="card-body">
     <h5 class="card-title">Past Exams</h5>
     @for (exam of exams(); track $index) {
-      <div class="exam-item">
-        <i class="bi bi-check-circle text-success"></i>
-        <span>{{ exam.courseName }}</span>
+      <div
+        class="exam-item"
+        [class.not-started]="exam.examStatus === ExamStatus.NotStarted" 
+        [class.in-progress]="exam.examStatus === ExamStatus.InProgress"
+        [class.completed]="exam.examStatus === ExamStatus.Completed"
+        [class.flushed]="exam.examStatus === ExamStatus.Flushed"
+        [class.pending]="exam.examStatus === ExamStatus.PendingEassysManualGrading"
+        [class.all-graded]="exam.examStatus === ExamStatus.AllGraded"
+      >
+        <div class="exam-info">
+          @switch (exam.examStatus) {
+            @case (ExamStatus.NotStarted) { <i class="bi bi-dash-circle"></i> }
+            @case (ExamStatus.InProgress) { <i class="bi bi-play-circle text-primary"></i> }
+            @case (ExamStatus.Completed) { <i class="bi bi-check-circle text-success"></i> }
+            @case (ExamStatus.Flushed) { <i class="bi bi-gear-wide-connected text-warning"></i> }
+            @case (ExamStatus.PendingEassysManualGrading) { <i class="bi bi-hourglass-split text-info"></i> }
+            @case (ExamStatus.AllGraded) { <i class="bi bi-trophy text-success"></i> }
+          }
+          <div class="exam-details">
+            <span class="exam-title">{{ exam.examTitle }}</span>
+            <span class="exam-grade">{{ getDegree(exam.studentScore, exam.examMaxScore) }}%</span>
+          </div>
+        </div>
+        <span class="exam-status">{{ getExamStatus(exam.examStatus) }}</span>
       </div>
     } @empty {
       <p class="empty-text">No past exams</p>

@@ -1,0 +1,90 @@
+
+      .exam-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.1rem 1rem;
+        background: var(--grades-color);
+      }
+      
+      .status {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: start;
+        align-items: center;
+      }
+      .status.connected{
+        color: var(--success-color);
+      }
+      .status.disconnected{
+        color: var(--danger-color);
+      }
+      .status-text {
+        font-size: 1.5rem;
+        font-weight: 500;
+      }
+      .bi{
+        font-size: 2.3rem;
+        position: relative;
+        bottom: 0.2vw;
+      }
+
+      .timer {
+        font-size: 3rem;
+        font-weight: 500;
+        letter-spacing: 1px;
+      }
+      .exam-id {
+        padding: 0 1.5rem 0 0;
+        font-weight: 500;
+        font-size: 1.5rem;
+      }
+      
+      @media (max-width: 768px) {
+        .bi {
+          font-size: 1.7rem;
+        }
+        .status-text {
+          font-size: 1.2rem;
+        }
+        .timer {
+          font-size: 1.5rem;
+        }
+        .exam-id {
+          font-size: 1rem;
+          text-wrap: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .exam-header {
+          padding: 0.25rem 0.5rem;
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 0.5rem;
+        }
+        .status {
+          order: 1;
+        }
+        .timer {
+          order: 2;
+          font-size: 1.3rem;
+          margin: 0 1rem;
+        }
+        .exam-id {
+          order: 3;
+          width: 100%;
+          text-align: center;
+          font-size: 0.9rem;
+          text-wrap: nowrap;
+          text-overflow: ellipsis;
+        }
+        .bi{
+          font-size: 1.4rem;
+        }
+        .status-text {
+          font-size: 1rem;
+        }
+      }

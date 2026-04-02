@@ -18,30 +18,150 @@
 .card-title {
   color: #2c3e50;
   margin: 0 0 1rem;
-  font-size: 1.15rem;
+  font-size: 1.3rem;
   font-weight: 700;
 }
 
 .exam-item {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  justify-content: space-between;
+  gap: 0.5rem;
   padding: 0.5rem 0;
-  font-size: 0.92rem;
-  color: #555;
 }
 
 .exam-item i {
-  font-size: 1.1rem;
-  color: #28a745;
+  font-size: 1rem;
 }
 
 .exam-item + .exam-item {
   border-top: 1px solid #f0f0f0;
 }
 
+.exam-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+}
+
 .empty-text {
   color: #999;
   margin: 0;
   font-size: 0.9rem;
+}
+
+.exam-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  transition: background-color 0.2s ease;
+}
+
+/* ─── Status Badges ─── */
+.exam-status {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Absent */
+.not-started {
+  background-color: #f3f4f6;
+  border: 1px solid #e5e7eb;
+}
+.not-started .exam-status {
+  background-color: #e5e7eb;
+  color: #4b5563;
+}
+
+/* In Progress */
+.in-progress {
+  background-color: #eff6ff;
+  border: 1px solid #dbeafe;
+}
+.in-progress .exam-status {
+  background-color: #dbeafe;
+  color: #2563eb;
+}
+
+/* Submitted */
+.completed {
+  background-color: #f0fdf4;
+  border: 1px solid #dcfce7;
+}
+.completed .exam-status {
+  background-color: #dcfce7;
+  color: #16a34a;
+}
+
+/* Evaluating */
+.flushed {
+  background-color: #fffbeb;
+  border: 1px solid #fef3c7;
+}
+.flushed .exam-status {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+/* Pending Review */
+.pending {
+  background-color: #f5f3ff;
+  border: 1px solid #ede9fe;
+}
+.pending .exam-status {
+  background-color: #ede9fe;
+  color: #7c3aed;
+}
+
+/* Graded/Completed */
+.all-graded {
+  background-color: #f0fdfa;
+  border: 1px solid #ccfbf1;
+}
+.all-graded .exam-status {
+  background-color: #ccfbf1;
+  color: #0d9488;
+}
+
+.exam-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.exam-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1f2937;
+  line-height: 1.2;
+}
+
+.exam-grade {
+  font-size: 0.85rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.exam-info i {
+  font-size: 1.25rem;
+  min-width: 24px;
+}
+
+@media (max-width: 768px) {
+  .exam-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  .exam-status {
+    align-self: flex-end;
+  }
 }
