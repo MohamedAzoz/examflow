@@ -23,22 +23,22 @@ import { Component, input, output, ChangeDetectionStrategy, computed } from '@an
         }
       </div>
 
-      <button type="button" class="submit-btn" (click)="submit.emit()" [disabled]="isDisabled()">
+      <button type="button" class="submit-btn" (click)="submit.emit()" [disabled]="!isDisabled()">
         Submit Exam
       </button>
 
       @if (errorMessage()) {
         <div class="error-msg">{{ errorMessage() }}</div>
       }
-    </aside> 
+    </aside>
   `,
   styles: [
     `
-    * {
-      padding: 0;
-      margin: 0;
-      box-sizing: border-box;
-    }
+      * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+      }
       .question-map {
         background: var(--grades-color);
         border-radius: 0.5rem;
@@ -184,5 +184,5 @@ export class QuestionMapComponent {
 
   readonly jumpTo = output<number>();
   readonly submit = output<void>();
-  readonly isDisabled = computed(() => this.availableTimeToStart() <= (new Date().getTime() + 1000)); 
+  readonly isDisabled = computed(() => this.availableTimeToStart() <= new Date().getTime() + 1000);
 }
