@@ -63,8 +63,8 @@ export class StudentExamFacade {
     const exam = this.activeExam();
     if (!exam || !exam.startTime) return 0;
     const start = new Date(exam.startTime).getTime();
-    const joinWindowEnd = start + exam.durationMinutes * 60_000 * this.percentage;
-    return Math.max(0, Math.floor((joinWindowEnd - this.currentTime()) / 1000));
+    const joinWindowEnd = start + exam.durationMinutes * 60 * this.percentage;
+    return Math.max(0, Math.floor(joinWindowEnd - this.currentTime()));
   });
 
   /**

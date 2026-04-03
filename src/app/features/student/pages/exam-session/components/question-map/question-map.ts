@@ -184,5 +184,5 @@ export class QuestionMapComponent {
 
   readonly jumpTo = output<number>();
   readonly submit = output<void>();
-  readonly isDisabled = computed(() => this.availableTimeToStart() <= new Date().getTime() + 1000);
+  readonly isDisabled = computed(() => this.availableTimeToStart() <= new Date().getTime() * 1000);
 }
