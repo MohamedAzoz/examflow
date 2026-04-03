@@ -26,11 +26,46 @@
   --bg-color: #E5E7EB;
 
   --teal: #357B85;
-  --main-bg: #E8E7E7;
   --bg-card: #F3F4F6;
 --border-teal: #62CEC2;
 --text-gray: #4D4D4E;
 --orange:#F59E0B;
+ --main-bg: #E8E7E7;
+  --surface: #f5faff;
+  --surface-container-lowest: #ffffff;
+  --surface-container-low: #eef4fa;
+  --surface-container: #e9eef5;
+  --surface-container-high: #e3e9ef;
+  --surface-container-highest: #dde3e9;
+  --surface-dim: #d5dbe1;
+  --surface-bright: #f5faff;
+
+  --primary: #13626c;
+  --primary-container: #357B85;
+  --on-primary: #ffffff;
+  --on-primary-container: #e6fbff;
+
+  --secondary: #006a62;
+  --secondary-container: #8af5e8;
+  --on-secondary-container: #007168;
+  --secondary-fixed-dim: #62CEC2;
+
+  --tertiary: #814c28;
+  --tertiary-container: #9e643e;
+  --on-tertiary-container: #fff6f3;
+
+  --error: #ba1a1a;
+  --error-container: #ffdad6;
+  --on-error-container: #93000a;
+
+  --success: #299E5B;
+  --on-surface: #161c21;
+  --on-surface-variant: #3f484a;
+  --outline-variant: #bfc8ca;
+
+  /* Typography */
+  --font-headline: 'Manrope', sans-serif;
+  --font-body: 'Inter', sans-serif;
 }
 * {
   box-sizing: border-box;

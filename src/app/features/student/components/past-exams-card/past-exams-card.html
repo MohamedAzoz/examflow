@@ -3,7 +3,7 @@
     <h5 class="card-title">Past Exams</h5>
     @for (exam of exams(); track $index) {
       @if (exam.examStatus !== ExamStatus.InProgress) {
-        <div
+        <div 
           class="exam-item"
           [class.not-started]="exam.examStatus === ExamStatus.NotStarted"
           [class.completed]="exam.examStatus === ExamStatus.Completed"

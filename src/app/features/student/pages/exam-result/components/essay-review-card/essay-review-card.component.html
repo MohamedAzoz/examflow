@@ -1,0 +1,23 @@
+<article class="essay-card">
+  <header class="card-header">
+    <div>
+      <p class="essay-index">Essay {{ index }}</p>
+      <h3 class="essay-title">Written Response Review</h3>
+    </div>
+
+    <span class="degree-badge">{{ question.degree }} pts</span>
+  </header>
+
+  <p class="question-text">{{ question.questionText }}</p>
+
+  @if (imageUrl; as image) {
+    <div class="essay-image-wrap">
+      <img [src]="image" [alt]="'Essay question ' + index + ' illustration'" class="essay-image" />
+    </div>
+  }
+
+  <div class="answer-box">
+    <span class="answer-label">Your written answer</span>
+    <p>{{ question.essayAnswer || 'No written answer was submitted.' }}</p>
+  </div>
+</article>

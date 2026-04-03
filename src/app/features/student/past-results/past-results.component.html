@@ -1,0 +1,66 @@
+<div class="results-page-container">
+  <header class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">My Exam Results</h1>
+    </div>
+  </header>
+
+  <main class="page-content">
+    @if (isLoading()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Synchronizing with Academic Records...</p>
+      </div>
+    }
+
+    @if (errorMessage()) {
+      <div class="error-state">
+        <span class="material-symbols-outlined">error</span>
+        <p>{{ errorMessage() }}</p>
+        <button class="btn-primary" (click)="loadResults()">Retry</button>
+      </div>
+    }
+
+    @if (!isLoading() && !errorMessage()) {
+      <div class="results-grid">
+        @for (result of pastExams(); track result.examId) {
+          <app-result-card [result]="result"> </app-result-card>
+        }
+      </div>
+    }
+
+    <!-- Empty State -->
+    @if (!isLoading() && !errorMessage() && pastExams().length === 0) {
+      <div class="empty-state">
+        <span class="material-symbols-outlined">description</span>
+        <h3>No results recorded yet</h3>
+        <p>You haven't completed any assessments or your results are still in processing.</p>
+      </div>
+    }
+
+    <!-- Pagination -->
+    @if (!isLoading() && pastExams().length > 0) {
+      <footer class="pagination-footer">
+        <div class="pagination-controls">
+          <button class="page-btn prev" (click)="changePage(currentPage() - 1)" [disabled]="currentPage() === 1">
+            <i class="material-symbols-outlined bi bi-chevron-left"></i>
+          </button>
+          
+          @for (page of pages(); track $index) {
+            <button
+              class="page-btn page-num"
+              [class.active]="currentPage() === page"
+              (click)="changePage(page)"
+            >
+              {{ page }}
+            </button>
+          }
+
+          <button class="page-btn next" (click)="changePage(currentPage() + 1)" [disabled]="currentPage() === pages().length">
+            <i class="material-symbols-outlined bi bi-chevron-right"></i>
+          </button>
+        </div>
+      </footer>
+    }
+  </main>
+</div>

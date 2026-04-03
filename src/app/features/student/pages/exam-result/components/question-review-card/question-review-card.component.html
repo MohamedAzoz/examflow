@@ -1,0 +1,32 @@
+<article class="question-card" [class.correct]="question.answerStatus" [class.incorrect]="!question.answerStatus">
+  <header class="card-header">
+    <div>
+      <p class="question-index">Question {{ index }}</p>
+      <h3 class="question-state">
+        {{ question.answerStatus ? 'Correct Answer' : 'Incorrect Answer' }}
+      </h3>
+    </div>
+
+    <span class="degree-badge">{{ question.degree }} pts</span>
+  </header>
+
+  <p class="question-text">{{ question.questionText }}</p>
+
+  @if (imageUrl; as image) {
+    <div class="question-image-wrap">
+      <img [src]="image" [alt]="'Question ' + index + ' illustration'" class="question-image" />
+    </div>
+  }
+
+  <div class="answer-stack">
+    <div class="answer-row" [class.selected-correct]="question.answerStatus" [class.selected-incorrect]="!question.answerStatus">
+      <span class="answer-label">Your answer</span>
+      <p>{{ question.selectedOptionText || 'No option selected' }}</p>
+    </div>
+
+    <div class="answer-row answer-row-correct">
+      <span class="answer-label">Correct answer</span>
+      <p>{{ question.correctOptionText }}</p>
+    </div>
+  </div>
+</article>

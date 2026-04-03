@@ -6,6 +6,7 @@ import { IstartExam } from '../models/StudentExam/IstartExam';
 import { IavailableExams } from '../models/StudentExam/IavailableExams';
 import { SkipLoading } from '../../core/interceptors/loading-interceptor';
 import { IpastExams } from '../models/StudentExam/IpastExams';
+import { IResultExam } from '../models/StudentExam/IResultExam';
 
 @Injectable({
   providedIn: 'root',
@@ -15,6 +16,13 @@ export class StudentExam {
 
   getAvailableExams() {
     return this.http.get<IavailableExams[]>(`${environment.apiUrl}/StudentExam/available`, {
+      context: new HttpContext().set(SkipLoading, true),
+    });
+  }
+
+  // /api/StudentExam/exam-results/{examId}
+  getExamResults(examId: number) {
+    return this.http.get<IResultExam>(`${environment.apiUrl}/StudentExam/exam-results/${examId}`, {
       context: new HttpContext().set(SkipLoading, true),
     });
   }

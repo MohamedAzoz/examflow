@@ -1,0 +1,34 @@
+<div class="result-card" [class]="statusMeta().colorClass">
+  <div class="card-header">
+    <span class="status-badge">
+      <i [class]="statusMeta().icon"></i>
+      {{ statusMeta().label }}
+    </span>
+    <div class="card-icon">
+      <i class="bi bi-journal-check"></i>
+    </div>
+  </div>
+
+  <div class="card-body">
+    <h3 class="exam-title">{{ result.examTitle }}</h3>
+    <p class="exam-subtitle">Assessment Session</p>
+  </div>
+
+  <div class="card-footer">
+    <div class="score-container">
+      <span class="score-value" [ngClass]="getScoreColor(result)">
+        {{ result.studentScore | number : '1.1-1' }}
+      </span>
+      <span class="score-total">/ {{ result.examMaxScore }}</span>
+    </div>
+
+    <button
+      type="button"
+      class="view-results-btn"
+      [routerLink]="['/main/student/past-results', result.examId]" 
+    >
+      View Results
+      <i class="bi bi-arrow-right"></i>
+    </button>
+  </div>
+</div>

@@ -2,18 +2,18 @@ import { Component, inject, input, output, ChangeDetectionStrategy } from '@angu
 import { NgOptimizedImage } from '@angular/common';
 import { Toggle } from '../../core/services/toggle';
 import { NavItem } from '../nav-item';
-import { Router } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { IdentityService } from '../../core/services/identity-service';
 
 @Component({
   selector: 'app-sidebar',
-  imports: [NgOptimizedImage],
+  imports: [NgOptimizedImage, RouterLink, RouterLinkActive],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidebarComponent {
-  protected readonly toggle = inject(Toggle); 
+  protected readonly toggle = inject(Toggle);
   private readonly router = inject(Router);
   private readonly identityService = inject(IdentityService);
 

@@ -212,7 +212,7 @@
   color: var(--primary);
 }
 
-.sidebar.student-mode .nav-link.active {
+.sidebar.student-mode .active {
   background: #CED4DA;
   color: var(--primary);
   box-shadow: none;

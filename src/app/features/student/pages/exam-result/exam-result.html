@@ -1,0 +1,114 @@
+<section class="exam-result-page">
+  <header class="page-hero">
+    <div class="hero-copy">
+      <a class="back-link" routerLink="/main/student/past-results">
+        <i class="bi bi-arrow-left"></i>
+        Back to Results
+      </a>
+
+      <p class="eyebrow">Performance Overview</p>
+      <h1 class="page-title">{{ examResult()?.examTitle || 'Exam Result' }}</h1>
+      <p class="page-description">
+        Review your score, completion details, and question-by-question feedback in one place.
+      </p>
+    </div>
+
+    @if (examResult()) {
+      <div class="hero-metrics">
+        <div class="metric-chip">
+          <span class="metric-label">Correct Answers</span>
+          <strong class="metric-value">{{ answeredCorrectlyCount() }}</strong>
+        </div>
+        <div class="metric-chip">
+          <span class="metric-label">Reviewed Items</span>
+          <strong class="metric-value">{{ totalQuestionsCount() }}</strong>
+        </div>
+      </div>
+    }
+  </header>
+
+  @if (isLoading()) {
+    <section class="state-card loading-state">
+      <div class="spinner"></div>
+      <h2>Loading result details</h2>
+      <p>Fetching the latest graded data for this exam.</p>
+    </section>
+  } @else if (errorMessage()) {
+    <section class="state-card error-state">
+      <div class="state-icon">
+        <i class="bi bi-exclamation-triangle"></i>
+      </div>
+      <h2>Unable to load result details</h2>
+      <p>{{ errorMessage() }}</p>
+      <button type="button" class="action-btn" (click)="reload()">
+        Try Again
+      </button>
+    </section>
+  } @else if (examResult(); as result) {
+    <div class="content-stack">
+      <app-result-summary-card
+        [examTitle]="result.examTitle"
+        [studentScore]="result.studentScore"
+        [examMaxScore]="result.examMaxScore"
+        [timeTaken]="result.timeTaken"
+        [examStatus]="result.examStatus"
+        [objectiveCount]="objectiveQuestions().length"
+        [essayCount]="essayQuestions().length"
+      />
+
+      <section class="review-section">
+        <div class="section-heading">
+          <div>
+            <p class="section-eyebrow">Objective Questions</p>
+            <h2>Question Review</h2>
+          </div>
+          <span class="section-meta">{{ objectiveQuestions().length }} items</span>
+        </div>
+
+        @if (objectiveQuestions().length > 0) {
+          <div class="review-grid">
+            @for (question of objectiveQuestions(); track $index) {
+              <app-question-review-card [question]="question" [index]="$index + 1" />
+            }
+          </div>
+        } @else {
+          <div class="empty-panel">
+            <i class="bi bi-ui-checks-grid"></i>
+            <p>No objective question details were returned for this exam.</p>
+          </div>
+        }
+      </section>
+
+      <section class="review-section">
+        <div class="section-heading">
+          <div>
+            <p class="section-eyebrow">Essay Questions</p>
+            <h2>Written Answers</h2>
+          </div>
+          <span class="section-meta">{{ essayQuestions().length }} items</span>
+        </div>
+
+        @if (essayQuestions().length > 0) {
+          <div class="essay-grid">
+            @for (question of essayQuestions(); track $index) {
+              <app-essay-review-card [question]="question" [index]="$index + 1" />
+            }
+          </div>
+        } @else {
+          <div class="empty-panel">
+            <i class="bi bi-journal-text"></i>
+            <p>This exam does not include essay answers to review.</p>
+          </div>
+        }
+      </section>
+    </div>
+  } @else {
+    <section class="state-card empty-state">
+      <div class="state-icon">
+        <i class="bi bi-journal-x"></i>
+      </div>
+      <h2>No result data found</h2>
+      <p>The selected exam does not have available result details yet.</p>
+    </section>
+  }
+</section>

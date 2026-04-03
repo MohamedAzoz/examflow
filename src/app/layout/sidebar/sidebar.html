@@ -56,11 +56,10 @@
     <ul class="nav-list">
       @for (item of navItems(); track item.route) {
         <li class="nav-item">
-          <button
-            type="button"
+          <a
+            [routerLink]="['/main',this.userRole().toLowerCase(), item.route]"
             class="nav-link"
-            (click)="onNavClick(item.route)"
-            [class.active]="activeRoute() === item.route"
+            routerLinkActive="active"
             [attr.aria-current]="activeRoute() === item.route ? 'page' : null"
           >
             @if (isStudent()) {
@@ -75,7 +74,7 @@
               />
             }
             <span class="nav-label">{{ item.label }}</span>
-          </button>
+          </a>
         </li>
       }
     </ul>

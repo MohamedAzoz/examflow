@@ -8,6 +8,7 @@ import { IavailableExams } from '../../../data/models/StudentExam/IavailableExam
 import { IstartExam } from '../../../data/models/StudentExam/IstartExam';
 import { IsendAnswer } from '../../../data/models/StudentExam/isend-answer';
 import { data, IpastExams } from '../../../data/models/StudentExam/IpastExams';
+import { IResultExam } from '../../../data/models/StudentExam/IResultExam';
 
 @Injectable({
   providedIn: 'root',
@@ -28,6 +29,12 @@ export class StudentExamFacade {
   readonly isLoading = signal<boolean>(false);
   readonly errorMessage = signal<string | null>(null);
 
+  // getExamResults
+  readonly examResults = signal<IResultExam | null>(null);
+
+  readonly totalPages = signal<number>(0);
+  readonly currentPage = signal<number>(1);
+  readonly pageSize = signal<number>(6);
 
   /** Active Reactive Timer signal */
   private readonly currentTime = signal<number>(Date.now());
@@ -133,7 +140,24 @@ export class StudentExamFacade {
       });
     }
   }
-
+  getExamResults(examId: number): void {
+    if (this.isOnline()) {
+      this.isLoading.set(true);
+      this.errorMessage.set(null);
+      this.studentExamService.getExamResults(examId).subscribe({
+        next: (results) => {
+          this.examResults.set(results);
+          this.isLoading.set(false);
+        },
+        error: (error) => {
+          this.isLoading.set(false);
+          this.examResults.set(null);
+          this.errorMessage.set('Failed to load exam results.');
+          console.error(error);
+        },
+      });
+    }
+  }
   submitExam(examId: number): any {
     if (this.isOnline()) {
       this.isLoading.set(true);
@@ -165,18 +189,23 @@ export class StudentExamFacade {
     return of(null);
   }
 
-  loadPastExams(): void {
+  loadPastExams(page: number = 1, pageSize: number = 2): void {
     if (this.isOnline()) {
       this.isLoading.set(true);
       this.errorMessage.set(null);
-      this.studentExamService.getPastExams().subscribe({
+      this.studentExamService.getPastExams(page, pageSize).subscribe({
         next: (exams: IpastExams) => {
           this.pastExams.set(exams.data);
           this.isLoading.set(false);
+          this.totalPages.set(exams.totalSize);
+          this.currentPage.set(exams.pageIndex);
+          this.pageSize.set(exams.pageSize);
         },
         error: (error) => {
           this.isLoading.set(false);
-          this.errorMessage.set('Failed to load past exams.');
+          this.pastExams.set([]);
+          this.totalPages.set(0);
+          this.errorMessage.set(error.message);
           console.error(error);
         },
       });
