@@ -1,6 +1,6 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { StudentExamFacade } from '../services/student-exam-facade';
+import { StudentExamFacade } from '../../services/student-exam-facade';
 import { ResultCardComponent } from './components/result-card/result-card.component';
 
 @Component({
@@ -19,7 +19,7 @@ export class PastResultsComponent implements OnInit {
   currentPage = this.facade.currentPage;
   pageSize = this.facade.pageSize;
   totalPages = this.facade.totalPages;
-  firstIndex =signal<number>(1);
+  firstIndex = signal<number>(1);
   size = signal<number>(6);
 
   pages = computed(() => {

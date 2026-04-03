@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, computed, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ExamStatus } from '../../../../../../data/enums/ExamStatus';
 import { getExamStatusMeta } from '../../../../../../shared/utils/exam-status-meta';
@@ -11,52 +11,62 @@ import { getExamStatusMeta } from '../../../../../../shared/utils/exam-status-me
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResultSummaryCardComponent {
-  @Input({ required: true }) examTitle!: string;
-  @Input({ required: true }) studentScore!: number;
-  @Input({ required: true }) examMaxScore!: number;
-  @Input({ required: true }) timeTaken!: number;
-  @Input({ required: true }) examStatus!: ExamStatus;
-  @Input({ required: true }) objectiveCount!: number;
-  @Input({ required: true }) essayCount!: number;
+  examTitle = input.required<string>();
+  studentScore = input.required<number>();
+  examMaxScore = input.required<number>();
+  timeTaken = input.required<number>();
+  examStatus = input.required<ExamStatus>();
+  objectiveCount = input.required<number>();
+  essayCount = input.required<number>();
 
   protected readonly percentage = computed(() => {
-    if (!this.examMaxScore) {
+    if (!this.examMaxScore()) {
       return 0;
     }
 
-    return Math.max(0, Math.min(100, (this.studentScore / this.examMaxScore) * 100));
+    return Math.max(0, Math.min(100, (this.studentScore() / this.examMaxScore()) * 100));
   });
 
   protected readonly grade = computed(() => {
     const percentage = this.percentage();
 
-    if (percentage >= 97) return 'A+';
-    if (percentage >= 93) return 'A';
-    if (percentage >= 90) return 'A-';
-    if (percentage >= 87) return 'B+';
-    if (percentage >= 83) return 'B';
-    if (percentage >= 80) return 'B-';
-    if (percentage >= 77) return 'C+';
-    if (percentage >= 73) return 'C';
-    if (percentage >= 70) return 'C-';
-    if (percentage >= 67) return 'D+';
-    if (percentage >= 63) return 'D';
-    if (percentage >= 60) return 'D-';
+    if (percentage >= 95) return 'A+';
+    if (percentage >= 90) return 'A';
+    if (percentage >= 85) return 'B+';
+    if (percentage >= 80) return 'B';
+    if (percentage >= 75) return 'C+';
+    if (percentage >= 70) return 'C';
+    if (percentage >= 60) return 'D+';
+    if (percentage >= 50) return 'D';
     return 'F';
   });
 
   protected readonly progressStyle = computed(() => `${this.percentage()}%`);
-  protected readonly statusMeta = computed(() => getExamStatusMeta(this.examStatus));
+  protected readonly statusMeta = computed(() => getExamStatusMeta(this.examStatus()));
+
+  protected readonly gradeClass = computed(() => {
+    const percentage = this.percentage();
+    if (percentage >= 90) return 'grade-a';
+    if (percentage >= 80) return 'grade-b';
+    if (percentage >= 70) return 'grade-c';
+    if (percentage >= 50) return 'grade-d';
+    return 'grade-f';
+  });
 
   protected formatTime(totalMinutes: number): string {
     const safeValue = Math.max(0, totalMinutes);
-    const hours = Math.floor(safeValue / 60);
-    const minutes = safeValue % 60;
+    let hours = Math.floor(safeValue / 60);
+    let minutes = Math.round(safeValue % 60);
+
+    do {
+      hours += 1;
+      minutes -= 60;
+    } while (minutes >= 60);
 
     if (hours === 0) {
-      return `${minutes} min`;
+      return `${minutes}m`;
     }
 
-    return `${hours}h ${minutes}m`;
+    return `${hours}h ${Math.round(minutes)}m`;
   }
 }

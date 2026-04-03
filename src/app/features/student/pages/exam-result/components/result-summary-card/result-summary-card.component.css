@@ -23,6 +23,7 @@
 
 .score-ring {
   --progress: 0%;
+  --score-color: var(--success);
   width: min(100%, 15rem);
   aspect-ratio: 1;
   padding: 1rem;
@@ -31,7 +32,7 @@
   place-items: center;
   background:
     radial-gradient(closest-side, rgba(255, 255, 255, 0.95) 73%, transparent 74% 100%),
-    conic-gradient(var(--success) var(--progress), rgba(191, 200, 202, 0.5) 0);
+    conic-gradient(var(--score-color) var(--progress), rgba(191, 200, 202, 0.5) 0);
   box-shadow: inset 0 0 0 1px rgba(19, 98, 108, 0.06);
 }
 
@@ -66,7 +67,7 @@
 }
 
 .score-percentage {
-  color: var(--success);
+  color: var(--score-color, var(--success));
   font-weight: 800;
   font-size: 0.95rem;
 }
@@ -114,31 +115,40 @@
   background: var(--surface-container-low);
 }
 
-.status-pill.status-absent {
+.status-absent {
   color: var(--on-surface-variant);
 }
 
-.status-pill.status-progress {
-  color: var(--primary);
+.status-progress {
+  color: var(--blue);
 }
 
-.status-pill.status-submitted,
-.status-pill.status-completed {
+.status-submitted{
+  color: var(--secondary);
+}
+.status-completed {
   color: var(--success);
 }
 
-.status-pill.status-evaluating {
+.status-evaluating {
   color: var(--orange);
 }
 
-.status-pill.status-pending {
+.status-pending {
   color: var(--secondary);
 }
 
 .grade-pill {
-  background: rgba(41, 158, 91, 0.12);
-  color: var(--success);
+  background: var(--score-bg, rgba(41, 158, 91, 0.12));
+  color: var(--score-color, var(--success));
 }
+
+/* Grade Color Logic Mapping */
+.grade-a { --score-color: var(--success); --score-bg: rgba(41, 158, 91, 0.12); }
+.grade-b { --score-color: var(--blue); --score-bg: rgba(117, 142, 253, 0.12); }
+.grade-c { --score-color: var(--orange); --score-bg: rgba(245, 158, 11, 0.12); }
+.grade-d { --score-color: var(--secondary); --score-bg: rgba(0, 106, 98, 0.12); }
+.grade-f { --score-color: var(--error); --score-bg: rgba(186, 26, 26, 0.12); }
 
 .stats-grid {
   display: grid;
@@ -154,7 +164,7 @@
 }
 
 .stat-tile.accent {
-  background: linear-gradient(135deg, rgba(19, 98, 108, 0.12), rgba(98, 206, 194, 0.12));
+  background: var(--score-bg, linear-gradient(135deg, rgba(19, 98, 108, 0.12), rgba(98, 206, 194, 0.12)));
 }
 
 .stat-label {

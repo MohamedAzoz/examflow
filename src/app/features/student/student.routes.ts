@@ -32,7 +32,7 @@ export const studentRoutes: Routes = [
       {
         path: 'past-results',
         loadComponent: () =>
-          import('./past-results/past-results.component').then((m) => m.PastResultsComponent),
+          import('./pages/past-results/past-results.component').then((m) => m.PastResultsComponent),
       },
       {
         path: 'past-results/:examId',

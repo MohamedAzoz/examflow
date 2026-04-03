@@ -2,48 +2,49 @@
   <div class="score-panel">
     <div
       class="score-ring"
+      [class]="gradeClass()"
       [style.--progress]="progressStyle()"
       [attr.aria-label]="'Score percentage ' + percentage() + '%'"
     >
       <div class="score-core">
         <span class="score-label">Score</span>
         <strong class="score-value">
-          {{ studentScore | number : '1.0-1' }}<span>/{{ examMaxScore }}</span>
+          {{ studentScore() | number: '1.0-1' }}<span>/{{ examMaxScore() }}</span>
         </strong>
-        <small class="score-percentage">{{ percentage() | number : '1.0-0' }}%</small>
+        <small class="score-percentage">{{ percentage() | number: '1.0-0' }}%</small>
       </div>
     </div>
   </div>
 
   <div class="summary-content">
     <p class="summary-kicker">Exam Insight</p>
-    <h2 class="summary-title">{{ examTitle }}</h2>
+    <h2 class="summary-title">{{ examTitle() }}</h2>
 
     <div class="status-row">
       <span class="status-pill" [class]="statusMeta().colorClass">
         <i class="bi" [class]="statusMeta().icon"></i>
         {{ statusMeta().label }}
       </span>
-      <span class="grade-pill">{{ grade() }}</span>
+      <span class="grade-pill" [class]="gradeClass()">{{ grade() }}</span>
     </div>
 
     <div class="stats-grid">
       <article class="stat-tile">
         <span class="stat-label">Time Taken</span>
-        <strong class="stat-value">{{ formatTime(timeTaken) }}</strong>
+        <strong class="stat-value">{{ formatTime(timeTaken()) }}</strong>
       </article>
 
       <article class="stat-tile">
         <span class="stat-label">Objective Questions</span>
-        <strong class="stat-value">{{ objectiveCount }}</strong>
+        <strong class="stat-value">{{ objectiveCount() }}</strong>
       </article>
 
       <article class="stat-tile">
         <span class="stat-label">Essay Questions</span>
-        <strong class="stat-value">{{ essayCount }}</strong>
+        <strong class="stat-value">{{ essayCount() }}</strong>
       </article>
 
-      <article class="stat-tile accent">
+      <article class="stat-tile accent" [class]="gradeClass()">
         <span class="stat-label">Estimated Grade</span>
         <strong class="stat-value">{{ grade() }}</strong>
       </article>
