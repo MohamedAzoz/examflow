@@ -23,7 +23,7 @@ import { Component, input, output, ChangeDetectionStrategy, computed } from '@an
         }
       </div>
 
-      <button type="button" class="submit-btn" (click)="submit.emit()" [disabled]="!isDisabled()">
+      <button type="button" class="submit-btn" (click)="submit.emit()" [disabled]="isDisabled()">
         Submit Exam
       </button>
 
@@ -184,5 +184,7 @@ export class QuestionMapComponent {
 
   readonly jumpTo = output<number>();
   readonly submit = output<void>();
-  readonly isDisabled = computed(() => this.availableTimeToStart() <= Math.floor(new Date().getTime() / 1000));
+  readonly isDisabled = computed(
+    () => this.availableTimeToStart() > 0,
+  );
 }

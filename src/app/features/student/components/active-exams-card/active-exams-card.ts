@@ -11,7 +11,9 @@ import { StudentExamFacade } from '../../services/student-exam-facade';
 export class ActiveExamsCardComponent {
   private readonly facade = inject(StudentExamFacade);
   // availableTimeToStart
-  readonly IsAvailableToStart = computed(() => this.facade.availableTimeToStart() > 0);
+  readonly IsAvailableToStart = computed(
+    () => this.facade.availableTimeToStart() <= 0,
+  );
 
   /** The currently active exam (null if none) */
   readonly activeExam = input<IavailableExams | null>(null);

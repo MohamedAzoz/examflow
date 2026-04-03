@@ -5,7 +5,7 @@
       <button
         class="active-exam-badge"
         (click)="joinExam(exam.examId)"
-        [disabled]="!IsAvailableToStart()"
+        [disabled]="IsAvailableToStart()"
       >
         <span class="exam-label">JOIN EXAM: {{ exam.courseName }} ( {{ exam.title }} )</span>
         <span class="countdown">{{ countdown() }}</span>

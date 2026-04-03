@@ -60,11 +60,16 @@ export class StudentExamFacade {
   });
 
   readonly availableTimeToStart = computed<number>(() => {
-    const exam = this.activeExam();
+    const active = this.activeExam();
+    const current = this.currentExam()?.exam;
+    
+    // Prioritize current ongoing exam info if available
+    const exam = current || active;
+    
     if (!exam || !exam.startTime) return 0;
     const start = new Date(exam.startTime).getTime();
-    const joinWindowEnd = start + exam.durationMinutes * 60 * this.percentage;
-    return Math.max(0, Math.floor(joinWindowEnd - this.currentTime()));
+    const joinWindowEnd = start + exam.durationMinutes * 60_000 * this.percentage;
+    return Math.floor(joinWindowEnd - this.currentTime());
   });
 
   /**
@@ -172,7 +177,7 @@ export class StudentExamFacade {
           this.localStorage.remove(`sync_queue_${examId}`);
           this.localStorage.remove(`answers_cache_${examId}`);
           this.toggleService.examMode(false);
-          this.router.navigate(['/main/student']);
+          this.router.navigate(['/main/student/past-results']);
         }),
       );
     }

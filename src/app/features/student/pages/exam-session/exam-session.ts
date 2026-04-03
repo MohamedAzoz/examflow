@@ -163,6 +163,7 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
       const h = Math.floor(remaining / 3600);
       const m = Math.floor((remaining % 3600) / 60);
       const s = remaining % 60;
+      this.facade.updateTime();
       this.countdown.set(
         `${h.toString().padStart(2, '0')}:${m
           .toString()
