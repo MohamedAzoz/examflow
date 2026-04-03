@@ -321,7 +321,11 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.facade.submitExam(examId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
+    this.facade.submitExam(examId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.router.navigate(['/main/student/past-results']);
+      }
+    });
   }
 
   /* ---------------- Initialization Methods ---------------- */
