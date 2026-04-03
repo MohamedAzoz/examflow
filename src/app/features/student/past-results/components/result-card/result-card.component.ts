@@ -1,4 +1,4 @@
-import { Component, Input, computed } from '@angular/core';
+import { Component, Input, computed, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { data } from '../../../../../data/models/StudentExam/IpastExams';
@@ -12,6 +12,8 @@ import { getExamStatusMeta } from '../../../../../shared/utils/exam-status-meta'
 })
 export class ResultCardComponent {
   @Input({ required: true }) result!: data;
+  
+  
 
   protected readonly statusMeta = computed(() => getExamStatusMeta(this.result.examStatus));
 

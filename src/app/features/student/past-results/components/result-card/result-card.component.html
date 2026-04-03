@@ -4,8 +4,8 @@
       <i [class]="statusMeta().icon"></i>
       {{ statusMeta().label }}
     </span>
-    <div class="card-icon">
-      <i class="bi bi-journal-check"></i>
+    <div class="card-icon" class="{{statusMeta().colorClass}}">
+      <i class="bi" [class]="statusMeta().icon"></i>
     </div>
   </div>
 

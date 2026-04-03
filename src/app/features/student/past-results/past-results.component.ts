@@ -5,7 +5,6 @@ import { ResultCardComponent } from './components/result-card/result-card.compon
 
 @Component({
   selector: 'app-past-results',
-  standalone: true,
   imports: [CommonModule, ResultCardComponent],
   templateUrl: './past-results.component.html',
   styleUrl: './past-results.component.css',
@@ -13,13 +12,15 @@ import { ResultCardComponent } from './components/result-card/result-card.compon
 export class PastResultsComponent implements OnInit {
   private readonly facade = inject(StudentExamFacade);
 
-  readonly pastExams = this.facade.pastExams;
+  readonly pastExams = this.facade.pastExamResult;
   readonly isLoading = this.facade.isLoading;
   readonly errorMessage = this.facade.errorMessage;
 
   currentPage = this.facade.currentPage;
   pageSize = this.facade.pageSize;
   totalPages = this.facade.totalPages;
+  firstIndex =signal<number>(1);
+  size = signal<number>(6);
 
   pages = computed(() => {
     const count = Math.ceil(this.totalPages() / this.pageSize());
@@ -27,18 +28,18 @@ export class PastResultsComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    if (this.pastExams().length === 0) {
-      this.loadResults();
-    }
+    this.loadResults(this.firstIndex(), this.size());
   }
 
-  loadResults(): void {
-    this.facade.loadPastExams(this.currentPage(), this.pageSize());
+  loadResults(firstIndex: number, size: number): void {
+    this.facade.loadPastExams(firstIndex, size);
   }
 
   changePage(page: number): void {
     const total = Math.ceil(this.totalPages() / this.pageSize());
     if (page < 1 || page > total || page === this.currentPage()) return;
     this.facade.loadPastExams(page, this.pageSize());
+    this.firstIndex.set(page);
+    this.size.set(this.pageSize());
   }
 }

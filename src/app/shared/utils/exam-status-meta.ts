@@ -56,7 +56,7 @@ export const EXAM_STATUS_MAP: Record<ExamStatus, ExamStatusMeta> = {
   [ExamStatus.NotStarted]: {
     label: 'Absent',
     icon: 'bi-dash-circle',
-    colorClass: 'status-absent',
+    colorClass: 'status-absent', 
     borderColor: 'border-absent',
   },
   [ExamStatus.InProgress]: {

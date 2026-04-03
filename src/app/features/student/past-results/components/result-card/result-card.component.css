@@ -44,17 +44,17 @@
   gap: 0.4rem;
 }
 
-.status-absent .status-badge { color: var(--on-surface-variant); }
-.status-progress .status-badge { color: var(--primary); }
-.status-submitted .status-badge { color: var(--success); }
-.status-evaluating .status-badge { color: var(--orange); }
-.status-pending .status-badge { color: var(--secondary-fixed-dim); }
-.status-completed .status-badge { color: var(--success); }
+.status-absent .status-badge, .status-absent .card-icon { color: var(--on-surface-variant); }
+.status-progress .status-badge, .status-progress .card-icon { color: var(--primary); }
+.status-submitted .status-badge, .status-submitted .card-icon { color: var(--success); }
+.status-evaluating .status-badge, .status-evaluating .card-icon { color: var(--orange); }
+.status-pending .status-badge, .status-pending .card-icon { color: var(--secondary-fixed-dim); }
+.status-completed .status-badge, .status-completed .card-icon { color: var(--success); }
 
 .card-icon {
   font-size: 1.5rem;
   color: var(--on-surface-variant);
-  opacity: 0.3;
+  font-weight: 900;
 }
 
 .card-body {

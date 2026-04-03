@@ -24,6 +24,7 @@ export class StudentExamFacade {
   /** All available exams from the API */
   readonly upcomingExams = signal<IavailableExams[]>([]);
   readonly pastExams = signal<data[]>([]);
+  readonly pastExamResult = signal<data[]>([]);
 
   readonly currentExam = signal<IstartExam | null>(null);
   readonly isLoading = signal<boolean>(false);
@@ -199,12 +200,14 @@ export class StudentExamFacade {
           this.isLoading.set(false);
           this.totalPages.set(exams.totalSize);
           this.currentPage.set(exams.pageIndex);
+          this.pastExamResult.set(exams.data);
           this.pageSize.set(exams.pageSize);
         },
         error: (error) => {
           this.isLoading.set(false);
           this.pastExams.set([]);
           this.totalPages.set(0);
+          this.pastExamResult.set([]);
           this.errorMessage.set(error.message);
           console.error(error);
         },

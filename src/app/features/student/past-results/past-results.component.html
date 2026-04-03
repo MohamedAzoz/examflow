@@ -17,13 +17,13 @@
       <div class="error-state">
         <span class="material-symbols-outlined">error</span>
         <p>{{ errorMessage() }}</p>
-        <button class="btn-primary" (click)="loadResults()">Retry</button>
+        <button class="btn-primary" (click)="loadResults(firstIndex(), size())">Retry</button>
       </div>
     }
 
     @if (!isLoading() && !errorMessage()) {
       <div class="results-grid">
-        @for (result of pastExams(); track result.examId) {
+        @for (result of pastExams(); track $index) {
           <app-result-card [result]="result"> </app-result-card>
         }
       </div>
@@ -43,7 +43,7 @@
       <footer class="pagination-footer">
         <div class="pagination-controls">
           <button class="page-btn prev" (click)="changePage(currentPage() - 1)" [disabled]="currentPage() === 1">
-            <i class="material-symbols-outlined bi bi-chevron-left"></i>
+            <i class="bi bi-chevron-left"></i>
           </button>
           
           @for (page of pages(); track $index) {
