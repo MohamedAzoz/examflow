@@ -1,84 +1,49 @@
-
 .dashboard-container {
-  margin-top: 20px;
-  width: 96%;
-  padding-left: 20px;
+  width: 98%;
+  margin-top: 2%;
+  margin-left: 1%;
 }
 
-.dashboard-title {
-  font-weight: 500;
-  margin-bottom: 1.75rem;
-  font-size: 3rem;
-  word-spacing: 0.2rem;
-  letter-spacing: 0.08rem;
-  
-}
-
-/* ─── Responsive Grid ─── */
 .dashboard-grid {
-  width: 100%;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.6rem 1.4rem;
+  grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+  grid-template-areas:
+    'upcoming past'
+    'active past';
+  gap: 1.4rem;
+  align-items: stretch;
 }
 
-/* ─── Columns ─── */
-.left-column {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+.upcoming-slot {
+  grid-area: upcoming;
 }
 
-.right-column {
-  display: flex;
-  flex-direction: column;
+.past-slot {
+  grid-area: past;
 }
 
-/* ─── Stretching Behavior ─── */
-app-past-exams-card {
+.active-slot {
+  grid-area: active;
+}
+
+.upcoming-slot app-upcoming-exams-card,
+.past-slot app-past-exams-card,
+.active-slot app-active-exams-card {
   display: block;
-  flex: 1;
-}
-
-app-upcoming-exams-card {
-  display: block;
-  flex: 1;
-}
-
-app-active-exams-card {
-  display: block;
-  flex-shrink: 0;
-}
-
-/* Ensure the inner UI card expands to fill the Host Component completely */
-::ng-deep app-past-exams-card > .exam-card,
-::ng-deep app-upcoming-exams-card > .exam-card {
   height: 100%;
 }
 
-/* ─── Mobile: single column ─── */
-@media (max-width: 768px) {
+@media (max-width: 992px) {
   .dashboard-container {
-    padding-left: 8px;
+    width: 100%;
+    margin-left: 0;
   }
   .dashboard-grid {
     grid-template-columns: 1fr;
+    grid-template-areas:
+      'upcoming'
+      'active'
+      'past';
   }
 
-  .dashboard-title {
-    font-size: 1.4rem;
-    margin-bottom: 1.25rem;
-  }
-}
-
-/* ─── Tablet ─── */
-@media (min-width: 769px) and (max-width: 992px) {
-  .dashboard-container {
-    margin-top: 5px;
-    padding-left: 12px;
-  }
-  .dashboard-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 1.25rem;
-  }
 }

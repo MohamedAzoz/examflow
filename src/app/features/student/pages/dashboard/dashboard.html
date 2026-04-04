@@ -1,19 +1,18 @@
 <div class="dashboard-container">
-  <h1 class="dashboard-title">Student Dashboard</h1>
-
   <div class="dashboard-grid">
-    <!-- Left Column: Upcoming & Active -->
-    <!-- <div class="left-column"> -->
+    <div class="upcoming-slot">
       <app-upcoming-exams-card [exams]="facade.futureExams()" />
-    <!-- </div> -->
-    
-    <!-- Right Column: Past Exams -->
-    <!-- <div class="right-column"> -->
+    </div>
+
+    <div class="past-slot">
       <app-past-exams-card [exams]="facade.pastExams()" />
-    <!-- </div> -->
+    </div>
+
+    <div class="active-slot">
     <app-active-exams-card
       [activeExam]="facade.activeExam()"
       [countdown]="facade.activeExamCountdown()"
     />
+    </div>
   </div>
-</div> 
+</div>

@@ -1,5 +1,5 @@
 import { inject, Injectable, signal, computed } from '@angular/core';
-import { finalize, of, Subject } from 'rxjs';
+import { finalize, of, tap } from 'rxjs';
 import { Toggle } from '../../../core/services/toggle';
 import { LocalStorage } from '../../../core/services/local-storage';
 import { StudentExam } from '../../../data/services/student-exam';
@@ -9,6 +9,7 @@ import { IstartExam } from '../../../data/models/StudentExam/IstartExam';
 import { IsendAnswer } from '../../../data/models/StudentExam/isend-answer';
 import { data, IpastExams } from '../../../data/models/StudentExam/IpastExams';
 import { IResultExam } from '../../../data/models/StudentExam/IResultExam';
+import { IsubmitExam } from '../../../data/models/StudentExam/IsubmitExam';
 
 @Injectable({
   providedIn: 'root',
@@ -62,10 +63,10 @@ export class StudentExamFacade {
   readonly availableTimeToStart = computed<number>(() => {
     const active = this.activeExam();
     const current = this.currentExam()?.exam;
-    
+
     // Prioritize current ongoing exam info if available
     const exam = current || active;
-    
+
     if (!exam || !exam.startTime) return 0;
     const start = new Date(exam.startTime).getTime();
     const joinWindowEnd = start + exam.durationMinutes * 60_000 * this.percentage;
@@ -164,20 +165,25 @@ export class StudentExamFacade {
       });
     }
   }
-  submitExam(examId: number): any {
+  submitExam(exam: IsubmitExam): any {
     if (this.isOnline()) {
       this.isLoading.set(true);
       this.errorMessage.set(null);
-      return this.studentExamService.submitExam(examId).pipe(
+      return this.studentExamService.submitExam(exam).pipe(
+        tap({
+          next: () => {
+            this.localStorage.remove(`exam_start_${exam.examId}`);
+            this.localStorage.remove(`last_q_${exam.examId}`);
+            this.localStorage.remove(`marked_q_${exam.examId}`);
+            this.localStorage.remove(`sync_queue_${exam.examId}`);
+            this.localStorage.remove(`answers_cache_${exam.examId}`);
+            this.localStorage.remove(`anti_cheat_${exam.examId}`);
+            this.toggleService.examMode(false);
+            this.router.navigate(['/main/student/past-results']);
+          },
+        }),
         finalize(() => {
           this.isLoading.set(false);
-          this.localStorage.remove(`exam_start_${examId}`);
-          this.localStorage.remove(`last_q_${examId}`);
-          this.localStorage.remove(`marked_q_${examId}`);
-          this.localStorage.remove(`sync_queue_${examId}`);
-          this.localStorage.remove(`answers_cache_${examId}`);
-          this.toggleService.examMode(false);
-          this.router.navigate(['/main/student/past-results']);
         }),
       );
     }
@@ -222,8 +228,18 @@ export class StudentExamFacade {
 }
 
 export function connectivitySignal() {
-  const isOnline = signal(navigator.onLine);
-  window.addEventListener('online', () => isOnline.set(true));
-  window.addEventListener('offline', () => isOnline.set(false));
-  return isOnline;
+  if (!connectivityInitialized) {
+    connectivityInitialized = true;
+    if (typeof window !== 'undefined') {
+      window.addEventListener('online', () => sharedConnectivity.set(true));
+      window.addEventListener('offline', () => sharedConnectivity.set(false));
+    }
+  }
+
+  return sharedConnectivity;
 }
+
+const sharedConnectivity = signal(
+  typeof navigator !== 'undefined' ? navigator.onLine : true,
+);
+let connectivityInitialized = false;

@@ -1,13 +1,28 @@
-<div class="card exam-card">
-  <div class="card-body">
+<section class="exam-card">
+  <header class="card-header">
     <h5 class="card-title">Upcoming Exams</h5>
-    @for (exam of exams(); track exam.examId) {
-      <div class="exam-item">
-        <i class="bi bi-clock text-muted"></i>
-        <span>{{ exam.courseName }} - {{ exam.startTime | date: 'MMM d, h:mm a' }}</span>
+    <span class="card-icon" aria-hidden="true">
+      <i class="bi bi-calendar-event"></i>
+    </span>
+  </header>
+
+  @if (exams().length > 0) {
+    <article class="upcoming-item">
+      <div class="exam-symbol" aria-hidden="true">
+        <i class="bi bi-link-45deg"></i>
       </div>
-    } @empty {
-      <p class="empty-text">No upcoming exams</p>
-    }
-  </div>
-</div>
+      <div class="exam-info">
+        <h6 class="exam-name">{{ exams()[0].title }}</h6>
+        <p class="exam-meta">Scheduled for {{ exams()[0].startTime | date: 'MMM d' }}</p>
+      </div>
+      <div class="exam-time">
+        <span class="time-value">{{ exams()[0].startTime | date: 'MMM d, h:mm a' }}</span>
+        <span class="time-status">Starting soon</span>
+      </div>
+    </article>
+  } @else {
+    <p class="empty">
+      <i class="bi bi-mortarboard"></i>
+    </p>
+  }
+</section>

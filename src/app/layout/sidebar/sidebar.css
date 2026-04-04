@@ -213,8 +213,8 @@
 }
 
 .sidebar.student-mode .active {
-  background: #CED4DA;
-  color: var(--primary);
+  background:var(--primary);
+  color: #ffffff;
   box-shadow: none;
   font-weight: 600;
 }

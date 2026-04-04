@@ -1,17 +1,29 @@
-<div class="card exam-card">
-  <div class="card-body">
-    <h5 class="card-title">Active Exams</h5>
-    @if (activeExam(); as exam) {
+@if (activeExam(); as exam) {
+  <section class="active-exam-card">
+    <span class="active-tag">Active Exam</span>
+    <h5 class="exam-title">
+      {{ exam.courseName }}
+      <span class="title-highlight">{{ exam.title }}</span>
+    </h5>
+
+    <div class="card-footer">
+      <div class="time-box">
+        <span class="time-label">Time Remaining</span>
+        <span class="countdown">{{ countdown() }}</span>
+      </div>
+
       <button
-        class="active-exam-badge"
+        type="button"
+        class="join-btn"
         (click)="joinExam(exam.examId)"
         [disabled]="IsAvailableToStart()"
       >
-        <span class="exam-label">JOIN EXAM: {{ exam.courseName }} ( {{ exam.title }} )</span>
-        <span class="countdown">{{ countdown() }}</span>
+        Join Exam
       </button>
-    } @else {
-      <p class="empty-text">No active exams</p>
-    }
-  </div>
-</div>
+    </div>
+  </section>
+} @else {
+  <section class="empty-card">
+    <p class="empty-text">No active exams</p>
+  </section>
+}

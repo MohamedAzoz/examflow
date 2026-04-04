@@ -54,10 +54,11 @@
   <!-- Navigation -->
   <nav class="sidebar-nav" role="navigation" aria-label="Main navigation">
     <ul class="nav-list">
-      @for (item of navItems(); track item.route) {
+      @for (item of navItems(); track $index) {
         <li class="nav-item">
           <a
-            [routerLink]="['/main',this.userRole().toLowerCase(), item.route]"
+            [routerLink]="['/main', this.userRole().toLowerCase(), item.route]"
+            (click)="onNavClick(item.route)"
             class="nav-link"
             routerLinkActive="active"
             [attr.aria-current]="activeRoute() === item.route ? 'page' : null"

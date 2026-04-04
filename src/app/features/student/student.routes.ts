@@ -6,11 +6,11 @@ export const studentRoutes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'dashboard',
+        redirectTo: 'stdashboard',
         pathMatch: 'full',
       },
       {
-        path: 'dashboard',
+        path: 'stdashboard',
         loadComponent: () =>
           import('./pages/dashboard/dashboard').then((m) => m.DashboardComponent),
       },

@@ -19,8 +19,10 @@ export class PastExamsCardComponent {
     switch (status) {
       case ExamStatus.NotStarted:
         return 'Absent';
+      case ExamStatus.InProgress:
+        return 'In Progress';
       case ExamStatus.Completed:
-        return 'Submitted';
+        return 'Completed';
       case ExamStatus.Flushed:
         return 'Evaluating';
       case ExamStatus.PendingEassysManualGrading:
@@ -31,4 +33,5 @@ export class PastExamsCardComponent {
         return 'Unknown';
     }
   }
+
 }

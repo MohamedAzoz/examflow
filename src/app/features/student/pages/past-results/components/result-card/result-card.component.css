@@ -15,13 +15,18 @@
   transform: translateY(-4px);
   box-shadow: 0 12px 32px rgba(22, 28, 33, 0.08);
 }
-
+/*
+  Completed = 2, // تم ارسال الامتحان
+  Flushed = 3, // جاري التصحيح
+  PendingEassysManualGrading = 4, // تم الانتهاء من الامتحان و ينتظر تصحيح المقالى
+  AllGraded = 5,
+*/
 /* Status Variants */
-.status-absent { border-top-color: var(--on-surface-variant); }
+.status-absent { border-top-color: var(--danger-color); }
 .status-progress { border-top-color: var(--primary); }
-.status-submitted { border-top-color: var(--success); }
+.status-submitted { border-top-color:  rgb(102, 196, 102); }
 .status-evaluating { border-top-color: var(--orange); }
-.status-pending { border-top-color: var(--secondary-fixed-dim); }
+.status-pending { border-top-color:#7c3aed; }
 .status-completed { border-top-color: var(--success); }
 
 .card-header {
@@ -44,11 +49,11 @@
   gap: 0.4rem;
 }
 
-.status-absent .status-badge, .status-absent .card-icon { color: var(--on-surface-variant); }
+.status-absent .status-badge, .status-absent .card-icon { color: var(--danger-color); }
 .status-progress .status-badge, .status-progress .card-icon { color: var(--primary); }
-.status-submitted .status-badge, .status-submitted .card-icon { color: var(--success); }
+.status-submitted .status-badge, .status-submitted .card-icon { color: rgb(102, 196, 102); }
 .status-evaluating .status-badge, .status-evaluating .card-icon { color: var(--orange); }
-.status-pending .status-badge, .status-pending .card-icon { color: var(--secondary-fixed-dim); }
+.status-pending .status-badge, .status-pending .card-icon { color: #7c3aed; }
 .status-completed .status-badge, .status-completed .card-icon { color: var(--success); }
 
 .card-icon {
@@ -129,4 +134,5 @@
 @media (max-width: 640px) {
   .score-value { font-size: 1.5rem; }
   .exam-title { font-size: 1rem; }
+  .result-card { padding: 1rem; }
 }

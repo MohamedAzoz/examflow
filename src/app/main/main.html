@@ -20,8 +20,8 @@
 
     <div class="main-area">
 
-      <!-- Header: hidden for students -->
-      @if (!isStudent()) {
+      <!-- Header -->
+      @if (!toggle.isExamMode()) {
         <header class="top-header">
           <div class="header-left">
             <button
@@ -46,7 +46,7 @@
           }
         </header>
       }
-
+<!--
       @if (isStudent() && isMobile() && !toggle.isExamMode()) {
         <header class="top-header">
           <div class="header-left">
@@ -71,7 +71,7 @@
             </div>
           }
         </header>
-      }
+      } -->
 
       <!-- Page content -->
       <main class="page-content">

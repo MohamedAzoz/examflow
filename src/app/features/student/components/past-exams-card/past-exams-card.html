@@ -1,44 +1,38 @@
-<div class="card exam-card">
-  <div class="card-body">
+<section class="exam-card">
+  <header class="card-header">
     <h5 class="card-title">Past Exams</h5>
-    @for (exam of exams(); track $index) {
-      @if (exam.examStatus !== ExamStatus.InProgress) {
-        <div 
-          class="exam-item"
-          [class.not-started]="exam.examStatus === ExamStatus.NotStarted"
-          [class.completed]="exam.examStatus === ExamStatus.Completed"
-          [class.flushed]="exam.examStatus === ExamStatus.Flushed"
-          [class.pending]="exam.examStatus === ExamStatus.PendingEassysManualGrading"
-          [class.all-graded]="exam.examStatus === ExamStatus.AllGraded"
-        >
-          <div class="exam-info">
-            @switch (exam.examStatus) {
-              @case (ExamStatus.NotStarted) {
-                <i class="bi bi-dash-circle"></i>
-              }
-              @case (ExamStatus.Completed) {
-                <i class="bi bi-check-circle text-success"></i>
-              }
-              @case (ExamStatus.Flushed) {
-                <i class="bi bi-gear-wide-connected text-warning"></i>
-              }
-              @case (ExamStatus.PendingEassysManualGrading) {
-                <i class="bi bi-hourglass-split text-info"></i>
-              }
-              @case (ExamStatus.AllGraded) {
-                <i class="bi bi-trophy text-success"></i>
-              }
-            }
-            <div class="exam-details">
-              <span class="exam-title">{{ exam.examTitle }}</span>
-              <span class="exam-grade">{{ getDegree(exam.studentScore, exam.examMaxScore) }}%</span>
-            </div>
+    <span class="card-icon" aria-hidden="true">
+      <i class="bi bi-clock-history"></i>
+    </span>
+  </header>
+
+  @for (exam of exams(); track exam.examId) {
+    @if (exam.examStatus !== ExamStatus.InProgress) {
+      <article class="exam-item">
+        <div class="row-top">
+          <h6 class="exam-name">{{ exam.examTitle }}</h6>
+          <div class="score">
+            <span class="score-main">{{ getDegree(exam.studentScore, exam.examMaxScore) }}</span>
+            <span class="score-max">/{{ exam.examMaxScore }}</span>
           </div>
-          <span class="exam-status">{{ getExamStatus(exam.examStatus) }}</span>
         </div>
-      }
-    } @empty {
-      <p class="empty-text">No past exams</p>
+        <span
+          class="exam-status"
+          [class.status-absent]="exam.examStatus === ExamStatus.NotStarted"
+          [class.status-progress]="exam.examStatus === ExamStatus.Completed"
+          [class.status-evaluating]="exam.examStatus === ExamStatus.Flushed"
+          [class.status-pending]="exam.examStatus === ExamStatus.PendingEassysManualGrading"
+          [class.status-graded]="exam.examStatus === ExamStatus.AllGraded"
+        >
+          {{ getExamStatus(exam.examStatus) }}
+        </span>
+      </article>
     }
-  </div>
-</div>
+  } @empty {
+    <p class="empty">
+      <i class="bi bi-mortarboard-fill"></i>
+    </p>
+  }
+
+  <p class="card-note">Academic records are updated every 24 hours.</p>
+</section>

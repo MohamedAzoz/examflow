@@ -1,9 +1,9 @@
 <div class="results-page-container">
-  <header class="page-header">
+  <!-- <header class="page-header">
     <div class="header-content">
       <h1 class="page-title">My Exam Results</h1>
     </div>
-  </header>
+  </header> -->
 
   <main class="page-content">
     @if (isLoading()) {
@@ -45,7 +45,7 @@
           <button class="page-btn prev" (click)="changePage(currentPage() - 1)" [disabled]="currentPage() === 1">
             <i class="bi bi-chevron-left"></i>
           </button>
-          
+
           @for (page of pages(); track $index) {
             <button
               class="page-btn page-num"

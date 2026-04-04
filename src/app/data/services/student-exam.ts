@@ -7,6 +7,7 @@ import { IavailableExams } from '../models/StudentExam/IavailableExams';
 import { SkipLoading } from '../../core/interceptors/loading-interceptor';
 import { IpastExams } from '../models/StudentExam/IpastExams';
 import { IResultExam } from '../models/StudentExam/IResultExam';
+import { IsubmitExam } from '../models/StudentExam/IsubmitExam';
 
 @Injectable({
   providedIn: 'root',
@@ -41,10 +42,10 @@ export class StudentExam {
     });
   }
 
-  submitExam(examId: number) {
+  submitExam(exam: IsubmitExam) {
     return this.http.post(
-      `${environment.apiUrl}/StudentExam/${examId}/submit`,
-      {},
+      `${environment.apiUrl}/StudentExam/submit`,
+      exam,
       {
         context: new HttpContext().set(SkipLoading, true),
       },

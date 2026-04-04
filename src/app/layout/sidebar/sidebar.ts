@@ -26,7 +26,6 @@ export class SidebarComponent {
   readonly navItemSelected = output<string>();
 
   protected onNavClick(route: string): void {
-    this.router.navigate(['/main',this.userRole().toLowerCase(), route]);
     this.navItemSelected.emit(route);
     if (this.toggle.value()) {
       this.toggle.closeSidebar();

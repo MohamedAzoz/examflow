@@ -1,3 +1,4 @@
+import { Student } from './../data/services/student';
 import {
   Component,
   HostListener,
@@ -6,12 +7,13 @@ import {
   computed,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { SidebarComponent } from '../layout/sidebar/sidebar';
 import { Toggle } from '../core/services/toggle';
 import { NavItem } from '../layout/nav-item';
 import { ADMIN_NAV_ITEMS, STUDENT_NAV_ITEMS } from '../shared/Config/sideBar.config';
 import { IdentityService } from '../core/services/identity-service';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-main',
@@ -23,6 +25,7 @@ import { IdentityService } from '../core/services/identity-service';
 export class Main {
   protected readonly toggle = inject(Toggle);
   private readonly identityService = inject(IdentityService);
+  private readonly router = inject(Router);
 
   /** Dynamically compute role from IdentityService */
   protected readonly userRole = computed(() => (this.identityService.userRole()?.toLowerCase() || 'student') as 'admin' | 'student');
@@ -40,10 +43,10 @@ export class Main {
 
   protected readonly userName = computed(() => {
     const fullName = this.identityService.userName() || 'User';
-    return fullName; 
+    return fullName;
   });
 
-  protected readonly userRoleLabel = computed(() => 
+  protected readonly userRoleLabel = computed(() =>
     this.identityService.userRole() || (this.userRole() === 'admin' ? 'System Administrator' : 'Student')
   );
 
@@ -51,6 +54,7 @@ export class Main {
     const titles: Record<string, string> = {
       // General
       dashboard: 'Dashboard',
+      'stdashboard': 'Student Dashboard',
 
       // Admin Management
       'user-managment': 'User Management',
@@ -64,7 +68,7 @@ export class Main {
 
       // Student Features
       courses: 'Courses',
-      results: 'Results',
+      'past-results': 'My Results',
       settings: 'Settings',
       exam: 'Exam Session',
     };
@@ -72,6 +76,13 @@ export class Main {
   });
 
   protected readonly showNotifications = computed(() => this.userRole() === 'admin');
+
+  constructor() {
+    this.syncActiveRouteWithUrl(this.router.url);
+    this.router.events
+      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
+      .subscribe((event) => this.syncActiveRouteWithUrl(event.urlAfterRedirects));
+  }
 
   protected onNavItemSelected(route: string): void {
     this.activeRoute.set(route);
@@ -84,5 +95,14 @@ export class Main {
   @HostListener('window:resize', ['$event'])
   protected onResize(event: Event): void {
     this.isMobile.set((event.target as Window).innerWidth <= 992);
+  }
+
+  private syncActiveRouteWithUrl(url: string): void {
+    const cleanUrl = url.split('?')[0];
+    const segments = cleanUrl.split('/').filter(Boolean);
+    const roleSegmentIndex = segments.findIndex((segment) => segment === 'admin' || segment === 'student');
+    const routeFromUrl = roleSegmentIndex >= 0 ? segments[roleSegmentIndex + 1] : 'dashboard';
+
+    this.activeRoute.set(routeFromUrl || 'dashboard');
   }
 }
