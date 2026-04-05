@@ -23,7 +23,7 @@ export class AuthFacade {
       next: (response) => {
         // Pushes state to IdentityService (Reactive)
         this.identityService.setAuth(response.token);
-        
+
         this.isLoading.set(false);
         this.router.navigate([this.identityService.dashboardPath()]);
       },
@@ -35,26 +35,13 @@ export class AuthFacade {
     });
   }
 
-  register(body: Iregister) {
-    this.isLoading.set(true);
-    this.errorMessage.set(null);
-    this.authService.register(body).subscribe({
-      next: (response) => {
-        this.identityService.setAuth(response.token);
-        this.isLoading.set(false);
-        this.router.navigate(['home']);
-      },
-      error: (error) => {
-        this.isLoading.set(false);
-        this.errorMessage.set('Registration failed. Please try again.');
-        console.error(error);
-      },
-    });
-  }
+  
+
 
   logout() {
     this.identityService.clearAuth();
     this.router.navigate(['login']);
   }
+
 }
 

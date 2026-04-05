@@ -1,0 +1,81 @@
+<div class="board-grid">
+  <section class="list-card">
+    <div class="list-header">
+      <h3 class="list-title"><i class="bi bi-list-ul"></i> <span>Available Courses</span></h3>
+      <div class="search-wrap">
+        <i class="bi bi-search"></i>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Filter by code or title..."
+          [value]="availableSearch()"
+          (input)="onAvailableSearch($any($event.target).value)"
+        />
+      </div>
+    </div>
+    <ul class="course-list">
+      @for (course of availableCourses(); track course.id) {
+        <li class="course-item">
+          <span class="code-chip">{{ course.code }}</span>
+          <span class="course-name">{{ course.name }}</span>
+          <button
+            type="button"
+            class="item-action"
+            [disabled]="disabled()"
+            (click)="assignOne.emit(course.id)"
+          >
+            <i class="bi bi-chevron-right"></i>
+          </button>
+        </li>
+      }
+      @if (availableCourses().length === 0) {
+        <li class="empty">No available courses</li>
+      }
+    </ul>
+  </section>
+
+  <div class="middle-actions">
+    <button type="button" class="swap-btn" [disabled]="disabled()" (click)="assignAll.emit()">
+      <i class="bi bi-chevron-right"></i>
+    </button>
+    <button type="button" class="swap-btn" [disabled]="disabled()" (click)="unassignAll.emit()">
+      <i class="bi bi-chevron-left"></i>
+    </button>
+  </div>
+
+  <section class="list-card">
+    <div class="list-header">
+
+      <h3 class="list-title"><i class="bi bi-check2-square"></i> Assigned Courses</h3>
+      <div class="search-wrap">
+        <i class="bi bi-search"></i>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Search assigned..."
+          [value]="assignedSearch()"
+          (input)="onAssignedSearch($any($event.target).value)"
+        />
+      </div>
+    </div>
+    <ul class="course-list">
+      @for (course of assignedCourses(); track course.id) {
+        <li class="course-item assigned">
+          <span class="code-chip assigned">{{ course.code }}</span>
+          <span class="course-name">{{ course.name }}</span>
+          <button
+            type="button"
+            class="item-action remove"
+            [disabled]="disabled()"
+            (click)="unassignOne.emit(course.id)"
+          >
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </li>
+      }
+      @if (assignedCourses().length === 0) {
+        <li class="empty">No courses assigned yet</li>
+      }
+    </ul>
+  </section>
+</div>

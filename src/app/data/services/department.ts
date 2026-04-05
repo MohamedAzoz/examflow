@@ -15,7 +15,7 @@ export class Department {
 
   // Get : /api/Department/departments
   getDepartments() {
-    return this.http.get<IDepartmentById[]>(`${environment.apiUrl}/Department/departments`, {
+    return this.http.get<IDepartmentById[]>(`${environment.apiUrl}/Department`, {
       context: new HttpContext().set(SkipLoading, true),
     });
   }

@@ -32,7 +32,7 @@ export const EXAM_STATUS_MAP: Record<ExamStatus, ExamStatusMeta> = {
     borderColor: 'border-evaluating',
   },
   [ExamStatus.PendingEassysManualGrading]: {
-    label: 'Pending Review',
+    label: 'Pending Essays',
     icon: 'bi-hourglass-split',
     colorClass: 'status-pending',
     borderColor: 'border-pending',

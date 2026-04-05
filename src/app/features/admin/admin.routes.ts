@@ -30,7 +30,7 @@ export const adminRoles: Routes = [
   },
   {
     path: 'departments-managment',
-    title: 'Add Department',
+    title: 'Department Management',
     loadComponent: () =>
       import('./pages/departments-managment/departments-managment').then(
         (m) => m.DepartmentsManagment,

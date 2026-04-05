@@ -188,10 +188,9 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
     const examId = this.examId();
     if (!examId) return;
     const cacheKey = `answers_cache_${examId}`;
-    const cache = this.getParsedLocalStorage<Record<number, { selectedOptionId: number; eassayAnswer: string }>>(
-      cacheKey,
-      {},
-    );
+    const cache = this.getParsedLocalStorage<
+      Record<number, { selectedOptionId: number; eassayAnswer: string }>
+    >(cacheKey, {});
     cache[qId] = { selectedOptionId: optId, eassayAnswer: essay };
     this.localStorage.set(cacheKey, JSON.stringify(cache));
   }
@@ -247,10 +246,9 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
 
     // Read from cache to ensure we send the latest persisted state (important after refresh)
     const cacheKey = `answers_cache_${examId}`;
-    const cache = this.getParsedLocalStorage<Record<number, { selectedOptionId: number; eassayAnswer: string }>>(
-      cacheKey,
-      {},
-    );
+    const cache = this.getParsedLocalStorage<
+      Record<number, { selectedOptionId: number; eassayAnswer: string }>
+    >(cacheKey, {});
     const cachedData = cache[qId];
 
     const optId = cachedData ? cachedData.selectedOptionId : this.selectedOptions()[qId] || 0;
@@ -276,10 +274,9 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
         const updatedQueue = queue.filter((id) => id !== qId);
         this.localStorage.set(queueKey, JSON.stringify(updatedQueue));
 
-        const updatedCache = this.getParsedLocalStorage<Record<number, { selectedOptionId: number; eassayAnswer: string }>>(
-          cacheKey,
-          {},
-        );
+        const updatedCache = this.getParsedLocalStorage<
+          Record<number, { selectedOptionId: number; eassayAnswer: string }>
+        >(cacheKey, {});
         delete updatedCache[qId];
         this.localStorage.set(cacheKey, JSON.stringify(updatedCache));
         return qId;
@@ -362,10 +359,9 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
       });
 
       // 2. Merge with local unsynced work (local takes priority)
-      const localCache = this.getParsedLocalStorage<Record<number, { selectedOptionId: number; eassayAnswer: string }>>(
-        `answers_cache_${this.examId()}`,
-        {},
-      );
+      const localCache = this.getParsedLocalStorage<
+        Record<number, { selectedOptionId: number; eassayAnswer: string }>
+      >(`answers_cache_${this.examId()}`, {});
       Object.entries(localCache).forEach(([qId, data]) => {
         const numQId = Number(qId);
         if (data.selectedOptionId) initialAnswers[numQId] = data.selectedOptionId;
@@ -423,7 +419,8 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
 
         this.router.navigate(['../', q.questionId], {
           relativeTo: this.route,
-          replaceUrl: true,
+          skipLocationChange: true, // هذا سيجعل الرابط لا يتغير في المتصفح
+          state: { id: q.questionId },
         });
       }
     });
@@ -489,17 +486,16 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
   }
 
   private setupAntiCheatDetection(): void {
-    merge(
-      fromEvent(document, 'copy'),
-      fromEvent(document, 'cut'),
-      fromEvent(document, 'paste'),
-    )
+    merge(fromEvent(document, 'copy'), fromEvent(document, 'cut'), fromEvent(document, 'paste'))
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.trackClipboardAction());
 
     fromEvent<KeyboardEvent>(document, 'keydown')
       .pipe(
-        filter((event) => (event.ctrlKey || event.metaKey) && this.shortcutKeys.has(event.key.toLowerCase())),
+        filter(
+          (event) =>
+            (event.ctrlKey || event.metaKey) && this.shortcutKeys.has(event.key.toLowerCase()),
+        ),
         throttleTime(150),
         takeUntilDestroyed(this.destroyRef),
       )

@@ -26,7 +26,7 @@ export class PastExamsCardComponent {
       case ExamStatus.Flushed:
         return 'Evaluating';
       case ExamStatus.PendingEassysManualGrading:
-        return 'Pending Review';
+        return 'Pending Essays';
       case ExamStatus.AllGraded:
         return 'Completed';
       default:

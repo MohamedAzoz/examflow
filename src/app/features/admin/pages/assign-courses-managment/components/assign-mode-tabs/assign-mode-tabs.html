@@ -1,0 +1,18 @@
+<div class="tabs-shell" role="tablist" aria-label="Assignment mode">
+  <button
+    type="button"
+    class="tab-btn"
+    [class.active]="mode() === 'professor'"
+    (click)="setMode('professor')"
+  >
+    Assign to Professor
+  </button>
+  <button
+    type="button"
+    class="tab-btn"
+    [class.active]="mode() === 'department'"
+    (click)="setMode('department')"
+  >
+    Assign to Department
+  </button>
+</div>

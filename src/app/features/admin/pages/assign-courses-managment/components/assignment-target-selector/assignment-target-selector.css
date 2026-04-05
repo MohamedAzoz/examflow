@@ -1,0 +1,15 @@
+.target-card{background:white;border:1px solid var(--outline-variant);border-radius:14px;padding:22px 24px}
+.target-label{text-transform:uppercase;letter-spacing:.1em;font-size:12px;font-weight:700;color:var(--text-gray-color);margin-bottom:12px}
+
+/* I want to style the select wrap background input --sidebar-bg */
+.select-wrap{position:relative;max-width:460px; }
+.search-icon,.down-icon{position:absolute;top:50%;transform:translateY(-50%);
+  color:#95a0ad;font-size:18px;pointer-events:none}
+.search-icon{left:14px}.down-icon{right:14px}
+.target-select{appearance:none;width:100%;height:46px;border:1px solid #bfc8ca;
+  border-radius:10px;padding:0 44px 0 46px;background:var(--sidebar-bg);color:var(--text-gray);font-size:15px}
+.target-select:focus{outline:none;border-color:var(--primary-color);
+  box-shadow:0 0 0 3px rgba(53,123,133,.12)}
+@media (max-width:768px){.target-card{padding:18px 16px}
+.target-select{height:40px;padding:0 38px 0 40px;font-size:13px}
+.select-wrap{max-width:100%}}

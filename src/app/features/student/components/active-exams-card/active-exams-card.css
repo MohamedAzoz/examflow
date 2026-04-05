@@ -90,9 +90,9 @@
   box-shadow: none;
 }
 
-.empty-card {
+.empty {
   border-radius: 18px;
-  padding: 1.4rem;
+  padding: 1.4rem; 
   min-height: 150px;
   display: flex;
   align-items: center;
@@ -101,10 +101,10 @@
   border: 1px solid #e9edf0;
 }
 
-.empty-text {
+.empty i {
   margin: 0;
   color: #8c97a4;
-  font-size: 0.95rem;
+  font-size: 2.7rem;
 }
 
 @media (max-width: 768px) {

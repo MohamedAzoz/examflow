@@ -22,7 +22,7 @@
   --text-white-color: #FFFFFF;
   --sidebar-bg: #F3F4F6;
   --card-bg: #E8E7E7;
-  /* --border-color: #CED4DA; */
+  /* --border-color: #CED4DA; */ 
   --bg-color: #E5E7EB;
 
   --teal: #357B85;
@@ -61,18 +61,18 @@
   --on-surface: #161c21;
   --on-surface-variant: #3f484a;
   --outline-variant: #bfc8ca;
-  
+
   --blue: #758efd;
   /* Typography */
   --font-headline: 'Manrope', sans-serif;
   --font-body: 'Inter', sans-serif;
 }
 * {
+  font-family: var(--font-body);
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 /* .app-shell {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   background: var(--main-bg);
 } */

@@ -1,0 +1,41 @@
+<section class="target-card">
+  <h3 class="target-label">
+    {{ mode() === 'professor' ? 'Target Professor' : 'Target Department' }}
+  </h3>
+
+  @if (mode() === 'professor') {
+    <div class="select-wrap">
+      <i class="bi bi-person search-icon" aria-hidden="true"></i>
+      <select
+        class="target-select"
+        [disabled]="disabled()"
+        [value]="selectedProfessorId() || ''"
+        (change)="onProfessorChange($any($event.target).value)"
+      >
+        <option value="" disabled>Search and select Professor...</option>
+        @for (professor of professors(); track professor.id) {
+          <option [value]="professor.id">
+            {{ professor.fullName }} - {{ professor.universityCode }}
+          </option>
+        }
+      </select>
+      <i class="bi bi-chevron-down down-icon" aria-hidden="true"></i>
+    </div>
+  } @else {
+    <div class="select-wrap">
+      <i class="bi bi-buildings search-icon" aria-hidden="true"></i>
+      <select
+        class="target-select"
+        [disabled]="disabled()"
+        [value]="selectedDepartmentId() || ''"
+        (change)="onDepartmentChange($any($event.target).value)"
+      >
+        <option value="" disabled>Search and select Department...</option>
+        @for (department of departments(); track department.id) {
+          <option [value]="department.id">{{ department.name }} - {{ department.code }}</option>
+        }
+      </select>
+      <i class="bi bi-chevron-down down-icon" aria-hidden="true"></i>
+    </div>
+  }
+</section>

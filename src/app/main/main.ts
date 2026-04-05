@@ -60,7 +60,7 @@ export class Main {
       'user-managment': 'User Management',
       'academic-year-managment': 'Manage Academic Years',
       'courses-managment': 'Configure Courses',
-      'departments-managment': 'Add Department',
+      'departments-managment': 'Department Management',
       'assign-courses-managment': 'Assign Courses',
       'reset-passwords': 'Reset Passwords',
       'enroll-students-managment': 'Enroll Students',

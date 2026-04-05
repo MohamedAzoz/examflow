@@ -1,1 +1,156 @@
-<p>departments-managment works!</p>
+<section class="department-page">
+  <div class="panel-card">
+    <div class="panel-toolbar">
+      <div class="search-box">
+        <i class="bi bi-search search-icon" aria-hidden="true"></i>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Search Department.."
+          autocomplete="off"
+          [value]="searchQuery()"
+          (input)="onSearch($any($event.target).value)"
+        />
+      </div>
+
+      <button type="button" class="btn-add" (click)="openCreateModal()">
+        <i class="bi bi-plus-lg" aria-hidden="true"></i>
+        <span>Add Department</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="table-card">
+    @if (loading()) {
+      <div class="loading-line"></div>
+    }
+
+    <table class="department-table" aria-label="Departments">
+      <thead class="table-header">
+        <tr>
+          <th>Department Name</th>
+          <th>Department Code</th>
+          <th class="actions-col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (department of filteredDepartments(); track trackByDepartmentId($index, department)) {
+          <tr>
+            <td class="name-cell">{{ department.name }}</td>
+            <td>
+              <span class="code-badge">{{ department.code }}</span>
+            </td>
+            <td class="actions-col">
+              <div class="row-actions">
+                <button
+                  type="button"
+                  class="icon-btn edit-btn"
+                  title="Edit Department"
+                  (click)="openEditModal(department)"
+                >
+                  <i class="bi bi-pencil" aria-hidden="true"></i>
+                </button>
+                <button
+                  type="button"
+                  class="icon-btn delete-btn"
+                  title="Delete Department"
+                  (click)="deleteDepartment(department)"
+                >
+                  <i class="bi bi-trash3" aria-hidden="true"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        }
+
+        @if (!loading() && filteredDepartments().length === 0) {
+          <tr>
+            <td colspan="3" class="empty-state">
+              <i class="bi bi-inbox" aria-hidden="true"></i>
+              <p>No departments found.</p>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- @if (requestError() && !showFormModal()) {
+    <p class="page-error">{{ requestError() }}</p>
+  } -->
+</section>
+
+@if (showFormModal()) {
+  <div class="modal-backdrop" (click)="closeModal()">
+    <div class="modal-box" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <h2 class="modal-title">
+          {{ isEditing() ? 'Edit Department' : 'New Department' }}
+        </h2>
+        <button type="button" class="modal-close-btn" (click)="closeModal()" aria-label="Close">
+          close
+        </button>
+      </div>
+
+      <form class="modal-body" [formGroup]="departmentForm" (ngSubmit)="saveDepartment()" novalidate>
+        @if (modalError()) {
+          <div class="alert-error" role="alert">
+            <strong>error</strong>
+            <div>
+              <p>{{ modalError() }}</p>
+            </div>
+          </div>
+        }
+
+        <div class="form-field">
+          <label for="department-name">Department Name</label>
+          <input
+            id="department-name"
+            type="text"
+            class="field-input"
+            placeholder="e.g. Computer Science"
+            formControlName="name"
+            autocomplete="off"
+          />
+          @if (hasControlError('name', 'required')) {
+            <small class="field-error">Department name is required.</small>
+          }
+        </div>
+
+        <div class="form-field">
+          <label for="department-code">Department Code</label>
+          <input
+            id="department-code"
+            type="text"
+            class="field-input"
+            [class.input-error]="hasControlError('code', 'duplicate')"
+            placeholder="CS"
+            formControlName="code"
+            autocomplete="off"
+          />
+          @if (hasControlError('code', 'required')) {
+            <small class="field-error">Department code is required.</small>
+          }
+          @if (hasControlError('code', 'pattern')) {
+            <small class="field-error">Only letters and numbers are allowed.</small>
+          }
+          @if (hasControlError('code', 'duplicate')) {
+            <small class="field-error">This department code is already in use.</small>
+          }
+        </div>
+      </form>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" (click)="closeModal()">Cancel</button>
+        <button
+          type="button"
+          class="btn-save"
+          [disabled]="departmentForm.invalid || submitting()"
+          (click)="saveDepartment()"
+        >
+          {{ submitting() ? 'Saving...' : 'Save Department' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

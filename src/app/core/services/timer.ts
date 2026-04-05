@@ -8,7 +8,7 @@ export class Timer {
 
   private readonly _timeLeftSeconds = signal<number>(0);
   readonly timeLeftSeconds = this._timeLeftSeconds.asReadonly();
-
+ 
   private readonly _serverOffsetMs = signal<number>(0);
   private readonly _now = signal<number>(Date.now());
   readonly now = this._now.asReadonly();

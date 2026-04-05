@@ -1,1 +1,49 @@
-<p>assign-courses-managment works!</p>
+<section class="assign-page">
+  
+  <app-assign-mode-tabs [mode]="mode()" (modeChanged)="onModeChanged($event)" />
+
+  <app-assignment-target-selector
+    [mode]="mode()"
+    [professors]="professors()"
+    [departments]="departments()"
+    [selectedProfessorId]="selectedProfessorId()"
+    [selectedDepartmentId]="selectedDepartmentId()"
+    [disabled]="isBusy()"
+    (professorChanged)="onProfessorChanged($event)"
+    (departmentChanged)="onDepartmentChanged($event)"
+  />
+
+  <app-course-transfer-board
+    [availableCourses]="availableCourses()"
+    [assignedCourses]="assignedCourses()"
+    [availableSearch]="availableSearch()"
+    [assignedSearch]="assignedSearch()"
+    [disabled]="!hasTargetSelected() || isBusy()"
+    (availableSearchChanged)="availableSearch.set($event)"
+    (assignedSearchChanged)="assignedSearch.set($event)"
+    (assignOne)="onAssignCourse($event)"
+    (unassignOne)="onUnassignCourse($event)"
+    (assignAll)="onAssignAll()"
+    (unassignAll)="onUnassignAll()"
+  />
+
+  <!-- @if (feedbackMessage()) {
+    <p class="feedback" [class.error]="feedbackType() === 'error'">{{ feedbackMessage() }}</p>
+  } -->
+
+  <div class="footer-actions">
+    <button type="button" class="btn-cancel" [disabled]="isBusy()" (click)="onCancel()">Cancel</button>
+    <button
+      type="button"
+      class="btn-save"
+      [disabled]="!hasTargetSelected() || isBusy()"
+      (click)="saveAssignments()"
+    >
+      {{
+        mode() === 'professor'
+          ? (submitting() ? 'Saving...' : 'Save Professor Assignments')
+          : (submitting() ? 'Saving...' : 'Save Department Assignments')
+      }}
+    </button>
+  </div>
+</section>

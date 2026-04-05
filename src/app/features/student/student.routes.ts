@@ -11,6 +11,7 @@ export const studentRoutes: Routes = [
       },
       {
         path: 'stdashboard',
+        title: 'Student Dashboard',
         loadComponent: () =>
           import('./pages/dashboard/dashboard').then((m) => m.DashboardComponent),
       },
@@ -19,6 +20,7 @@ export const studentRoutes: Routes = [
         children: [
           {
             path: '',
+            title: 'Exam Session',
             loadComponent: () =>
               import('./pages/exam-session/exam-session').then((m) => m.ExamSessionComponent),
           },
@@ -31,11 +33,13 @@ export const studentRoutes: Routes = [
       },
       {
         path: 'past-results',
+        title: 'Past Results',
         loadComponent: () =>
           import('./pages/past-results/past-results.component').then((m) => m.PastResultsComponent),
       },
       {
         path: 'past-results/:examId',
+        title: 'Exam Result',
         loadComponent: () =>
           import('./pages/exam-result/exam-result').then((m) => m.ExamResultComponent),
       },
