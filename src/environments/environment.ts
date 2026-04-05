@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://examflow.runasp.net/api',
+  apiUrl: 'http://46.202.132.102:5001/api',
 };

@@ -21,7 +21,7 @@ export class Department {
   }
   // Get : /api/Department/department this grt id by query
   getDepartmentById(id: number) {
-    return this.http.get<IDepartmentById>(`${environment.apiUrl}/Department/department?id=${id}`);
+    return this.http.get<IDepartmentById>(`${environment.apiUrl}/Department/${id}`);
   }
 
   // Post : /api/Department
@@ -45,8 +45,6 @@ export class Department {
   }
   //GET :/api/Department/assign-courses
   getAssignCourses(id: number) {
-    return this.http.get<IAssignCourses>(
-      `${environment.apiUrl}/Department/assign-courses?id=${id}`,
-    );
+    return this.http.get<IAssignCourses>(`${environment.apiUrl}/Department/assigned-courses/${id}`);
   }
 }
