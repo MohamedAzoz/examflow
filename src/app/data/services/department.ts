@@ -36,7 +36,7 @@ export class Department {
 
   // Delete : /api/Department this delete department
   deleteDepartment(id: number) {
-    return this.http.delete(`${environment.apiUrl}/Department?id=${id}`);
+    return this.http.delete(`${environment.apiUrl}/Department/${id}`);
   }
 
   //PUT :/api/Department/assign-courses
