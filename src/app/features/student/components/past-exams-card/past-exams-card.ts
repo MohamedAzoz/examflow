@@ -12,9 +12,6 @@ export class PastExamsCardComponent {
   readonly exams = input.required<data[]>();
   readonly ExamStatus = ExamStatus;
 
-  getDegree(score: number, maxScore: number): number {
-    return Math.round((score / maxScore) * 100);
-  }
   getExamStatus(status: ExamStatus): string {
     switch (status) {
       case ExamStatus.NotStarted:
