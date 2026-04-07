@@ -4,14 +4,14 @@ import { catchError, finalize, Observable, throwError } from 'rxjs';
 import { ICoueseResponse } from '../../../data/models/course/icouese-response';
 import { Course } from '../../../data/services/course';
 import { IassignDepartments } from '../../../data/models/course/IassignDepartments';
+import { rxResource } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CourseFacade {
   private readonly courseService = inject(Course);
-
-  public readonly courses = signal<ICoueseResponse[]>([]);
+  
   public readonly assignToDepartment = signal<IassignDepartments[]>([]);
   public readonly loading = signal<boolean>(false);
   public readonly error = signal<string | null>(null);
@@ -23,37 +23,39 @@ export class CourseFacade {
 
   private setErrorFromUnknown(err: unknown): void {
     const fallbackMessage = 'An unexpected error occurred. Please try again.';
-
+    
     if (err instanceof HttpErrorResponse) {
       const apiMessage =
-        typeof err.error === 'string'
-          ? err.error
-          : err.error?.message || err.error?.title || err.message;
+      typeof err.error === 'string'
+      ? err.error
+      : err.error?.message || err.error?.title || err.message;
       this.error.set(apiMessage || fallbackMessage);
       return;
     }
-
+    
     this.error.set(err instanceof Error ? err.message : fallbackMessage);
   }
-
+  
   private handleRequestError(err: unknown): Observable<never> {
     this.setErrorFromUnknown(err);
     return throwError(() => err);
   }
-
-  getAllCourses(): void {
-    this.startRequest();
-    this.courseService.getAllCourses().subscribe({
-      next: (res) => {
-        this.courses.set(res || []);
-        this.loading.set(false);
-      },
-      error: (err) => {
-        this.setErrorFromUnknown(err);
-        this.loading.set(false);
-      },
+  
+  //#region Get All Course
+  
+    public readonly allCourses = rxResource<ICoueseResponse[], unknown>({
+      stream: () => this.courseService.getAllCourses(),
     });
+
+  /**
+   * @deprecated Use allCourses resource value directly.
+   * Call refreshCourses() or allCourses.reload() if needed.
+   */
+  getAllCourses(): void {
+    this.allCourses.reload();
   }
+
+  //#endregion
 
   refreshCourses(): Observable<ICoueseResponse[]> {
     this.startRequest();
@@ -62,6 +64,7 @@ export class CourseFacade {
       finalize(() => this.loading.set(false)),
     );
   }
+
   assignCourseDepartments(courseId: number): void {
     this.startRequest();
     this.courseService

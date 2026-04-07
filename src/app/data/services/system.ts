@@ -1,6 +1,7 @@
 import { environment } from './../../../environments/environment.development';
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable } from '@angular/core';
+import { rxResource } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
@@ -10,6 +11,15 @@ export class System {
 
   // /api/System/server-time
   getServerTime() {
-    return this.http.get<{ serverTime: string | Date }>(`${environment.apiUrl}/System/server-time`);
+    return this.http.get<{ serverTime: string }>(`${environment.apiUrl}/System/server-time`);
   }
+
+  public Timer = rxResource({
+    stream: () => this.getServerTime(),
+  });
+
+  public currentTime = computed(() => {
+    const time = this.Timer.value()?.serverTime;
+    return time ? new Date(time).getTime() : null;
+  });
 }

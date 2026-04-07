@@ -47,17 +47,17 @@ export class AssignCoursesManagment {
   protected readonly feedbackMessage = signal<string | null>(null);
   protected readonly feedbackType = signal<'success' | 'error'>('success');
 
-  protected readonly professors = this.professorFacade.professors;
-  protected readonly departments = this.departmentFacade.departments;
-  protected readonly allCourses = this.courseFacade.courses;
+  protected readonly professors = computed(() => this.professorFacade.allProfessors.value() || []);
+  protected readonly departments = computed(() => this.departmentFacade.allDepartments.value() || []);
+  protected readonly allCourses = computed(() => this.courseFacade.allCourses.value() || []);
 
   protected readonly isBusy = computed(
     () =>
       this.submitting() ||
       this.loadingAssignments() ||
-      this.professorFacade.loading() ||
-      this.departmentFacade.loading() ||
-      this.courseFacade.loading(),
+      this.professorFacade.allProfessors.isLoading() ||
+      this.departmentFacade.allDepartments.isLoading() ||
+      this.courseFacade.allCourses.isLoading(),
   );
 
   protected readonly hasTargetSelected = computed(() =>

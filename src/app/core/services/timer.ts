@@ -10,8 +10,8 @@ export class Timer {
   readonly timeLeftSeconds = this._timeLeftSeconds.asReadonly();
  
   private readonly _serverOffsetMs = signal<number>(0);
-  private readonly _now = signal<number>(Date.now());
-  readonly now = this._now.asReadonly();
+  private readonly _tick = signal<number>(Date.now());
+  readonly now = computed(() => this._tick() + this._serverOffsetMs());
 
   private readonly _isRunning = signal<boolean>(false);
   readonly isRunning = this._isRunning.asReadonly();
@@ -22,8 +22,17 @@ export class Timer {
   private clockSub: Subscription | null = null;
   private resyncSub: Subscription | null = null;
   private onExpire: (() => void) | null = null;
-  private examEndMs = 0;
+  private examEndMs = 0; 
   private startToken = 0;
+
+  constructor() {
+    this.initGlobalClock();
+  }
+
+  private initGlobalClock(): void {
+    this.syncServerTime().subscribe();
+    interval(1000).subscribe(() => this._tick.set(Date.now()));
+  }
 
   startExam(startTime: string, durationMinutes: number, onExpire?: () => void): void {
     const parsedStart = Date.parse(startTime);
@@ -84,8 +93,7 @@ export class Timer {
   }
 
   private tick(): void {
-    const now = Date.now() + this._serverOffsetMs();
-    this._now.set(now);
+    const now = this.now();
 
     if (!this.examEndMs) {
       this._timeLeftSeconds.set(0);
@@ -124,7 +132,7 @@ export class Timer {
     return null;
   }
 
-  private formatTime(totalSeconds: number): string {
+  formatTime(totalSeconds: number): string {
     const safeSeconds = Math.max(0, totalSeconds);
     const hours = Math.floor(safeSeconds / 3600);
     const minutes = Math.floor((safeSeconds % 3600) / 60);

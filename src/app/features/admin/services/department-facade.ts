@@ -2,16 +2,44 @@ import { inject, Injectable, signal } from '@angular/core';
 import { Department } from '../../../data/services/department';
 import { IDepartment } from '../../../data/models/department/idepartment';
 import { IDepartmentById } from '../../../data/models/department/idepartment-by-id';
-import { catchError, finalize, Observable, tap, throwError } from 'rxjs';
+import { catchError, finalize, Observable, of, tap, throwError } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { IAssignCourses } from '../../../data/models/department/iassign-courses';
 import { IReqAssignCourses } from '../../../data/models/department/ireq-assign-courses';
+import { rxResource } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DepartmentFacade {
   private department = inject(Department);
+
+  public readonly allDepartments = rxResource<IDepartmentById[], unknown>({
+    stream: () =>
+      this.department.getDepartments().pipe(tap((res) => this.departments.set(res || []))),
+  });
+
+  public readonly departmentByIdRequest = signal<number | null>(null);
+  public readonly departmentByIdResource = rxResource<IDepartmentById | null, number | null>({
+    stream: () => {
+      const id = this.departmentByIdRequest();
+      return id !== null
+        ? this.department.getDepartmentById(id).pipe(tap((res) => this.departmentById.set(res)))
+        : of(null);
+    },
+  });
+
+  public readonly assignedCoursesRequest = signal<number | null>(null);
+  public readonly assignedCoursesResource = rxResource<IAssignCourses | null, number | null>({
+    stream: () => {
+      const id = this.assignedCoursesRequest();
+      return id !== null
+        ? this.department
+            .getAssignCourses(id)
+            .pipe(tap((res) => this.assignedCourses.set(res.assignedCourses || [])))
+        : of(null);
+    },
+  });
 
   public departments = signal<IDepartmentById[]>([]);
   public departmentById = signal<IDepartmentById | null>(null);
@@ -45,32 +73,14 @@ export class DepartmentFacade {
     return throwError(() => err);
   }
 
+  /** @deprecated Use allDepartments resource value. */
   getDepartments() {
-    this.startRequest();
-    this.department.getDepartments().subscribe({
-      next: (res) => {
-        this.departments.set(res);
-        this.loading.set(false);
-      },
-      error: (err) => {
-        this.setErrorFromUnknown(err);
-        this.loading.set(false);
-      },
-    });
+    this.allDepartments.reload();
   }
 
+  /** @deprecated Set departmentByIdRequest signal instead. */
   getDepartmentById(id: number) {
-    this.startRequest();
-    this.department.getDepartmentById(id).subscribe({
-      next: (res) => {
-        this.departmentById.set(res);
-        this.loading.set(false);
-      },
-      error: (err) => {
-        this.setErrorFromUnknown(err);
-        this.loading.set(false);
-      },
-    });
+    this.departmentByIdRequest.set(id);
   }
 
   postDepartment(department: IDepartment) {
@@ -97,8 +107,9 @@ export class DepartmentFacade {
     );
   }
 
+  /** @deprecated Use assignedCoursesResource. */
   getAssignCourses(id: number): Observable<IAssignCourses> {
-    this.startRequest();
+    this.assignedCoursesRequest.set(id);
     return this.department.getAssignCourses(id).pipe(
       tap((res) => this.assignedCourses.set(res.assignedCourses || [])),
       catchError((err) => this.handleRequestError(err)),

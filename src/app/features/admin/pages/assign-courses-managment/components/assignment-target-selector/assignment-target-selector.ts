@@ -16,7 +16,7 @@ export class AssignmentTargetSelectorComponent {
   readonly selectedProfessorId = input<string | null>(null);
   readonly selectedDepartmentId = input<number | null>(null);
   readonly disabled = input(false);
-
+ 
   readonly professorChanged = output<string>();
   readonly departmentChanged = output<number>();
 

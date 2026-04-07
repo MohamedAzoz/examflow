@@ -3,7 +3,6 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment.development';
 import { Ilogin } from '../models/auth/ilogin';
-import { Iregister } from '../models/auth/iregister';
 import { IResponseAuth } from '../models/auth/iresponse-auth';
 import { IVoTp } from '../models/auth/IVoTp';
 import { IReqVoTp } from '../models/auth/IReqVoTp';
@@ -15,10 +14,11 @@ import { IconfirmEmail } from '../models/auth/IconfirmEmail';
 })
 export class Auth {
   private http = inject(HttpClient);
+
   public login(body: Ilogin): Observable<IResponseAuth> {
     return this.http.post<IResponseAuth>(`${environment.apiUrl}/Authentication/login`, body);
   }
- 
+
   //   POST
   // /api/Authentication/request-email
   public requestEmail(newEmail: string) {

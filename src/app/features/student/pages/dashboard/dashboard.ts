@@ -1,8 +1,7 @@
-import { Component, inject, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { UpcomingExamsCardComponent } from '../../components/upcoming-exams-card/upcoming-exams-card';
 import { PastExamsCardComponent } from '../../components/past-exams-card/past-exams-card';
 import { ActiveExamsCardComponent } from '../../components/active-exams-card/active-exams-card';
-// import { DashboardState } from '../../state/dashboard.state';
 import { StudentExamFacade } from '../../services/student-exam-facade';
 
 @Component({
@@ -12,26 +11,11 @@ import { StudentExamFacade } from '../../services/student-exam-facade';
   styleUrl: './dashboard.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DashboardComponent implements OnInit, OnDestroy {
-  // readonly state = inject(DashboardState);
+export class DashboardComponent implements OnInit {
   readonly facade = inject(StudentExamFacade);
-  private intervalId: ReturnType<typeof setInterval> | null = null;
 
   ngOnInit(): void {
-    // Load available exams from API
     this.facade.loadAvailableExams();
-    this.facade.loadPastExams();
-
-    // Start countdown ticker (every second) to force reactivity in facade selectors
-    this.intervalId = setInterval(() => {
-      this.facade.updateTime();
-    }, 1000);
-  }
-
-  ngOnDestroy(): void {
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
-      this.intervalId = null;
-    }
+    this.facade.loadPastExams(1, 3);
   }
 }

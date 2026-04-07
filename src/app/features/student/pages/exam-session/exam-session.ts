@@ -421,7 +421,7 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
         this.router.navigate(['../', q.questionId], {
           relativeTo: this.route,
           skipLocationChange: true, // هذا سيجعل الرابط لا يتغير في المتصفح
-          state: { id: q.questionId },
+          // state: { id: q.questionId },
         });
       }
     });

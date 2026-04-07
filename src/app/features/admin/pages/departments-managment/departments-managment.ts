@@ -30,9 +30,9 @@ export class DepartmentsManagment {
   protected readonly submitting = signal(false);
   protected readonly editingDepartment = signal<IDepartmentById | null>(null);
 
-  protected readonly departments = this.departmentFacade.departments;
-  protected readonly loading = this.departmentFacade.loading;
-  protected readonly requestError = this.departmentFacade.error;
+  protected readonly departments = computed(() => this.departmentFacade.allDepartments.value() || []);
+  protected readonly loading = this.departmentFacade.allDepartments.isLoading;
+  protected readonly requestError = computed(() => (this.departmentFacade.allDepartments.error() as any)?.message || null);
 
   protected readonly filteredDepartments = computed(() => {
     const query = this.searchQuery().trim().toLowerCase();

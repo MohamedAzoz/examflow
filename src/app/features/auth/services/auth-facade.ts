@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Ilogin } from '../../../data/models/auth/ilogin';
 import { Iregister } from '../../../data/models/auth/iregister';
 import { IdentityService } from '../../../core/services/identity-service';
+import { IErrorResponse } from '../../../data/models/auth/IErrorResponse';
 
 @Injectable({
   providedIn: 'root',
@@ -21,27 +22,19 @@ export class AuthFacade {
     this.errorMessage.set(null);
     this.authService.login(body).subscribe({
       next: (response) => {
-        // Pushes state to IdentityService (Reactive)
         this.identityService.setAuth(response.token);
-
         this.isLoading.set(false);
         this.router.navigate([this.identityService.dashboardPath()]);
       },
-      error: (error) => {
+      error: (error: IErrorResponse) => {
         this.isLoading.set(false);
-        this.errorMessage.set('Invalid credentials. Please try again.');
-        console.error(error);
+        this.errorMessage.set(error.errorMessage ?? 'Invalid credentials. Please try again.');
       },
     });
   }
-
-  
-
 
   logout() {
     this.identityService.clearAuth();
     this.router.navigate(['login']);
   }
-
 }
-

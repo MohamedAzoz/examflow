@@ -10,6 +10,8 @@ import { IsendAnswer } from '../../../data/models/StudentExam/isend-answer';
 import { data, IpastExams } from '../../../data/models/StudentExam/IpastExams';
 import { IResultExam } from '../../../data/models/StudentExam/IResultExam';
 import { IsubmitExam } from '../../../data/models/StudentExam/IsubmitExam';
+import { Timer } from '../../../core/services/timer';
+import { rxResource } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
@@ -20,6 +22,7 @@ export class StudentExamFacade {
   private readonly router = inject(Router);
   private readonly toggleService = inject(Toggle);
   private readonly localStorage = inject(LocalStorage);
+  private readonly timerService = inject(Timer);
   private readonly isOnline = connectivitySignal();
 
   /** All available exams from the API */
@@ -38,12 +41,11 @@ export class StudentExamFacade {
   readonly currentPage = signal<number>(1);
   readonly pageSize = signal<number>(6);
 
-  /** Active Reactive Timer signal */
-  private readonly currentTime = signal<number>(Date.now());
+  /** Synchronized server time signal */
+  readonly currentTime = this.timerService.now;
 
-  public updateTime(): void {
-    this.currentTime.set(Date.now());
-  }
+  // Manual updateTime is no longer needed but kept empty for API compatibility
+  public updateTime(): void {}
 
   /**
    * The currently active exam — one whose startTime <= now
@@ -93,19 +95,8 @@ export class StudentExamFacade {
   });
 
   readonly activeExamCountdown = computed<string>(() =>
-    this.formatTime(this.activeExamRemainingSeconds()),
+    this.timerService.formatTime(this.activeExamRemainingSeconds()),
   );
-
-  private formatTime(totalSeconds: number): string {
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-    return `${this.pad(hours)}:${this.pad(minutes)}:${this.pad(seconds)}`;
-  }
-
-  private pad(n: number): string {
-    return n < 10 ? '0' + n : '' + n;
-  }
 
   loadAvailableExams(): void {
     if (this.isOnline()) {
@@ -225,6 +216,37 @@ export class StudentExamFacade {
       });
     }
   }
+
+  // public allPastExams = rxResource({
+  //   params: () => [this.currentPage(), this.pageSize()],
+  //   stream: () => this.studentExamService.getPastExams(this.currentPage(), this.pageSize()),
+  // });
+  // public allPastExamsData = computed(() => this.allPastExams.value()?.data);
+  // public allPastExamsTotalPages = computed(() => this.allPastExams.value()?.totalSize);
+  // public allPastExamsCurrentPage = computed(() => this.allPastExams.value()?.pageIndex);
+  // public allPastExamsPageSize = computed(() => this.allPastExams.value()?.pageSize);
+  // public loadingPastExams = computed(() => this.allPastExams.isLoading());
+
+  // setPage(page: number): void {
+  //   this.currentPage.set(page);
+  // }
+ 
+  // setPageSize(pageSize: number): void {
+  //   this.pageSize.set(pageSize);
+  // }
+
+  // public allUpcomingExams = rxResource({
+  //   stream: () => this.studentExamService.getAvailableExams(),
+  // });
+  // public allUpcomingExamsData = computed(() => this.allUpcomingExams.value());
+  // public loadingUpcomingExams = computed(() => this.allUpcomingExams.isLoading());
+
+  // public activeExamsData = computed(() =>
+  //   this.allUpcomingExams
+  //     .value()
+  //     ?.filter((exam) => new Date(exam.startTime).getTime() > this.currentTime()),
+  // );
+  
 }
 
 export function connectivitySignal() {
@@ -239,7 +261,5 @@ export function connectivitySignal() {
   return sharedConnectivity;
 }
 
-const sharedConnectivity = signal(
-  typeof navigator !== 'undefined' ? navigator.onLine : true,
-);
+const sharedConnectivity = signal(typeof navigator !== 'undefined' ? navigator.onLine : true);
 let connectivityInitialized = false;

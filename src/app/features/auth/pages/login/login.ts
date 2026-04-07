@@ -1,12 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { AuthFacade } from '../../services/auth-facade';
 import { Ilogin } from '../../../../data/models/auth/ilogin';
-import {
-  FormGroup,
-  FormControl,
-  Validators,
-  ReactiveFormsModule,
-} from '@angular/forms';
+import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -26,12 +21,16 @@ export class Login {
   });
 
   togglePassword(): void {
-    this.showPassword.update(v => !v);
+    this.showPassword.update((v) => !v);
   }
 
   onSubmit() {
     if (this.loginForm.valid) {
-      this.authFacade.login(this.loginForm.value as Ilogin);
+      const body: Ilogin = {
+        identifier: this.loginForm.value.identifier?.trim() || '',
+        password: this.loginForm.value.password?.trim() || '',
+      };
+      this.authFacade.login(body);
     } else {
       this.loginForm.markAllAsTouched();
     }
