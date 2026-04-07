@@ -40,6 +40,7 @@ import {
 import { Timer } from '../../../../core/services/timer';
 import { IsubmitExam } from '../../../../data/models/StudentExam/IsubmitExam';
 import { Iexam, IstartExam } from '../../../../data/models/StudentExam/IstartExam';
+import { environment } from '../../../../../environments/environment.development';
 
 interface AntiCheatCounters {
   copyPasteCnt: number;
@@ -119,7 +120,7 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
   readonly questionIds = computed(() => this.questions().map((q) => q.questionId));
   readonly currentQuestionImage = computed(() => {
     const path = this.currentQuestion()?.imagePath;
-    return path ? `https://examflow.runasp.net${path}` : '';
+    return path ? `${environment.baseUrl}${path}` : '';
   });
 
   readonly countdown = computed(() => this.timerService.countdown());
