@@ -4,7 +4,7 @@ import { computed, inject, Injectable } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root', 
 })
 export class System {
   private http = inject(HttpClient);
@@ -13,13 +13,4 @@ export class System {
   getServerTime() {
     return this.http.get<{ serverTime: string }>(`${environment.apiUrl}/System/server-time`);
   }
-
-  public Timer = rxResource({
-    stream: () => this.getServerTime(),
-  });
-
-  public currentTime = computed(() => {
-    const time = this.Timer.value()?.serverTime;
-    return time ? new Date(time).getTime() : null;
-  });
 }

@@ -1,5 +1,5 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { catchError, interval, map, of, Subscription, switchMap, take } from 'rxjs';
+import { catchError, finalize, interval, map, of, Subscription, switchMap, take } from 'rxjs';
 import { System } from '../../data/services/system';
 
 @Injectable({ providedIn: 'root' })
@@ -24,6 +24,8 @@ export class Timer {
   private onExpire: (() => void) | null = null;
   private examEndMs = 0; 
   private startToken = 0;
+  private lastSyncMs = 0;
+  private syncInProgress: any = null;
 
   constructor() {
     this.initGlobalClock();
@@ -79,17 +81,35 @@ export class Timer {
   }
 
   private syncServerTime() {
-    return this.systemService.getServerTime().pipe(
+    // If a sync is already in progress, return the existing observable
+    if (this.syncInProgress) {
+      return this.syncInProgress;
+    }
+
+    // Cooldown: Don't sync more than once every 5 minutes unless explicitly forced (if needed)
+    const nowMs = Date.now();
+    if (this.lastSyncMs > 0 && nowMs - this.lastSyncMs < 300_000) {
+      return of(void 0);
+    }
+
+    this.syncInProgress = this.systemService.getServerTime().pipe(
       map((response) => response.serverTime),
       map((serverTime) => this.parseServerTime(serverTime)),
       map((parsedServerMs) => {
         if (parsedServerMs !== null) {
-          this._serverOffsetMs.set(parsedServerMs - Date.now());
+          const now = Date.now();
+          this._serverOffsetMs.set(parsedServerMs - now);
+          this.lastSyncMs = now;
         }
       }),
       catchError(() => of(void 0)),
+      finalize(() => {
+        this.syncInProgress = null;
+      }),
       take(1),
     );
+
+    return this.syncInProgress;
   }
 
   private tick(): void {
