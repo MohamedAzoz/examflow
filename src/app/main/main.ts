@@ -31,7 +31,7 @@ export class Main {
   protected readonly userRole = computed(() => (this.identityService.userRole()?.toLowerCase() || 'student') as 'admin' | 'student');
 
   protected readonly activeRoute = signal('dashboard');
-  protected readonly isMobile = signal(false);
+  protected readonly isMobile = signal(typeof window !== 'undefined' ? window.innerWidth <= 992 : false);
 
   /** Is the user a student? */
   protected readonly isStudent = computed(() => this.userRole() === 'student');

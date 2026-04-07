@@ -24,15 +24,16 @@
       @if (!toggle.isExamMode()) {
         <header class="top-header">
           <div class="header-left">
-            <button
-              [hidden]="!toggle.value() && !isMobile()"
-              type="button"
-              class="hamburger-btn"
-              (click)="toggle.toggle()"
-              aria-label="Toggle menu"
-            >
-              <i class="bi bi-list" style="font-weight: bold; font-size: 1.5rem"></i>
-            </button>
+            @if (isMobile() || toggle.value()) {
+              <button
+                type="button"
+                class="hamburger-btn"
+                (click)="toggle.toggle()"
+                aria-label="Toggle menu"
+              >
+                <i class="bi bi-list" style="font-weight: bold; font-size: 1.5rem"></i>
+              </button>
+            }
 
             <h1 class="page-title">{{ pageTitle() }}</h1>
           </div>
