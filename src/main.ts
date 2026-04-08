@@ -7,13 +7,18 @@ import { environment } from './environments/environment';
 Sentry.init({
   dsn: environment.sentryDsn,
   environment: environment.sentryEnv,
-  sendDefaultPii: true,
-  integrations: [Sentry.browserTracingIntegration(), Sentry.replayIntegration()],
-  tracesSampleRate: 1.0,
+  tracesSampleRate: 0.1,
   tracePropagationTargets: ['localhost', /^https:\/\/examflow\.duckdns\.org\/api/],
-  replaysSessionSampleRate: 0.1,
+  replaysSessionSampleRate: 0.0,
   replaysOnErrorSampleRate: 1.0,
-  enableLogs: true,
+  integrations: [
+    Sentry.browserTracingIntegration(),
+    Sentry.replayIntegration({
+      blockAllMedia: true,
+      maskAllText: true,
+    }),
+  ],
+  enableLogs: !environment.production,
 });
 
 bootstrapApplication(App, appConfig).catch((err) => console.error(err));

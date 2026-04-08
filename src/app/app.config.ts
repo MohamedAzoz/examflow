@@ -4,6 +4,8 @@ import {
   provideZonelessChangeDetection,
   ErrorHandler,
   APP_INITIALIZER,
+  provideAppInitializer,
+  inject,
 } from '@angular/core';
 import { provideRouter, Router } from '@angular/router';
 import * as Sentry from '@sentry/angular';
@@ -15,22 +17,23 @@ import { loadingInterceptor } from './core/interceptors/loading-interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideZonelessChangeDetection(), // استمر في استخدامه، فهو رائع للأداء
     provideBrowserGlobalErrorListeners(),
-    provideZonelessChangeDetection(),
+
     {
       provide: ErrorHandler,
-      useValue: Sentry.createErrorHandler(),
+      useValue: Sentry.createErrorHandler({
+        showDialog: false,
+      }),
     },
     {
       provide: Sentry.TraceService,
       deps: [Router],
     },
-    {
-      provide: APP_INITIALIZER,
-      useFactory: () => () => {},
-      deps: [Sentry.TraceService],
-      multi: true,
-    },
+
+    provideAppInitializer(() => {
+      inject(Sentry.TraceService);
+    }),
 
     provideRouter(routes),
     provideHttpClient(withFetch(), withInterceptors([authInterceptor, loadingInterceptor])),

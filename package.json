@@ -4,9 +4,10 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build && npm run sentry:sourcemaps",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org examflow --project javascript-angular ./dist && sentry-cli sourcemaps upload --org examflow --project javascript-angular ./dist"
   },
   "prettier": {
     "printWidth": 100,
@@ -30,6 +31,7 @@
     "@angular/router": "^20.3.0",
     "@sentry/angular": "^10.47.0",
     "@sentry/browser": "^10.47.0",
+    "@sentry/cli": "^2.58.5",
     "bootstrap": "^5.3.8",
     "bootstrap-icons": "^1.13.1",
     "jwt-decode": "^4.0.0",
