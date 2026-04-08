@@ -1,17 +1,15 @@
-import { inject, Injectable, signal, computed } from '@angular/core';
-import { finalize, of, tap } from 'rxjs';
-import { Toggle } from '../../../core/services/toggle';
-import { LocalStorage } from '../../../core/services/local-storage';
-import { StudentExam } from '../../../data/services/student-exam';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { finalize, of, tap } from 'rxjs';
+import { Timer } from '../../../core/services/timer';
+import { Toggle } from '../../../core/services/toggle';
 import { IavailableExams } from '../../../data/models/StudentExam/IavailableExams';
-import { IstartExam } from '../../../data/models/StudentExam/IstartExam';
-import { IsendAnswer } from '../../../data/models/StudentExam/isend-answer';
-import { data, IpastExams } from '../../../data/models/StudentExam/IpastExams';
+import { IpastExams, data } from '../../../data/models/StudentExam/IpastExams';
 import { IResultExam } from '../../../data/models/StudentExam/IResultExam';
 import { IsubmitExam } from '../../../data/models/StudentExam/IsubmitExam';
-import { Timer } from '../../../core/services/timer';
-import { rxResource } from '@angular/core/rxjs-interop';
+import { IstartExam } from '../../../data/models/StudentExam/IstartExam';
+import { IsendAnswer } from '../../../data/models/StudentExam/isend-answer';
+import { StudentExam } from '../../../data/services/student-exam';
 
 @Injectable({
   providedIn: 'root',
@@ -21,36 +19,28 @@ export class StudentExamFacade {
   private readonly studentExamService = inject(StudentExam);
   private readonly router = inject(Router);
   private readonly toggleService = inject(Toggle);
-  private readonly localStorage = inject(LocalStorage);
   private readonly timerService = inject(Timer);
   private readonly isOnline = connectivitySignal();
 
-  /** All available exams from the API */
   readonly upcomingExams = signal<IavailableExams[]>([]);
   readonly pastExams = signal<data[]>([]);
   readonly pastExamResult = signal<data[]>([]);
 
   readonly currentExam = signal<IstartExam | null>(null);
+  readonly examResults = signal<IResultExam | null>(null);
+
   readonly isLoading = signal<boolean>(false);
   readonly errorMessage = signal<string | null>(null);
-
-  // getExamResults
-  readonly examResults = signal<IResultExam | null>(null);
 
   readonly totalPages = signal<number>(0);
   readonly currentPage = signal<number>(1);
   readonly pageSize = signal<number>(6);
 
-  /** Synchronized server time signal */
+  readonly sessionExamId = signal<number | null>(null);
+  readonly currentQuestionIndex = signal<number>(0);
+
   readonly currentTime = this.timerService.now;
 
-  // Manual updateTime is no longer needed but kept empty for API compatibility
-  public updateTime(): void {}
-
-  /**
-   * The currently active exam — one whose startTime <= now
-   * and startTime + durationMinutes > now.
-   */
   readonly activeExam = computed<IavailableExams | null>(() => {
     const now = this.currentTime();
     return (
@@ -65,30 +55,23 @@ export class StudentExamFacade {
   readonly availableTimeToStart = computed<number>(() => {
     const active = this.activeExam();
     const current = this.currentExam()?.exam;
-
-    // Prioritize current ongoing exam info if available
     const exam = current || active;
 
     if (!exam || !exam.startTime) return 0;
+
     const start = new Date(exam.startTime).getTime();
     const joinWindowEnd = start + exam.durationMinutes * 60_000 * this.percentage;
     return Math.floor(joinWindowEnd - this.currentTime());
   });
 
-  /**
-   * Remaining seconds for the active exam countdown.
-   * Returns 0 when no active exam.
-   */
   readonly activeExamRemainingSeconds = computed<number>(() => {
     const exam = this.activeExam();
     if (!exam || !exam.startTime) return 0;
+
     const end = new Date(exam.startTime).getTime() + exam.durationMinutes * 60_000;
     return Math.max(0, Math.floor((end - this.currentTime()) / 1000));
   });
 
-  /**
-   * Upcoming-only exams — those whose startTime is still in the future.
-   */
   readonly futureExams = computed<IavailableExams[]>(() => {
     const now = this.currentTime();
     return this.upcomingExams().filter((exam) => new Date(exam.startTime).getTime() > now);
@@ -98,155 +81,133 @@ export class StudentExamFacade {
     this.timerService.formatTime(this.activeExamRemainingSeconds()),
   );
 
+  setSessionExamId(examId: number): void {
+    this.sessionExamId.set(examId);
+  }
+
+  setCurrentQuestionIndex(index: number): void {
+    if (index < 0) return;
+    this.currentQuestionIndex.set(index);
+  }
+
+  resetExamSessionState(): void {
+    this.sessionExamId.set(null);
+    this.currentQuestionIndex.set(0);
+    this.currentExam.set(null);
+  }
+
   loadAvailableExams(): void {
-    if (this.isOnline()) {
-      this.isLoading.set(true);
-      this.errorMessage.set(null);
-      this.studentExamService.getAvailableExams().subscribe({
-        next: (exams) => {
-          this.upcomingExams.set(exams);
-          this.isLoading.set(false);
-        },
-        error: (error) => {
-          this.isLoading.set(false);
-          this.errorMessage.set('Failed to load upcoming exams.');
-          console.error(error);
-        },
-      });
-    }
+    if (!this.isOnline()) return;
+
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
+
+    this.studentExamService.getAvailableExams().subscribe({
+      next: (exams) => {
+        this.upcomingExams.set(exams);
+        this.isLoading.set(false);
+      },
+      error: (error) => {
+        this.isLoading.set(false);
+        this.errorMessage.set('Failed to load upcoming exams.');
+      },
+    });
   }
 
   startExam(examId: number): void {
-    if (this.isOnline()) {
-      this.isLoading.set(true);
-      this.errorMessage.set(null);
+    if (!this.isOnline()) return;
 
-      this.studentExamService.startExam(examId).subscribe({
-        next: (response: IstartExam) => {
-          this.currentExam.set(response);
-          this.isLoading.set(false);
-          const targetRoute = `/main/student/exam/${response.exam.examId}/0`;
-          if (this.router.url !== targetRoute) {
-            this.router.navigate(['/main/student/exam', response.exam.examId, 0]);
-          }
-        },
-        error: (error) => {
-          this.isLoading.set(false);
-          this.errorMessage.set('Failed to start the exam.');
-          console.error(error);
-        },
-      });
-    }
+    this.setSessionExamId(examId);
+    this.setCurrentQuestionIndex(0);
+
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
+
+    this.studentExamService.startExam(examId).subscribe({
+      next: (response) => {
+        this.currentExam.set(response);
+        this.isLoading.set(false);
+
+        const targetRoute = `/main/student/exam/${response.exam.examId}`;
+        if (this.router.url !== targetRoute) {
+          this.router.navigate(['/main/student/exam', response.exam.examId]);
+        }
+      },
+      error: (error) => {
+        this.isLoading.set(false);
+        this.errorMessage.set('Failed to start the exam.');
+      },
+    });
   }
+
   getExamResults(examId: number): void {
-    if (this.isOnline()) {
-      this.isLoading.set(true);
-      this.errorMessage.set(null);
-      this.studentExamService.getExamResults(examId).subscribe({
-        next: (results) => {
-          this.examResults.set(results);
-          this.isLoading.set(false);
-        },
-        error: (error) => {
-          this.isLoading.set(false);
-          this.examResults.set(null);
-          this.errorMessage.set('Failed to load exam results.');
-          console.error(error);
-        },
-      });
-    }
-  }
-  submitExam(exam: IsubmitExam): any {
-    if (this.isOnline()) {
-      this.isLoading.set(true);
-      this.errorMessage.set(null);
-      return this.studentExamService.submitExam(exam).pipe(
-        tap({
-          next: () => {
-            this.localStorage.remove(`exam_start_${exam.examId}`);
-            this.localStorage.remove(`last_q_${exam.examId}`);
-            this.localStorage.remove(`marked_q_${exam.examId}`);
-            this.localStorage.remove(`sync_queue_${exam.examId}`);
-            this.localStorage.remove(`answers_cache_${exam.examId}`);
-            this.localStorage.remove(`anti_cheat_${exam.examId}`);
-            this.toggleService.examMode(false);
-            this.router.navigate(['/main/student/past-results']);
-          },
-        }),
-        finalize(() => {
-          this.isLoading.set(false);
-        }),
-      );
-    }
-    return of(null);
+    if (!this.isOnline()) return;
+
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
+
+    this.studentExamService.getExamResults(examId).subscribe({
+      next: (results) => {
+        this.examResults.set(results);
+        this.isLoading.set(false);
+      },
+      error: (error) => {
+        this.isLoading.set(false);
+        this.examResults.set(null);
+        this.errorMessage.set('Failed to load exam results.');
+      },
+    });
   }
 
-  sendAnswer(data: IsendAnswer): any {
-    if (this.isOnline()) {
-      this.isLoading.set(true);
-      this.errorMessage.set(null);
-      return this.studentExamService
-        .sendAnswer(data)
-        .pipe(finalize(() => this.isLoading.set(false)));
-    }
-    return of(null);
+  submitExam(exam: IsubmitExam) {
+    if (!this.isOnline()) return of(null);
+
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
+
+    return this.studentExamService.submitExam(exam).pipe(
+      tap(() => {
+        this.toggleService.examMode(false);
+        this.resetExamSessionState();
+        this.router.navigate(['/main/student/past-results']);
+      }),
+      finalize(() => this.isLoading.set(false)),
+    );
+  }
+
+  sendAnswer(data: IsendAnswer) {
+    if (!this.isOnline()) return of(null);
+
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
+
+    return this.studentExamService.sendAnswer(data).pipe(finalize(() => this.isLoading.set(false)));
   }
 
   loadPastExams(page: number = 1, pageSize: number = 2): void {
-    if (this.isOnline()) {
-      this.isLoading.set(true);
-      this.errorMessage.set(null);
-      this.studentExamService.getPastExams(page, pageSize).subscribe({
-        next: (exams: IpastExams) => {
-          this.pastExams.set(exams.data);
-          this.isLoading.set(false);
-          this.totalPages.set(exams.totalSize);
-          this.currentPage.set(exams.pageIndex);
-          this.pastExamResult.set(exams.data);
-          this.pageSize.set(exams.pageSize);
-        },
-        error: (error) => {
-          this.isLoading.set(false);
-          this.pastExams.set([]);
-          this.totalPages.set(0);
-          this.pastExamResult.set([]);
-          this.errorMessage.set(error.message);
-          console.error(error);
-        },
-      });
-    }
+    if (!this.isOnline()) return;
+
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
+
+    this.studentExamService.getPastExams(page, pageSize).subscribe({
+      next: (exams: IpastExams) => {
+        this.pastExams.set(exams.data);
+        this.totalPages.set(exams.totalSize);
+        this.currentPage.set(exams.pageIndex);
+        this.pastExamResult.set(exams.data);
+        this.pageSize.set(exams.pageSize);
+        this.isLoading.set(false);
+      },
+      error: (error) => {
+        this.isLoading.set(false);
+        this.pastExams.set([]);
+        this.totalPages.set(0);
+        this.pastExamResult.set([]);
+        this.errorMessage.set(error.message);
+      },
+    });
   }
-
-  // public allPastExams = rxResource({
-  //   params: () => [this.currentPage(), this.pageSize()],
-  //   stream: () => this.studentExamService.getPastExams(this.currentPage(), this.pageSize()),
-  // });
-  // public allPastExamsData = computed(() => this.allPastExams.value()?.data);
-  // public allPastExamsTotalPages = computed(() => this.allPastExams.value()?.totalSize);
-  // public allPastExamsCurrentPage = computed(() => this.allPastExams.value()?.pageIndex);
-  // public allPastExamsPageSize = computed(() => this.allPastExams.value()?.pageSize);
-  // public loadingPastExams = computed(() => this.allPastExams.isLoading());
-
-  // setPage(page: number): void {
-  //   this.currentPage.set(page);
-  // }
- 
-  // setPageSize(pageSize: number): void {
-  //   this.pageSize.set(pageSize);
-  // }
-
-  // public allUpcomingExams = rxResource({
-  //   stream: () => this.studentExamService.getAvailableExams(),
-  // });
-  // public allUpcomingExamsData = computed(() => this.allUpcomingExams.value());
-  // public loadingUpcomingExams = computed(() => this.allUpcomingExams.isLoading());
-
-  // public activeExamsData = computed(() =>
-  //   this.allUpcomingExams
-  //     .value()
-  //     ?.filter((exam) => new Date(exam.startTime).getTime() > this.currentTime()),
-  // );
-  
 }
 
 export function connectivitySignal() {

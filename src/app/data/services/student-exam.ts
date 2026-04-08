@@ -43,13 +43,7 @@ export class StudentExam {
   }
 
   submitExam(exam: IsubmitExam) {
-    return this.http.post(
-      `${environment.apiUrl}/StudentExam/submit`,
-      exam,
-      {
-        context: new HttpContext().set(SkipLoading, true),
-      },
-    );
+    return this.http.post(`${environment.apiUrl}/StudentExam/submit`, exam);
   }
   //PageIndex=1&PageSize=10
   getPastExams(page: number = 1, pageSize: number = 2) {

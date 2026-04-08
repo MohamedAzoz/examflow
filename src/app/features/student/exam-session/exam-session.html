@@ -1,0 +1,45 @@
+<div class="exam-session-layout">
+  <app-exam-header [countdown]="countdown()" [studentId]="currentExam()?.studentExamId || ''"> </app-exam-header>
+
+  <main class="exam-content-grid">
+    @if (currentQuestion(); as q) {
+      <app-question-area
+        [title]="q.text"
+        [imageUrl]="currentQuestionImage()"
+        [questType]="q.questionType"
+        [options]="q.options"
+        [selectedOptionId]="selectedOptions()[q.questionId] || 0"
+        [essayValue]="essayAnswers()[q.questionId] || ''"
+        [isMarked]="markedQuestions()[q.questionId] || false"
+        [isDirty]="isDirty()"
+        [navigationBlocked]="showNavigationWarning()"
+        [isSavingEssay]="isSavingEssay()"
+        [isFirst]="questionIndex() === 0"
+        [isLast]="questionIndex() >= questions().length - 1"
+        (optionSelected)="selectOption($event)"
+        (essayAnswer)="essayAnswer($event, q.questionId)"
+        (saveEssay)="saveEssayAnswer()"
+        (toggleMark)="toggleMark()"
+        (previous)="previous()"
+        (next)="next()"
+      >
+      </app-question-area>
+    } @else {
+      <div class="loading-state">
+        <p class="text-muted">Loading question data...</p>
+      </div>
+    }
+
+    <app-question-map
+      [questionIds]="questionIds()"
+      [currentIndex]="questionIndex()"
+      [answeredIds]="allAnsweredIds()"
+      [markedIds]="markedQuestions()"
+      [availableTimeToStart]="availableTimeToStart()"
+      [errorMessage]="errorMessage()"
+      (jumpTo)="jumpTo($event)"
+      (submit)="submit()"
+    >
+    </app-question-map>
+  </main>
+</div>
