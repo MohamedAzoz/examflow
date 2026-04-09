@@ -1,0 +1,70 @@
+<div class="modal-backdrop" (click)="onClose()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <!-- Header -->
+    <div class="modal-header">
+      <h2 class="modal-title">{{ isEditMode ? 'Edit Course' : 'Add New Course' }}</h2>
+      <button type="button" class="modal-close-btn" (click)="onClose()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <form [formGroup]="courseForm" (ngSubmit)="onSubmit()">
+      <div class="modal-body">
+        <p class="modal-subtitle">Fill in the details to register a new curriculum.</p>
+
+        <!-- Course Name -->
+        <div class="form-field">
+          <label for="name" class="field-label">Course Name</label>
+          <input
+            id="name"
+            type="text"
+            formControlName="name"
+            class="field-input"
+            placeholder="e.g. Artificial Intelligence"
+          />
+          @if (courseForm.get('name')?.touched && courseForm.get('name')?.invalid) {
+            <span class="error-msg">Name is required (min 3 chars)</span>
+          }
+        </div>
+
+        <!-- Course Code -->
+        <div class="form-field">
+          <label for="code" class="field-label">Course Code</label>
+          <input
+            id="code"
+            type="text"
+            formControlName="code"
+            class="field-input"
+            placeholder="e.g. AI402"
+          />
+          @if (courseForm.get('code')?.touched && courseForm.get('code')?.invalid) {
+            <span class="error-msg">Code is required</span>
+          }
+        </div>
+
+        <!-- Academic Level -->
+        <div class="form-field">
+          <label for="academicLevel" class="field-label">Academic Level</label>
+          <div class="select-wrap">
+            <select id="academicLevel" formControlName="academicLevel" class="field-select">
+              <option [value]="1">Level 1</option>
+              <option [value]="2">Level 2</option>
+              <option [value]="3">Level 3</option>
+              <option [value]="4">Level 4</option>
+            </select>
+            <i class="bi bi-chevron-down select-arrow"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" (click)="onClose()">Cancel</button>
+        <button type="submit" class="btn-create" [disabled]="courseForm.invalid">
+          {{ isEditMode ? 'Save Changes' : 'Create Course' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

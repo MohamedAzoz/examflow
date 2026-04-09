@@ -1,0 +1,105 @@
+<div class="table-card">
+  <!-- Table Responsive Wrap -->
+  <div class="table-responsive">
+    <table class="data-table" aria-label="Semesters table">
+      <thead>
+        <tr>
+          <th class="head-text">SEMESTER NAME</th>
+          <th class="head-text">DURATION</th>
+          <th class="head-text">STATUS</th>
+          <th class="actions-col">ACTIONS</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (semester of paginatedSemesters(); track semester.id) {
+          <tr class="data-row">
+            <td>
+              <div class="name-cell">
+                <div class="avatar semester-icon">
+                   @switch (semester.name.split(' ')[0]) {
+                     @case ('Spring') { <i class="bi bi-leaf"></i> }
+                     @case ('Fall') { <i class="bi bi-flower3"></i> }
+                     @case ('Summer') { <i class="bi bi-brightness-high"></i> }
+                     @default { <i class="bi bi-calendar-event"></i> }
+                   }
+                </div>
+                <span class="cell-name">{{ semester.name }}</span>
+              </div>
+            </td>
+            <td>
+              <span class="duration-text">
+                {{ semester.startDate | date: 'MMM d, yyyy' }} - {{ semester.endDate | date: 'MMM d, yyyy' }}
+              </span>
+            </td>
+            <td>
+              <span class="badge" [ngClass]="semester.status === 'Active' ? 'badge-active' : 'badge-inactive'">
+                {{ semester.status }}
+              </span>
+            </td>
+            <td class="actions-col">
+              <div class="row-actions">
+                <button
+                  type="button"
+                  class="action-btn edit-btn"
+                  (click)="editSemester(semester)"
+                  title="Edit">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button
+                  type="button"
+                  class="action-btn status-btn"
+                  [class.active-mode]="semester.status === 'Active'"
+                  (click)="toggleActivation(semester)"
+                  [title]="semester.status === 'Active' ? 'Deactivate' : 'Activate'">
+                  <i class="bi bi-lightning-charge"></i>
+                </button>
+                <button
+                  type="button"
+                  class="action-btn delete-btn"
+                  (click)="deleteSemester(semester)"
+                  title="Delete">
+                  <i class="bi bi-trash3"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          @if (!semesterFacade.allSemestersResource.isLoading()) {
+            <tr>
+              <td colspan="4" class="empty-state">
+                <i class="bi bi-calendar-x"></i>
+                <p>No semesters found</p>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Table Footer -->
+  @if (totalCount() > 0) {
+    <div class="table-footer">
+      <p class="result-info">
+        Showing <strong>{{ showingFrom() }}</strong>-<strong>{{ showingTo() }}</strong> of
+        <strong>{{ totalCount() }}</strong> semesters
+      </p>
+      <div class="pagination-btns">
+        <button
+          type="button"
+          class="page-btn"
+          [disabled]="currentPage() === 1"
+          (click)="prevPage()">
+          <i class="bi bi-chevron-left"></i>
+        </button>
+        <button
+          type="button"
+          class="page-btn"
+          [disabled]="currentPage() >= totalPages()"
+          (click)="nextPage()">
+          <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  }
+</div>

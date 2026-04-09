@@ -12,34 +12,34 @@ export class Semester {
 
   // GET: /api/Semester/semesters
   getAllSemesters() {
-    this.http.get<ISemesterResponse[]>(`${environment.apiUrl}/Semester/semesters`);
+    return this.http.get<ISemesterResponse[]>(`${environment.apiUrl}/Semester`);
   }
 
   // GET: /api/Semester/active-semester
-  getAllActiveSemesters() {
-    this.http.get<ISemesterResponse[]>(`${environment.apiUrl}/Semester/active-semester`);
+  getActiveSemester() {
+    return this.http.get<ISemesterResponse>(`${environment.apiUrl}/Semester/active`);
   }
   // POST : /api/Semester/create-semester
   postSemesters(data: ISemesterRequest) {
-    this.http.post(`${environment.apiUrl}/Semester/create-semester`, data);
+    return this.http.post(`${environment.apiUrl}/Semester`, data);
   }
   // PUT: /api/Semester/update-semester
   putSemesters(data: ISemesterResponse) {
-    this.http.post(`${environment.apiUrl}/Semester/update-semester`, data);
+    return this.http.put(`${environment.apiUrl}/Semester/update`, data);
   }
 
   // PATCH: /api/Semester/activate
   activateSemesters(id: number) {
-    this.http.patch(`${environment.apiUrl}/Semester/activate`, { params: { id } });
+    return this.http.patch(`${environment.apiUrl}/Semester/activate`, { params: { id } });
   }
 
   // PATCH: /api/Semester/deactivate
   deactivateSemesters(id: number) {
-    this.http.patch(`${environment.apiUrl}/Semester/deactivate`, { params: { id } });
+    return this.http.patch(`${environment.apiUrl}/Semester/deactivate`, { params: { id } });
   }
 
   // DELETE: /api/Semester/delete
   deleteSemesters(id: number) {
-    this.http.delete(`${environment.apiUrl}/Semester/delete`, { params: { id } });
+    return this.http.delete(`${environment.apiUrl}/Semester`, { params: { id } });
   }
 }

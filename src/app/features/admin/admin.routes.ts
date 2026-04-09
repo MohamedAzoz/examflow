@@ -7,40 +7,36 @@ export const adminRoles: Routes = [
     path: 'user-managment',
     title: 'User Managment',
     loadComponent: () =>
-      import('./pages/user-managment/user-managment').then((m) => m.UserManagementComponent),
+      import('./user-managment/user-managment').then((m) => m.UserManagementComponent),
   },
   {
-    path: 'academic-year-managment',
-    title: 'Manage Academic Years',
+    path: 'semester-managment',
+    title: 'Manage Semesters',
     loadComponent: () =>
-      import('./pages/academic-year-managment/academic-year-managment').then(
-        (m) => m.AcademicYearManagment,
-      ),
+      import('./semester-managment/semester-managment').then((m) => m.SemesterManagment),
   },
   {
     path: 'courses-managment',
     title: 'Configure Courses',
     loadComponent: () =>
-      import('./pages/courses-managment/courses-managment').then((m) => m.CoursesManagment),
+      import('./courses-managment/courses-managment').then((m) => m.CoursesManagment),
   },
   {
     path: 'dashboard',
     title: 'Dashboard',
-    loadComponent: () => import('./pages/dashboard/dashboard').then((m) => m.Dashboard),
+    loadComponent: () => import('./dashboard/dashboard').then((m) => m.Dashboard),
   },
   {
     path: 'departments-managment',
     title: 'Department Management',
     loadComponent: () =>
-      import('./pages/departments-managment/departments-managment').then(
-        (m) => m.DepartmentsManagment,
-      ),
+      import('./departments-managment/departments-managment').then((m) => m.DepartmentsManagment),
   },
   {
     path: 'assign-courses-managment',
     title: 'Assign Courses',
     loadComponent: () =>
-      import('./pages/assign-courses-managment/assign-courses-managment').then(
+      import('./assign-courses-managment/assign-courses-managment').then(
         (m) => m.AssignCoursesManagment,
       ),
   },
@@ -48,7 +44,7 @@ export const adminRoles: Routes = [
     path: 'enroll-students-managment',
     title: 'Enroll Students',
     loadComponent: () =>
-      import('./pages/enroll-students-managment/enroll-students-managment').then(
+      import('./enroll-students-managment/enroll-students-managment').then(
         (m) => m.EnrollStudentsManagment,
       ),
   },
@@ -62,7 +58,7 @@ export const adminRoles: Routes = [
     path: 'system-settings-managment',
     title: 'System Settings',
     loadComponent: () =>
-      import('./pages/system-settings-managment/system-settings-managment').then(
+      import('./system-settings-managment/system-settings-managment').then(
         (m) => m.SystemSettingsManagment,
       ),
   },

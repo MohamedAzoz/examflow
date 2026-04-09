@@ -1,0 +1,24 @@
+/* .toolbar {
+    padding: 24px;
+    background: #fff;
+    border-radius: 12px 12px 0 0;
+    border-bottom: 1px solid var(--border-color);
+}
+.toolbar-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+@media (max-width: 768px) {
+    .toolbar {
+        padding: 12px;
+    }
+    .toolbar-actions {
+        flex-direction: row;
+        justify-content: space-between;
+        gap: 0;
+    }
+    .search-wrap {
+        width: 50%;
+    }
+} */

@@ -1,0 +1,102 @@
+<div class="table-card">
+  <!-- Loading Bar -->
+  @if (courseFacade.loading()) {
+    <div class="loading-bar"></div>
+  }
+
+  <!-- Table Content -->
+  <div class="table-responsive">
+    <table class="data-table" aria-label="Courses table">
+      <thead>
+        <tr>
+          <th class="head-text">COURSE NAME</th>
+          <th class="head-text">CODE</th>
+          <th class="head-text">ACADEMIC LEVEL</th>
+          <th class="actions-col">ACTIONS</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (course of paginatedCourses(); track course.id) {
+          <tr class="data-row">
+            <td>
+              <div class="name-cell">
+                <div class="avatar" [style.background]="getAvatarColor($index)">
+                  <span class="avatar-initials" [style.color]="getAvatarText($index)">
+                    {{ getInitials(course.name) }}
+                  </span>
+                </div>
+                <div class="course-info">
+                  <span class="cell-name" title="{{ course.name }}">{{ course.name | cut: 25 }}</span>
+                  <p class="school-text">Academic Department</p>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="univ-code">{{ course.code }}</span>
+            </td>
+            <td>
+              <span class="badge" [ngClass]="getLevelClass(course.academicLevel)">
+                Level {{ course.academicLevel }}
+              </span>
+            </td>
+            <td class="actions-col">
+              <div class="row-actions">
+                <button
+                  type="button"
+                  class="action-btn edit-btn"
+                  (click)="editCourse(course)"
+                  title="Edit">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button
+                  type="button"
+                  class="action-btn delete-btn"
+                  (click)="deleteCourse(course)"
+                  title="Delete">
+                  <i class="bi bi-trash3"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          @if (!courseFacade.loading()) {
+            <tr>
+              <td colspan="4" class="empty-state">
+                <i class="bi bi-journal-x"></i>
+                <p>No courses found</p>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Table Footer -->
+  @if (totalCount() > 0) {
+    <div class="table-footer">
+      <p class="result-info">
+        Showing <strong>{{ showingFrom() }}</strong> to <strong>{{ showingTo() }}</strong> of
+        <strong>{{ totalCount() }}</strong> courses
+      </p>
+      <div class="pagination-btns">
+        <button
+          type="button"
+          class="page-btn"
+          [disabled]="currentPage() === 1"
+          (click)="prevPage()"
+          aria-label="Previous page">
+          <i class="bi bi-chevron-left"></i>
+        </button>
+        <button
+          type="button"
+          class="page-btn"
+          [disabled]="currentPage() >= totalPages()"
+          (click)="nextPage()"
+          aria-label="Next page">
+          <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  }
+</div>

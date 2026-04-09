@@ -3,7 +3,7 @@ import { NavItem } from '../../layout/nav-item';
 export const ADMIN_NAV_ITEMS: readonly NavItem[] = [
   { label: 'Dashboard', icon: 'Dashboard.svg', route: 'dashboard' },
   { label: 'Manage Users', icon: 'User Management.svg', route: 'user-managment' },
-  { label: 'Manage Academic Years', icon: 'Manage Academic Years.svg', route: 'academic-year-managment' },
+  { label: 'Manage Semesters', icon: 'Manage Academic Years.svg', route: 'semester-managment' },
   { label: 'Configure Courses', icon: 'Configure Courses.svg', route: 'courses-managment' },
   { label: 'Add Department', icon: 'Add Department.svg', route: 'departments-managment' },
   { label: 'Assign Courses', icon: 'Assign Courses.svg', route: 'assign-courses-managment' },

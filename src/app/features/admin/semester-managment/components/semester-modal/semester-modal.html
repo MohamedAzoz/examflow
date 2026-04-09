@@ -1,0 +1,68 @@
+<div class="modal-backdrop" (click)="onClose()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <!-- Header -->
+    <div class="modal-header">
+      <h2 class="modal-title">{{ isEditMode ? 'Edit Semester' : 'Add New Semester' }}</h2>
+      <button type="button" class="modal-close-btn" (click)="onClose()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <form [formGroup]="semesterForm" (ngSubmit)="onSubmit()">
+      <div class="modal-body">
+        <p class="modal-subtitle">Configure academic period details.</p>
+
+        <!-- Semester Name -->
+        <div class="form-field">
+          <label for="name" class="field-label">Name</label>
+          <input
+            id="name"
+            type="text"
+            formControlName="name"
+            class="field-input"
+            placeholder="e.g., Winter 2025"
+          />
+        </div>
+
+        <!-- Dates -->
+        <div class="form-row two-col">
+          <div class="form-field">
+            <label for="startDate" class="field-label">Start Date</label>
+            <input
+              id="startDate"
+              type="date"
+              formControlName="startDate"
+              class="field-input"
+            />
+          </div>
+          <div class="form-field">
+            <label for="endDate" class="field-label">End Date</label>
+            <input
+              id="endDate"
+              type="date"
+              formControlName="endDate"
+              class="field-input"
+            />
+          </div>
+        </div>
+
+        <!-- Validation Warning -->
+        @if (semesterForm.hasError('invalidRange')) {
+          <div class="info-alert">
+            <i class="bi bi-exclamation-circle"></i>
+            <span>End Date must be after Start Date. Please ensure the selected time range covers a full academic term.</span>
+          </div>
+        }
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" (click)="onClose()">Cancel</button>
+        <button type="submit" class="btn-create" [disabled]="semesterForm.invalid">
+          {{ isEditMode ? 'Save Changes' : 'Create Semester' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

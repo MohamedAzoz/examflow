@@ -58,7 +58,7 @@ export class Main {
 
       // Admin Management
       'user-managment': 'User Management',
-      'academic-year-managment': 'Manage Academic Years',
+      'semester-managment': 'Manage Semesters',
       'courses-managment': 'Configure Courses',
       'departments-managment': 'Department Management',
       'assign-courses-managment': 'Assign Courses',

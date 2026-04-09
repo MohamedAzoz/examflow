@@ -1,6 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
 
-@import "bootstrap-icons/font/bootstrap-icons.css";
+@import 'bootstrap-icons/font/bootstrap-icons.css';
 @import url('https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Bebas+Neue&family=Big+Shoulders:opsz@10..72&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Figtree:ital,wght@0,300..900;1,300..900&family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Jura:wght@300..700&family=Karla:ital,wght@0,200..800;1,200..800&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=League+Spartan:wght@100..900&family=Lexend+Deca:wght@100..900&family=Libre+Franklin:ital,wght@0,100..900;1,100..900&family=Manrope:wght@200..800&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Outfit:wght@100..900&family=Overpass:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Red+Hat+Display:ital,wght@0,300..900;1,300..900&family=Roboto:ital,wght@0,100..900;1,100..900&family=Rubik:ital,wght@0,300..900;1,300..900&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Work+Sans:ital,wght@0,100..900;1,100..900&family=Young+Serif&display=swap');
 * {
   margin: 0;
@@ -9,28 +9,27 @@
 }
 
 :root {
-  --main-bg-color: #E8E7E7;
-  --success-color: #299E5B;
-  --primary-color: #357B85;
-  --danger-color: #BC3E3E;
-  --gray-color: #CED4DA;
-  --grades-color: #F3F4F6;
+  --main-bg-color: #e8e7e7;
+  --success-color: #299e5b;
+  --primary-color: #357b85;
+  --danger-color: #bc3e3e;
+  --gray-color: #ced4da;
+  --grades-color: #f3f4f6;
 
-
-  --text-gray-color: #706D79;
+  --text-gray-color: #706d79;
   --text-dark-color: #000000;
-  --text-white-color: #FFFFFF;
-  --sidebar-bg: #F3F4F6;
-  --card-bg: #E8E7E7;
-  /* --border-color: #CED4DA; */ 
-  --bg-color: #E5E7EB;
+  --text-white-color: #ffffff;
+  --sidebar-bg: #f3f4f6;
+  --card-bg: #e8e7e7;
+  /* --border-color: #CED4DA; */
+  --bg-color: #e5e7eb;
 
-  --teal: #357B85;
-  --bg-card: #F3F4F6;
---border-teal: #62CEC2;
---text-gray: #4D4D4E;
---orange:#F59E0B;
- --main-bg: #E8E7E7;
+  --teal: #357b85;
+  --bg-card: #f3f4f6;
+  --border-teal: #62cec2;
+  --text-gray: #4d4d4e;
+  --orange: #f59e0b;
+  --main-bg: #e8e7e7;
   --surface: #f5faff;
   --surface-container-lowest: #ffffff;
   --surface-container-low: #eef4fa;
@@ -41,14 +40,14 @@
   --surface-bright: #f5faff;
 
   --primary: #13626c;
-  --primary-container: #357B85;
+  --primary-container: #357b85;
   --on-primary: #ffffff;
   --on-primary-container: #e6fbff;
 
   --secondary: #006a62;
   --secondary-container: #8af5e8;
   --on-secondary-container: #007168;
-  --secondary-fixed-dim: #62CEC2;
+  --secondary-fixed-dim: #62cec2;
 
   --tertiary: #814c28;
   --tertiary-container: #9e643e;
@@ -57,7 +56,7 @@
   --error: #ba1a1a;
   --error-container: #ffdad6;
   --on-error-container: #93000a;
-  --success: #299E5B;
+  --success: #299e5b;
   --on-surface: #161c21;
   --on-surface-variant: #3f484a;
   --outline-variant: #bfc8ca;

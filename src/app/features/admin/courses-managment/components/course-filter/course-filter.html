@@ -1,0 +1,19 @@
+<div class="toolbar">
+  <div class="search-wrap">
+    <i class="bi bi-search search-icon"></i>
+    <input
+      type="text"
+      class="search-input"
+      placeholder="Search by course name or code (e.g., CS201)..."
+      (input)="onSearch($event)"
+      autocomplete="off"
+    />
+  </div>
+
+  <div class="toolbar-actions">
+    <button type="button" class="btn-action btn-add" (click)="onAdd()">
+      <i class="bi bi-plus-lg"></i>
+      <span>Add New Course</span>
+    </button>
+  </div>
+</div>

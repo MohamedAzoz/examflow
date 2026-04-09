@@ -1,0 +1,14 @@
+<div class="courses-container">
+  <!-- Filter & Actions -->
+  <div class="content-section">
+    <app-course-filter (add)="onAddCourse()" (search)="onSearchChanges($event)" />
+    
+    <!-- Main Table -->
+    <app-course-table />
+    
+  </div>
+  <!-- Upsert Modal -->
+  @if (showModal()) {
+    <app-course-modal (closed)="onModalClosed()" />
+  }
+</div>

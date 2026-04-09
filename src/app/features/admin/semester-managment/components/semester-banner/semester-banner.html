@@ -1,0 +1,17 @@
+@if (activeSemester(); as semester) {
+  <div class="banner-card">
+    <div class="banner-badge">
+      <span class="dot"></span>
+      CURRENT ACTIVE SEMESTER
+    </div>
+    <h1 class="semester-name">{{ semester.name }}</h1>
+    <div class="date-range">
+      <i class="bi bi-calendar3"></i>
+      <span>{{ semester.startDate | date: 'MMM d' }} - {{ semester.endDate | date: 'MMM d, yyyy' }}</span>
+    </div>
+  </div>
+} @else if (!isLoading()) {
+  <div class="banner-card empty-banner">
+    <h2 class="no-semester-text">No active semester currently</h2>
+  </div>
+}

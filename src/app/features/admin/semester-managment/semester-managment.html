@@ -1,0 +1,19 @@
+<div class="sm-container">
+  <!-- Banner Section -->
+  <section class="banner-section">
+    <app-semester-banner [activeSemester]="activeSemester()" 
+        [isLoading]="isLoading()" />
+  </section>
+
+  <!-- Content Section -->
+  <main class="content-section">
+    <app-semester-filter (add)="onAddSemester()" (search)="onSearch($event)" />
+    <app-semester-table />
+  </main>
+
+  <!-- Modal -->
+  @if (showModal()) {
+    <app-semester-modal (closed)="onModalClosed()" />
+  }
+</div>
+ 

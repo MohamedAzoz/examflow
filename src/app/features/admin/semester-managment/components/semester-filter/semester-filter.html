@@ -1,0 +1,19 @@
+<div class="toolbar">
+  <div class="search-wrap">
+    <i class="bi bi-search search-icon"></i>
+    <input
+      type="text"
+      class="search-input"
+      placeholder="Search semesters..."
+      (input)="onSearch($event)"
+      autocomplete="off"
+    />
+  </div>
+
+  <div class="toolbar-actions">
+    <button type="button" class="btn-action btn-add" (click)="onAdd()">
+      <i class="bi bi-plus-lg"></i>
+      <span>Add New Semester</span>
+    </button>
+  </div>
+</div>
