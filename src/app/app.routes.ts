@@ -5,7 +5,6 @@ import { authGuard } from './core/guards/auth-guard';
 import { guestGuard } from './core/guards/guest-guard';
 import { IdentityService } from './core/services/identity-service';
 
-
 export const routes: Routes = [
   {
     path: '',
@@ -45,6 +44,12 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./features/student/student.routes').then((m) => m.studentRoutes),
       },
+      {
+        path: 'coming-soon',
+        title: 'Coming Soon',
+        loadComponent: () =>
+          import('./shared/components/coming-soon/coming-soon').then((m) => m.ComingSoon),
+      },
     ],
   },
 
@@ -60,4 +65,3 @@ export const routes: Routes = [
     loadComponent: () => import('./shared/components/not-found/not-found').then((m) => m.NotFound),
   },
 ];
-

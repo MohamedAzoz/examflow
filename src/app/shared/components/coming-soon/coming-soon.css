@@ -1,0 +1,11 @@
+:host {
+  display: block;
+}
+
+.display-1 {
+  opacity: 0.85;
+}
+
+.card {
+  border-radius: 16px;
+}

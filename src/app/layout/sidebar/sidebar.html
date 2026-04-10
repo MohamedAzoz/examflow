@@ -57,7 +57,7 @@
       @for (item of navItems(); track $index) {
         <li class="nav-item">
           <a
-            [routerLink]="['/main', this.userRole().toLowerCase(), item.route]"
+            [routerLink]="[url(item.route)]"
             (click)="onNavClick(item.route)"
             class="nav-link"
             routerLinkActive="active"

@@ -31,6 +31,13 @@ export class SidebarComponent {
       this.toggle.closeSidebar();
     }
   }
+  protected url(route: string): string {
+    if (route === 'coming-soon') {
+      return '/main/coming-soon';
+    } else {
+      return '/main/' + this.userRole().toLowerCase() + '/' + route;
+    }
+  }
 
   protected onCloseClick(): void {
     this.toggle.closeSidebar();

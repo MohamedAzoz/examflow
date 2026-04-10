@@ -1,0 +1,28 @@
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8 col-md-10 text-center">
+      <!-- أيقونة كبيرة -->
+      <div class="mb-4">
+        <i class="bi bi-gear-wide-connected display-1 text-primary"></i>
+      </div>
+
+      <!-- العنوان -->
+      <h1 class="display-5 fw-bold text-dark mb-3">
+        {{ pageTitle() }}
+      </h1>
+
+      <!-- الرسالة -->
+      <p class="lead text-muted mb-5 fs-4">
+        {{ message() }}
+      </p>
+      <!-- أزرار التنقل -->
+      <div class="d-flex justify-content-center gap-3 flex-wrap">
+        <button (click)="goBack()" class="btn btn-outline-secondary btn-lg px-5">
+          <!-- translate to English -->
+          <i class="bi bi-arrow-left me-2"></i>
+          Back
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
