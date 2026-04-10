@@ -49,12 +49,12 @@ export const adminRoles: Routes = [
       ),
   },
   {
-    path: 'reset-passwords',
+    path: 'reset-passwords-managment',
     title: 'Reset Passwords',
     loadComponent: () =>
       import('../auth/pages/reset-passwords/reset-passwords').then((m) => m.ResetPasswords),
   },
-  {
+  { 
     path: 'system-settings-managment',
     title: 'System Settings',
     loadComponent: () =>

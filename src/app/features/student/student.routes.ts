@@ -1,9 +1,8 @@
 import { CanDeactivateFn, Routes } from '@angular/router';
 import { ExamSessionComponent } from './exam-session/exam-session';
 
-export const canDeactivateExamSessionGuard: CanDeactivateFn<ExamSessionComponent> = (
-  component,
-) => component.canDeactivate();
+export const canDeactivateExamSessionGuard: CanDeactivateFn<ExamSessionComponent> = (component) =>
+  component.canDeactivate();
 
 export const studentRoutes: Routes = [
   {
@@ -17,8 +16,7 @@ export const studentRoutes: Routes = [
       {
         path: 'stdashboard',
         title: 'Student Dashboard',
-        loadComponent: () =>
-          import('./dashboard/dashboard').then((m) => m.DashboardComponent),
+        loadComponent: () => import('./dashboard/dashboard').then((m) => m.DashboardComponent),
       },
       {
         path: 'exam/:examId',
@@ -36,8 +34,17 @@ export const studentRoutes: Routes = [
       {
         path: 'past-results/:examId',
         title: 'Exam Result',
-        loadComponent: () =>
-          import('./exam-result/exam-result').then((m) => m.ExamResultComponent),
+        loadComponent: () => import('./exam-result/exam-result').then((m) => m.ExamResultComponent),
+      },
+      {
+        path: 'courses',
+        title: 'Courses',
+        loadComponent: () => import('./courses/courses').then((m) => m.Courses),
+      },
+      {
+        path: 'settings',
+        title: 'Settings',
+        loadComponent: () => import('./settings/settings').then((m) => m.Settings),
       },
     ],
   },

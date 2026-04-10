@@ -62,7 +62,7 @@ export class Main {
       'courses-managment': 'Configure Courses',
       'departments-managment': 'Department Management',
       'assign-courses-managment': 'Assign Courses',
-      'reset-passwords': 'Reset Passwords',
+      'reset-passwords-managment': 'Reset Passwords',
       'enroll-students-managment': 'Enroll Students',
       'system-settings-managment': 'System Settings',
 

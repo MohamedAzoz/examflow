@@ -44,12 +44,6 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./features/student/student.routes').then((m) => m.studentRoutes),
       },
-      {
-        path: 'coming-soon',
-        title: 'Coming Soon',
-        loadComponent: () =>
-          import('./shared/components/coming-soon/coming-soon').then((m) => m.ComingSoon),
-      },
     ],
   },
 
