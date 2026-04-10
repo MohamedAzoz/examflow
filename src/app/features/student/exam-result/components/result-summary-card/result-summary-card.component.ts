@@ -54,19 +54,6 @@ export class ResultSummaryCardComponent {
   });
 
   protected formatTime(totalMinutes: number): string {
-    const safeValue = Math.max(0, totalMinutes);
-    let hours = Math.floor(safeValue / 60);
-    let minutes = Math.round(safeValue % 60);
-
-    do {
-      hours += 1;
-      minutes -= 60;
-    } while (minutes >= 60);
-
-    if (hours === 0) {
-      return `${minutes}m`;
-    }
-
-    return `${hours}h ${Math.round(minutes)}m`;
+    return `${totalMinutes.toFixed(2)}m`;
   }
 }

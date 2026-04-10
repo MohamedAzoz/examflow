@@ -13,7 +13,7 @@ import { connectivitySignal } from '../../../services/student-exam-facade';
       <div class="timer">{{ countdown() }}</div>
       <div class="exam-id">ID : {{ studentId().split('-')[0] }}</div>
     </header>
-  `,
+  `, 
   styleUrl: './exam-header.css',
 })
 export class ExamHeaderComponent {

@@ -1,0 +1,27 @@
+<aside class="question-map">
+  <div class="grid">
+    @for (qId of questionIds(); track $index) {
+      <button
+        type="button"
+        class="grid-item"
+        [class.answered]="!!answeredIds()[qId]"
+        [class.active]="currentIndex() === $index"
+        [class.marked]="!!markedIds()[qId]"
+        (click)="jumpTo.emit($index)"
+      >
+        <span class="question-number">{{ $index + 1 }}</span>
+        @if (markedIds()[qId]) {
+          <i class="bi bi-flag-fill flag-icon"></i>
+        }
+      </button>
+    }
+  </div>
+
+  <button type="button" class="submit-btn" (click)="submit.emit()" [disabled]="isDisabled()">
+    Submit Exam
+  </button>
+
+  @if (errorMessage()) {
+    <div class="error-msg">{{ errorMessage() }}</div>
+  }
+</aside>

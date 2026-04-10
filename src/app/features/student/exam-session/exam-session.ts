@@ -90,6 +90,13 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
       return false;
     }
 
+    const currentAnswer = this.essayAnswers()[q.questionId] || '';
+
+    // If result is only whitespace or empty, don't mark as dirty/block navigation
+    if (!currentAnswer.trim()) {
+      return false;
+    }
+
     return Boolean(this.essayDirtyMap()[q.questionId]);
   });
 
@@ -144,7 +151,9 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
 
   async saveEssayAnswer(): Promise<void> {
     const q = this.currentQuestion();
-    if (!q || q.questionType !== QuestionType.Essay || !this.isDirty() || this.isSavingEssay()) {
+    const isDirty = this.isDirty();
+    
+    if (!q || q.questionType !== QuestionType.Essay || !isDirty || this.isSavingEssay()) {
       return;
     }
 
