@@ -1,60 +1,7 @@
-.access-denied-container {
-  min-height: 100vh;
-  background-color: var(--main-bg-color);
-  padding: 1.5rem;
+.access-denied{
+  font-size: 2.5rem;
 }
-
-.content-box {
-  background-color: var(--text-white-color);
-  border-radius: 15px;
-  max-width: 600px;
-  width: 100%;
-  border-top: 5px solid var(--danger-color); /* شريط علوي بلون التحذير */
-}
-
-/* حركة الأيقونة */
-.icon-wrapper {
-  font-size: 5rem;
-  color: var(--danger-color);
-  animation: pulse-red 2s infinite;
-}
-
-.lock-icon {
-  filter: drop-shadow(0 0 10px rgba(188, 62, 62, 0.2));
-}
-
-/* تخصيص الزر الرئيسي */
-.btn-primary-custom {
-  background-color: var(--primary-color);
-  color: var(--text-white-color);
-  border: none;
-  transition: all 0.3s ease;
-}
-
-.btn-primary-custom:hover {
-  background-color: #2a626a; /* درجة أغمق */
-  color: var(--text-white-color);
-  transform: translateY(-2px);
-}
-
-.btn-outline-secondary {
-  border-color: var(--border-color);
-  color: var(--text-gray-color);
-}
-
-/* أنيميشن بسيط للقفل */
-@keyframes pulse-red {
-  0% { transform: scale(1); }
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
   50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
-}
-
-/* توافق الشاشات الصغيرة */
-@media (max-width: 576px) {
-  .content-box {
-    padding: 2rem 1rem !important;
-  }
-  .display-5 {
-    font-size: 1.8rem;
-  }
 }

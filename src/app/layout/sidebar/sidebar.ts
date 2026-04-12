@@ -1,5 +1,14 @@
-import { Component, inject, input, output, ChangeDetectionStrategy } from '@angular/core';
-import { NgOptimizedImage } from '@angular/common';
+import {
+  Component,
+  inject,
+  input,
+  output,
+  ChangeDetectionStrategy,
+  HostListener,
+  computed,
+  signal,
+} from '@angular/core';
+import { NgClass } from '@angular/common';
 import { Toggle } from '../../core/services/toggle';
 import { NavItem } from '../nav-item';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
@@ -7,7 +16,7 @@ import { IdentityService } from '../../core/services/identity-service';
 
 @Component({
   selector: 'app-sidebar',
-  imports: [NgOptimizedImage, RouterLink, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, NgClass],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -25,18 +34,25 @@ export class SidebarComponent {
 
   readonly navItemSelected = output<string>();
 
+  private readonly viewportWidth = signal<number>(
+    typeof window !== 'undefined' ? window.innerWidth : 1024,
+  );
+
+  protected readonly isMobile = computed<boolean>(() => this.viewportWidth() < 1024);
+
+  @HostListener('window:resize', ['$event'])
+  protected onResize(event: UIEvent): void {
+    this.viewportWidth.set((event.target as Window).innerWidth);
+  }
+
   protected onNavClick(route: string): void {
     this.navItemSelected.emit(route);
-    if (this.toggle.value()) {
+    if (this.toggle.value() && this.isMobile()) {
       this.toggle.closeSidebar();
     }
   }
   protected url(route: string): string {
-    if (route === 'coming-soon') {
-      return '/main/coming-soon';
-    } else {
-      return '/main/' + this.userRole().toLowerCase() + '/' + route;
-    }
+    return '/main/' + this.userRole().toLowerCase() + '/' + route;
   }
 
   protected onCloseClick(): void {

@@ -1,22 +1,28 @@
-<div class="not-found-wrapper d-flex align-items-center justify-content-center">
-  <div class="container text-center">
-    <div class="row justify-content-center">
-      <div class="col-md-8 col-lg-6">
-        
-        <div class="error-illustration mb-4">
-          <i class="bi bi-exclamation-diamond-fill error-icon"></i>
-          <h1 class="display-1 fw-bold error-code">404</h1>
-        </div>
-        <h2 class="mb-3 fw-bold text-dark">Sorry, the page you are looking for does not exist!</h2>
-        <p class="mb-5 error-description">
-          It seems you took a wrong turn or the page you are looking for has been moved or deleted.
-        </p>
-
-        <button (click)="goBack()" class="btn btn-back d-inline-flex align-items-center gap-2">
-          <i class="bi bi-arrow-right-short fs-4"></i> <span>Back to Previous Page</span>
-        </button>
-
+<div class="flex min-h-screen items-center justify-center bg-main-bg p-6">
+  <div class="max-w-xl w-full text-center">
+    <!-- Error Illustration -->
+    <div class="flex flex-col items-center mb-8">
+      <div class="mb-4 drop-shadow-md">
+        <i class="pi pi-exclamation-circle text-danger notFound"></i>
       </div>
+      <h1 class="text-8xl font-black text-primary tracking-widest leading-none mt-2">404</h1>
     </div>
+
+    <!-- Message -->
+    <h2 class="text-4xl font-extrabold mb-4 leading-tight">
+      Sorry, the page you are looking for does not exist!
+    </h2>
+    <p class="text-text-gray text-xl mb-12 leading-relaxed">
+      It seems you took a wrong turn or the page you are looking for has been moved or deleted.
+    </p>
+
+    <!-- Back Button -->
+    <button
+      (click)="goBack()"
+      class="inline-flex items-center gap-3 px-10 py-4 rounded-xl bg-primary text-white text-lg font-bold border-none cursor-pointer transition-all duration-300 hover:bg-primary hover:-translate-y-1 hover:shadow-xl shadow-lg"
+    >
+      <i class="pi pi-arrow-left text-xl"></i>
+      <span>Back to Previous Page</span>
+    </button>
   </div>
 </div>

@@ -23,8 +23,8 @@ import { QuestionAreaComponent } from './components/question-area/question-area'
 import { QuestionMapComponent } from './components/question-map/question-map';
 
 interface AntiCheatCounters {
-  copyPasteCnt: number;
-  tabSwitchCnt: number;
+  serverResponses: number;
+  sessionId: number;
 }
 
 @Component({
@@ -50,7 +50,7 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
   readonly essayAnswers = signal<Record<number, string>>({});
   readonly markedQuestions = signal<Record<number, boolean>>({});
   readonly essayDirtyMap = signal<Record<number, boolean>>({});
-  readonly antiCheatCounters = signal<AntiCheatCounters>({ copyPasteCnt: 0, tabSwitchCnt: 0 });
+  readonly antiCheatCounters = signal<AntiCheatCounters>({ serverResponses: 0, sessionId: 0 });
 
   readonly showNavigationWarning = signal<boolean>(false);
   readonly isSubmitting = signal<boolean>(false);
@@ -152,7 +152,7 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
   async saveEssayAnswer(): Promise<void> {
     const q = this.currentQuestion();
     const isDirty = this.isDirty();
-    
+
     if (!q || q.questionType !== QuestionType.Essay || !isDirty || this.isSavingEssay()) {
       return;
     }
@@ -203,8 +203,8 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
     const counters = this.antiCheatCounters();
     const payload: IsubmitExam = {
       examId,
-      finalCopyPasteCnt: counters.copyPasteCnt,
-      finalTabSwitchCnt: counters.tabSwitchCnt,
+      serverResponses: counters.serverResponses,
+      sessionId: counters.sessionId,
     };
 
     this.isSubmitting.set(true);
@@ -335,8 +335,8 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
       questionId,
       selectedOptionId: this.selectedOptions()[questionId] ?? 0,
       eassayAnswer: this.essayAnswers()[questionId] ?? '',
-      copyPasteCnt: counters.copyPasteCnt,
-      tabSwitchCnt: counters.tabSwitchCnt,
+      serverResponses: counters.serverResponses,
+      sessionId: counters.sessionId,
     };
 
     try {
@@ -350,7 +350,7 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
   private incrementCopyPaste(): void {
     this.antiCheatCounters.update((state) => ({
       ...state,
-      copyPasteCnt: state.copyPasteCnt + 1,
+      serverResponses: state.serverResponses + 1,
     }));
   }
 
@@ -361,7 +361,7 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
     this.lastTabSwitchTimestamp = now;
     this.antiCheatCounters.update((state) => ({
       ...state,
-      tabSwitchCnt: state.tabSwitchCnt + 1,
+      sessionId: state.sessionId + 1,
     }));
   }
 }

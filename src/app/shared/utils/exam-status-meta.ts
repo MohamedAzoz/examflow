@@ -6,42 +6,43 @@ export interface ExamStatusMeta {
   colorClass: string;
   borderColor: string;
 }
+
 export const EXAM_STATUS_MAP: Record<ExamStatus, ExamStatusMeta> = {
   [ExamStatus.NotStarted]: {
     label: 'Absent',
-    icon: 'bi-dash-circle',
-    colorClass: 'status-absent',
-    borderColor: 'border-absent',
+    icon: 'pi-minus-circle',
+    colorClass: 'danger',
+    borderColor: 'border-danger',
   },
   [ExamStatus.InProgress]: {
     label: 'In Progress',
-    icon: 'bi-play-circle',
-    colorClass: 'status-progress',
-    borderColor: 'border-progress',
+    icon: 'pi-play-circle',
+    colorClass: 'primary',
+    borderColor: 'border-primary',
   },
   [ExamStatus.Completed]: {
     label: 'Submitted',
-    icon: 'bi-check-circle',
-    colorClass: 'status-submitted',
-    borderColor: 'border-submitted',
+    icon: 'pi-check-circle',
+    colorClass: 'border-teal',
+    borderColor: 'border-border-teal',
   },
   [ExamStatus.Flushed]: {
     label: 'Evaluating',
-    icon: 'bi-gear-wide-connected',
-    colorClass: 'status-evaluating',
-    borderColor: 'border-evaluating',
+    icon: 'pi-spin pi-spinner',
+    colorClass: 'orange',
+    borderColor: 'border-orange',
   },
   [ExamStatus.PendingEassysManualGrading]: {
     label: 'Pending Essays',
-    icon: 'bi-hourglass-split',
-    colorClass: 'status-pending',
-    borderColor: 'border-pending',
+    icon: 'pi-hourglass',
+    colorClass: 'purple-700',
+    borderColor: 'border-purple-700',
   },
   [ExamStatus.AllGraded]: {
     label: 'Completed',
-    icon: 'bi-trophy',
-    colorClass: 'status-completed',
-    borderColor: 'border-completed',
+    icon: 'pi-verified',
+    colorClass: 'success',
+    borderColor: 'border-success',
   },
 };
 
@@ -49,9 +50,9 @@ export function getExamStatusMeta(status: ExamStatus): ExamStatusMeta {
   return (
     EXAM_STATUS_MAP[status] || {
       label: 'Unknown',
-      icon: 'bi-question-circle',
-      colorClass: 'status-neutral',
-      borderColor: 'border-neutral',
+      icon: 'pi-question-circle',
+      colorClass: 'gray',
+      borderColor: 'border-gray',
     }
   );
 }

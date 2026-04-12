@@ -1,18 +1,33 @@
-<div class="access-denied-container d-flex align-items-center justify-content-center">
-  <div class="content-box text-center shadow-sm p-5">
-    <div class="icon-wrapper mb-4">
-      <i class="bi bi-shield-lock-fill lock-icon"></i>
+<div class="flex min-h-screen items-center justify-center bg-main-bg p-4">
+  <div
+    class="relative w-full max-w-[660px] rounded-3xl bg-white p-12 text-center shadow-lg sm:p-20 before:absolute before:top-0 before:left-0 before:right-0 before:h-2 before:bg-(--danger-color) before:rounded-t-3xl"
+  >
+    <!-- Shield Icon -->
+    <div
+      class="w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mx-auto border-4 border-red-200 shadow-inner"
+    >
+      <i class="pi pi-shield text-red-600 animate-pulse" style="font-size: 3rem"></i>
     </div>
-    <h1 class="display-5 fw-bold text-dark mb-3">Access Denied</h1>
-    <p class="text-muted mb-4 fs-5">
-      Sorry, you do not have the necessary permissions to access this page. <br />
+
+    <!-- Title -->
+    <h1 class="mb-5 text-5xl font-extrabold leading-tight text-text-primary sm:text-6xl">
+      Access Denied
+    </h1>
+
+    <!-- Description -->
+    <p class="mb-12 font-(--font-body) text-xl leading-relaxed text-text-gray">
+      Sorry, you do not have the necessary permissions to <br class="hidden sm:block" />
+      access this page. <br class="hidden sm:block" />
       Please contact the administration if you believe this is an error.
     </p>
-    <div class="d-flex flex-column justify-content-center gap-3">
-      <button (click)="goBack()" class="btn btn-primary-custom px-4 py-2">
-        <i class="bi bi-arrow-right ms-2"></i>
-        Back to Previous Page
-      </button>
-    </div>
+
+    <!-- Back Button -->
+    <button
+      (click)="goBack()"
+      class="inline-flex items-center justify-center gap-3 px-10 py-3 text-lg font-medium rounded-xl bg-[#357b85] text-white border-none cursor-pointer transition-all duration-200 hover:bg-[#2a626a] hover:shadow-md hover:-translate-y-0.5"
+    >
+      <i class="pi pi-arrow-left"></i>
+      <span>Back to Previous Page</span>
+    </button>
   </div>
 </div>

@@ -9,7 +9,7 @@ export class Toggle {
 
   examMode(value: boolean) {
     if (value) {
-      this.isSidebarOpen.set(true);
+      this.isSidebarOpen.set(false);
       this.isExamMode.set(true);
     } else {
       this.isSidebarOpen.set(false);

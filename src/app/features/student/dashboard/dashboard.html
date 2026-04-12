@@ -1,18 +1,28 @@
-<div class="dashboard-container">
-  <div class="dashboard-grid">
-    <div class="upcoming-slot">
-      <app-upcoming-exams-card [exams]="facade.futureExams()" />
-    </div>
+<section class="min-h-full p-3 md:p-6 lg:p-10 animate-in fade-in duration-700">
 
-    <div class="past-slot">
-      <app-past-exams-card [exams]="facade.pastExams()" />
-    </div>
+  <!-- Academic Action Center -->
+  <main class="space-y-12">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+      <!-- Left Column: Upcoming & Active -->
+      <div class="lg:col-span-8 flex flex-col gap-8">
+        <!-- Upcoming Exams Slot -->
+        <div class="animate-in slide-in-from-left duration-500">
+          <app-upcoming-exams-card [exams]="facade.futureExams()" />
+        </div>
 
-    <div class="active-slot">
-      <app-active-exams-card
-        [activeExam]="facade.activeExam()"
-        [countdown]="facade.activeExamCountdown()"
-      />
+        <!-- Active Exam Slot -->
+        <div class="flex-1 animate-in slide-in-from-left duration-500 delay-150">
+          <app-active-exams-card
+            [activeExam]="facade.activeExam()"
+            [countdown]="facade.activeExamCountdown()"
+          />
+        </div>
+      </div>
+
+      <!-- Right Column: Recent Activity / Past Exams -->
+      <div class="lg:col-span-4 h-full animate-in slide-in-from-right duration-500 delay-300">
+        <app-past-exams-card [exams]="facade.pastExams()" class="h-full block" />
+      </div>
     </div>
-  </div>
-</div>
+  </main>
+</section>

@@ -41,7 +41,7 @@ export class ProfessorFacade {
               .filter((item: any) => !!item.id);
             this.professors.set(mapped);
             return mapped;
-          })
+          }),
         );
     },
   });
@@ -50,7 +50,11 @@ export class ProfessorFacade {
   public readonly assignedCoursesResource = rxResource<IAssignCourses | null, string | null>({
     stream: () => {
       const id = this.assignedCoursesRequest();
-      return id !== null ? this.professorService.getAssignedCourses(id).pipe(tap((res) => this.assignedCourses.set(res.assignedCourses || []))) : of(null);
+      return id !== null
+        ? this.professorService
+            .getAssignedCourses(id)
+            .pipe(tap((res) => this.assignedCourses.set(res.assignedCourses || [])))
+        : of(null);
     },
   });
 
@@ -84,28 +88,28 @@ export class ProfessorFacade {
     return throwError(() => err);
   }
 
-  /** @deprecated Use allProfessors resource and professorsSearch signal. */
+  /** Use allProfessors resource and professorsSearch signal. */
   getAllProfessors(
     nameSearch: string = '',
     professorSortingOption: number = 0,
     pageSize: number = 300,
     pageIndex: number = 1,
   ): void {
-    this.professorsSearch.set({ 
-      nameSearch, 
-      sortingOption: professorSortingOption, 
-      pageSize, 
-      pageIndex 
+    this.professorsSearch.set({
+      nameSearch,
+      sortingOption: professorSortingOption,
+      pageSize,
+      pageIndex,
     });
   }
 
-  /** @deprecated Use assignedCoursesResource and assignedCoursesRequest signal. */
-  getAssignedCourses(professorId: string): Observable<IAssignCourses> {
+  // rx
+  getAssignedCourses(professorId: string) {
     this.assignedCoursesRequest.set(professorId);
     return this.professorService.getAssignedCourses(professorId).pipe(
       tap((res) => this.assignedCourses.set(res.assignedCourses || [])),
       catchError((err) => this.handleRequestError(err)),
-      finalize(() => this.loading.set(false)),
+      finalize(() => this.assignedCoursesResource.reload()),
     );
   }
 

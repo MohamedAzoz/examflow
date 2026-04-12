@@ -1,34 +1,56 @@
-<div class="result-card" [class]="statusMeta().colorClass">
-  <div class="card-header">
-    <span class="status-badge">
-      <i [class]="statusMeta().icon"></i>
+<div
+  class="group relative h-full bg-card-bg rounded-4xl p-6 pt-5 flex flex-col transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 border-t-4"
+  [class]="'border-' + statusMeta().colorClass"
+>
+  <!-- [style.border-top-color]="'var(--' + statusMeta().colorClass + ')'" -->
+  <!-- Card Header -->
+  <div class="flex items-center justify-between mb-8">
+    <!-- Status Badge -->
+    <div
+      class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-[10px] font-extrabold uppercase tracking-wider backdrop-blur-sm shadow-sm"
+      [class]="'text-' + statusMeta().colorClass + ' ' + 'bg-surface-container'"
+    >
+      <i [class]="'pi ' + statusMeta().icon" class="text-xs"></i>
       {{ statusMeta().label }}
-    </span>
-    <div class="card-icon" class="{{statusMeta().colorClass}}">
-      <i class="bi" [class]="statusMeta().icon"></i>
+    </div>
+
+    <!-- Status Icon Circle -->
+    <div
+      class="w-8 h-8 rounded-full flex items-center justify-center border-2"
+      [class]="'border-' + statusMeta().colorClass"
+    >
+      <i
+        [class]="'pi ' + statusMeta().icon + ' ' + 'text-' + statusMeta().colorClass"
+        class="text-xs"
+      ></i>
     </div>
   </div>
 
-  <div class="card-body">
-    <h3 class="exam-title">{{ result.examTitle }}</h3>
-    <!-- <p class="exam-subtitle">Assessment Session</p> -->
+  <!-- Card Body -->
+  <div class="mb-4">
+    <h3
+      class="text-2xl font-black text-primary leading-tight line-clamp-2 uppercase tracking-tight"
+    >
+      {{ result.examTitle }}
+    </h3>
   </div>
 
-  <div class="card-footer">
-    <div class="score-container">
-      <span class="score-value" [ngClass]="getScoreColor(result)">
-        {{ result.studentScore | number : '1.1-1' }}
+  <!-- Card Footer -->
+  <div class="mt-auto space-y-4">
+    <div class="flex items-baseline gap-1.5">
+      <span class="text-4xl font-black" [ngClass]="getScoreColor(result)">
+        {{ result.studentScore | number: '1.1-1' }}
       </span>
-      <span class="score-total">/ {{ result.examMaxScore }}</span>
+      <span class="text-lg font-bold text-text-secondary/50">/ {{ result.examMaxScore }}</span>
     </div>
 
     <button
       type="button"
-      class="view-results-btn"
-      [routerLink]="['/main/student/past-results', result.examId]" 
+      class="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-primary text-white font-bold text-sm transition-all duration-300 hover:bg-primary-hover hover:gap-3 focus-visible:ring-4 focus-visible:ring-primary/20 shadow-md shadow-primary/10"
+      [routerLink]="['/main/student/past-results', result.examId]"
     >
-      View Results
-      <i class="bi bi-arrow-right"></i>
+      <span>View Results</span>
+      <i class="pi pi-arrow-right text-xs"></i>
     </button>
   </div>
 </div>

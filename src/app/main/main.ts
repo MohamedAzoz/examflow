@@ -28,10 +28,14 @@ export class Main {
   private readonly router = inject(Router);
 
   /** Dynamically compute role from IdentityService */
-  protected readonly userRole = computed(() => (this.identityService.userRole()?.toLowerCase() || 'student') as 'admin' | 'student');
+  protected readonly userRole = computed(
+    () => (this.identityService.userRole()?.toLowerCase() || 'student') as 'admin' | 'student',
+  );
 
   protected readonly activeRoute = signal('dashboard');
-  protected readonly isMobile = signal(typeof window !== 'undefined' ? window.innerWidth <= 992 : false);
+  protected readonly isMobile = signal(
+    typeof window !== 'undefined' ? window.innerWidth < 1024 : false,
+  );
 
   /** Is the user a student? */
   protected readonly isStudent = computed(() => this.userRole() === 'student');
@@ -46,17 +50,16 @@ export class Main {
     return fullName;
   });
 
-  protected readonly userRoleLabel = computed(() =>
-    this.identityService.userRole() || (this.userRole() === 'admin' ? 'System Administrator' : 'Student')
+  protected readonly userRoleLabel = computed(
+    () =>
+      this.identityService.userRole() ||
+      (this.userRole() === 'admin' ? 'System Administrator' : 'Student'),
   );
 
   protected readonly pageTitle = computed(() => {
     const titles: Record<string, string> = {
-      // General
-      dashboard: 'Dashboard',
-      'stdashboard': 'Student Dashboard',
-
       // Admin Management
+      dashboard: 'Dashboard',
       'user-managment': 'User Management',
       'semester-managment': 'Manage Semesters',
       'courses-managment': 'Configure Courses',
@@ -67,6 +70,7 @@ export class Main {
       'system-settings-managment': 'System Settings',
 
       // Student Features
+      stdashboard: 'Student Dashboard',
       courses: 'Courses',
       'past-results': 'My Results',
       settings: 'Settings',
@@ -93,14 +97,17 @@ export class Main {
   }
 
   @HostListener('window:resize', ['$event'])
-  protected onResize(event: Event): void {
-    this.isMobile.set((event.target as Window).innerWidth <= 992);
+  protected onResize(event: UIEvent): void {
+    const w = (event.target as Window).innerWidth;
+    this.isMobile.set(w < 1024);
   }
 
   private syncActiveRouteWithUrl(url: string): void {
     const cleanUrl = url.split('?')[0];
     const segments = cleanUrl.split('/').filter(Boolean);
-    const roleSegmentIndex = segments.findIndex((segment) => segment === 'admin' || segment === 'student');
+    const roleSegmentIndex = segments.findIndex(
+      (segment) => segment === 'admin' || segment === 'student',
+    );
     const routeFromUrl = roleSegmentIndex >= 0 ? segments[roleSegmentIndex + 1] : 'dashboard';
 
     this.activeRoute.set(routeFromUrl || 'dashboard');

@@ -1,23 +1,37 @@
-<article class="essay-card">
-  <header class="card-header">
-    <div>
-      <p class="essay-index">Essay {{ index }}</p>
-      <h3 class="essay-title">Written Response Review</h3>
+<article
+  class="group h-full bg-card-bg rounded-[2.5rem] p-8 flex flex-col transition-all duration-300 border border-border/40 hover:shadow-xl hover:shadow-primary/5"
+>
+  <header class="flex justify-between items-start gap-4 mb-8">
+    <div class="space-y-1">
+      <p class="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Essay {{ index }}</p>
+      <h3 class="text-xl font-black text-text-primary uppercase tracking-tight leading-none">
+        Written Response
+      </h3>
     </div>
-
-    <span class="degree-badge">{{ question.degree }} pts</span>
+    <span class="px-4 py-1.5 bg-primary/5 border border-primary/20 rounded-full text-xs font-black text-primary whitespace-nowrap">
+      {{ question.degree }} pts
+    </span>
   </header>
 
-  <p class="question-text">{{ question.questionText }}</p>
+  <p class="text-xl font-bold text-text-primary leading-snug mb-8 line-clamp-6">
+    {{ question.questionText }}
+  </p>
 
   @if (imageUrl; as image) {
-    <div class="essay-image-wrap">
-      <img [src]="image" [alt]="'Essay question ' + index + ' illustration'" class="essay-image" />
+    <div class="mb-8 rounded-3xl overflow-hidden border border-border/20 aspect-video bg-surface shadow-sm">
+      <img [src]="image" [alt]="'Essay question ' + index + ' illustration'" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
     </div>
   }
 
-  <div class="answer-box">
-    <span class="answer-label">Your written answer</span>
-    <p>{{ question.essayAnswer || 'No written answer was submitted.' }}</p>
+  <div class="mt-auto space-y-4">
+    <div class="p-6 rounded-4xl bg-surface/50 border border-border/30 group-hover:bg-white group-hover:shadow-lg group-hover:shadow-primary/5 transition-all duration-300">
+      <span class="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.15em] mb-3 text-text-secondary/60">
+        <i class="pi pi-pencil text-[10px]"></i>
+        Your written answer
+      </span>
+      <p class="text-text-primary leading-relaxed whitespace-pre-wrap font-medium">
+        {{ question.essayAnswer || 'No written answer was submitted.' }}
+      </p>
+    </div>
   </div>
 </article>

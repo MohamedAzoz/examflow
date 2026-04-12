@@ -1,32 +1,76 @@
-<article class="question-card" [class.correct]="question.answerStatus" [class.incorrect]="!question.answerStatus">
-  <header class="card-header">
-    <div>
-      <p class="question-index">Question {{ index }}</p>
-      <h3 class="question-state">
+<article
+  class="grid gap-3 sm:gap-4 p-4 sm:p-[1.2rem] rounded-2xl sm:rounded-[1.35rem] border border-[#bfc8ca]/70 bg-white/95 shadow-[0_12px_28px_rgba(22,28,33,0.06)]"
+  [style.box-shadow]="
+    question.answerStatus
+      ? 'inset 0 0 0 1px rgba(41, 158, 91, 0.18), 0 12px 28px rgba(22, 28, 33, 0.06)'
+      : 'inset 0 0 0 1px rgba(186, 26, 26, 0.14), 0 12px 28px rgba(22, 28, 33, 0.06)'
+  "
+>
+  <header class="flex justify-between items-start gap-3">
+    <div class="min-w-0">
+      <p
+        class="m-0 mb-1 sm:mb-[0.35rem] text-text-secondary/80 text-xs sm:text-[0.82rem] uppercase tracking-widest sm:tracking-[0.08em] font-extrabold truncate"
+      >
+        Question {{ index }}
+      </p>
+      <h3 class="m-0 text-sm sm:text-base font-bold text-text-primary truncate">
         {{ question.answerStatus ? 'Correct Answer' : 'Incorrect Answer' }}
       </h3>
     </div>
-
-    <span class="degree-badge">{{ question.degree }} pts</span>
+    <span
+      class="px-2.5 py-1 sm:px-[0.7rem] sm:py-[0.45rem] bg-surface-container rounded-full text-xs sm:text-[0.8rem] text-primary font-extrabold whitespace-nowrap shrink-0"
+    >
+      {{ question.degree }} pts
+    </span>
   </header>
 
-  <p class="question-text">{{ question.questionText }}</p>
+  <p
+    class="m-0 text-sm sm:text-[1rem] leading-relaxed sm:leading-[1.7] text-text-primary font-medium"
+  >
+    {{ question.questionText }}
+  </p>
 
-  @if (imageUrl; as image) {
-    <div class="question-image-wrap">
-      <img [src]="image" [alt]="'Question ' + index + ' illustration'" class="question-image" />
+  @if (imageUrl !== null && !imageError) {
+    <div class="overflow-hidden rounded-2xl border border-[#bfc8ca]/60 bg-surface-container">
+      <img
+        [src]="imageUrl"
+        (error)="imageError = true"
+        [alt]="'Question ' + index + ' illustration'"
+        class="block w-full max-h-60 object-cover"
+      />
     </div>
   }
 
-  <div class="answer-stack">
-    <div class="answer-row" [class.selected-correct]="question.answerStatus" [class.selected-incorrect]="!question.answerStatus">
-      <span class="answer-label">Your answer</span>
-      <p>{{ question.selectedOptionText || 'No option selected' }}</p>
+  <div class="grid gap-2.5 sm:gap-3">
+    <!-- Student Answer -->
+    <div
+      class="p-3 sm:p-[0.95rem] px-3 sm:px-4 rounded-2xl border-none"
+      [class]="question.answerStatus ? 'bg-success/10' : 'bg-danger/10'"
+    >
+      <span
+        class="block mb-1 sm:mb-[0.4rem] text-xs sm:text-[0.78rem] text-text-secondary/80 uppercase tracking-widest sm:tracking-[0.08em] font-semibold"
+        >Your answer</span
+      >
+      <p
+        class="m-0 text-sm sm:text-base text-text-primary leading-relaxed sm:leading-[1.6] font-semibold"
+      >
+        {{ question.selectedOptionText || 'No option selected' }}
+      </p>
     </div>
 
-    <div class="answer-row answer-row-correct">
-      <span class="answer-label">Correct answer</span>
-      <p>{{ question.correctOptionText }}</p>
-    </div>
+    <!-- Correct Answer (Only shown if incorrect) -->
+    @if (!question.answerStatus) {
+      <div class="p-3 sm:p-[0.95rem] px-3 sm:px-4 rounded-2xl bg-success/10 border-none">
+        <span
+          class="block mb-1 sm:mb-[0.4rem] text-xs sm:text-[0.78rem] text-text-secondary/80 uppercase tracking-widest sm:tracking-[0.08em] font-semibold"
+          >Correct answer</span
+        >
+        <p
+          class="m-0 text-sm sm:text-base text-text-primary leading-relaxed sm:leading-[1.6] font-semibold"
+        >
+          {{ question.correctOptionText }}
+        </p>
+      </div>
+    }
   </div>
 </article>

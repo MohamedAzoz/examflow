@@ -100,9 +100,9 @@ export class AssignCoursesManagment {
   });
 
   constructor() {
-    this.courseFacade.getAllCourses();
-    this.professorFacade.getAllProfessors();
-    this.departmentFacade.getDepartments();
+    this.courseFacade.allCourses.reload();
+    this.professorFacade.allProfessors.reload();
+    this.departmentFacade.allDepartments.reload();
   }
 
   protected onModeChanged(mode: AssignMode): void {

@@ -1,27 +1,36 @@
-<aside class="question-map">
-  <div class="grid">
+<aside
+  class="flex h-full min-h-[260px] flex-col rounded-xl border border-[var(--color-border)] bg-[var(--color-card-bg)] p-3 shadow-sm md:min-h-[340px] md:p-4"
+>
+  <div class="grid flex-1 grid-cols-4 gap-2 md:gap-2.5">
     @for (qId of questionIds(); track $index) {
       <button
         type="button"
-        class="grid-item"
-        [class.answered]="!!answeredIds()[qId]"
-        [class.active]="currentIndex() === $index"
-        [class.marked]="!!markedIds()[qId]"
+        [class]="questionButtonClass(qId, $index)"
         (click)="jumpTo.emit($index)"
+        [attr.aria-label]="'Question ' + ($index + 1)"
       >
-        <span class="question-number">{{ $index + 1 }}</span>
+        <span [class]="questionNumberClass($index)">{{ $index + 1 }}</span>
         @if (markedIds()[qId]) {
-          <i class="bi bi-flag-fill flag-icon"></i>
+          <i
+            class="pi pi-flag-fill absolute right-1 top-1 text-[0.65rem] text-[var(--color-danger)]"
+          ></i>
         }
       </button>
     }
   </div>
 
-  <button type="button" class="submit-btn" (click)="submit.emit()" [disabled]="isDisabled()">
+  <button
+    type="button"
+    class="mt-5 w-full rounded-lg bg-[var(--color-danger)] px-4 py-2.5 text-lg font-semibold text-white transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-65 md:mt-6 md:text-xl"
+    (click)="submit.emit()"
+    [disabled]="isDisabled()"
+  >
     Submit Exam
   </button>
 
   @if (errorMessage()) {
-    <div class="error-msg">{{ errorMessage() }}</div>
+    <div class="mt-4 text-center text-sm font-semibold text-[var(--color-danger)]">
+      {{ errorMessage() }}
+    </div>
   }
 </aside>

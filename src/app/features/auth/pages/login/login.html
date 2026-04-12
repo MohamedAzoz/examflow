@@ -1,68 +1,87 @@
-<div class="py-0 py-lg-1 px-0 d-flex align-items-center justify-content-center">
-  <div class="container main-card">
-    <div class="row w-100 g-0 color" >
+<div class="min-h-screen flex items-center justify-center bg-[#f4f7f6] p-4 lg:p-0">
+  <div class="main-card bg-sidebar-bg shadow-lg rounded-xl overflow-hidden max-w-[1150px] w-full lg:w-[80vw] lg:h-[90vh] flex flex-col md:flex-row border border-gray-200">
+    
+    <!-- Left Illustration (Visible only on desktop) -->
+    <div class="hidden md:block md:w-5/12 h-full">
+      <img src="Login.png" class="w-full h-full object-cover rounded-tr-[2.5rem] rounded-br-[2.5rem]" alt="Login Illustration">
+    </div>
 
-      <div class="col-md-5 d-none d-md-block">
-        <img src="Login.png" class="img-fluid w-100 image" alt="Login Illustration">
+    <!-- Right Login Form -->
+    <div class="w-full md:w-7/12 p-6 md:p-10 lg:p-20 flex flex-col justify-center">
+      
+      <!-- Logo Section -->
+      <div class="flex items-center justify-center mb-8 md:mb-10 -translate-x-2">
+        <img src="Logo.svg" class="w-10 h-auto mr-4 -translate-y-2" alt="Logo">
+        <h2 class="text-xl font-medium tracking-widest text-[#111827] -translate-y-2">EXAMFLOW</h2>
       </div>
 
-      <div class="col-md-7 col-12 form-section d-flex flex-column justify-content-center p-3 p-md-4 p-lg-5">
-
-        <div class="brand-section mb-0 mb-lg-4">
-          <img src="Logo.svg" class="brand-logo" alt="Logo">
-          <h2 class="brand-name">EXAMFLOW</h2>
-        </div>
-
-        <!-- <hr class="hr-custom col-12 d-md-none d-block"> -->
-        <div class="welcome-section mb-4">
-          <h1 class="welcome-title">Welcome back!</h1>
-          <p class="welcome-subtitle">Please login to continue</p>
-        </div>
-
-        @if (authFacade.errorMessage()) {
-          <div class="alert alert-danger py-2 small border-0 mb-3">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i>
-            {{ authFacade.errorMessage() }}
-          </div>
-        }
-
-        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-
-          <div class="mb-1 mb-lg-3">
-            <div class="input-wrapper gap-2" [class.is-invalid-group]="loginForm.get('identifier')?.touched && loginForm.get('identifier')?.invalid">
-              <i class="bi bi-person-fill mx-2"></i>
-              <input type="text" formControlName="identifier" class="form-control form-input" placeholder="Username or ID">
-            </div>
-            @if (loginForm.get('identifier')?.touched && loginForm.get('identifier')?.errors?.['required']) {
-              <small class="text-danger ps-1 mt-1 d-block">Required field</small>
-            }
-          </div>
-
-          <div class="mb-1 mb-lg-3">
-            <div class="input-wrapper gap-2" [class.is-invalid-group]="loginForm.get('password')?.touched && loginForm.get('password')?.invalid">
-              <i class="bi bi-lock-fill mx-2"></i>
-              <input [type]="showPassword() ? 'text' : 'password'" formControlName="password" class="form-control form-input" placeholder="Password">
-              <i [class]="showPassword() ? 'bi bi-eye-slash-fill' : 'bi bi-eye-fill'" class="toggle-password mx-2" (click)="togglePassword()"></i>
-            </div>
-
-            @if (loginForm.get('password')?.touched && loginForm.get('password')?.errors?.['required']) {
-              <small class="text-danger ps-1 mt-1 d-block">Password is required</small>
-            }
-          </div>
-
-          <div class="forgot-password-section mb-4">
-            <a href="#" class="forgot-link">forgot password?</a>
-          </div>
-
-          <button type="submit" class="btn btn-login w-100 d-flex align-items-center justify-content-center gap-2" [disabled]="loginForm.invalid || authFacade.isLoading()">
-            @if (authFacade.isLoading()) {
-              <span class="spinner-border spinner-border-sm" role="status"></span>
-            }
-            {{ authFacade.isLoading() ? 'Logging in...' : 'Login' }}
-          </button>
-        </form>
-
+      <!-- Welcome Section -->
+      <div class="text-center mb-10">
+        <h1 class="text-2xl font-medium text-[#111827] mb-2 font-headline">Welcome back!</h1>
+        <p class="text-sm font-medium text-[#706D79]">Please login to continue</p>
       </div>
+
+      <!-- Alert Section -->
+      @if (authFacade.errorMessage()) {
+        <div class="bg-red-50 border border-red-200 text-red-600 px-4 py-2 rounded-lg mb-6 flex items-center gap-2 text-sm">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          {{ authFacade.errorMessage() }}
+        </div>
+      }
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-5">
+        
+        <!-- Username Field -->
+        <div class="flex flex-col gap-1.5">
+          <p-iconfield>
+              <p-inputicon class="pi pi-user text-gray-500" />
+              <input type="text" 
+                     pInputText 
+                     formControlName="identifier" 
+                     placeholder="Username or ID" 
+                     class="w-full bg-sidebar-bg! border-border! focus:border-primary! rounded-xl py-3! text-sm" 
+                     [class.ng-invalid]="loginForm.get('identifier')?.touched && loginForm.get('identifier')?.invalid" />
+          </p-iconfield>
+          @if (loginForm.get('identifier')?.touched && loginForm.get('identifier')?.errors?.['required']) {
+            <small class="text-red-500 text-xs font-medium ps-1">Required field</small>
+          }
+        </div>
+
+        <!-- Password Field -->
+        <div class="flex flex-col gap-1.5">
+          <p-iconfield>
+              <p-inputicon class="pi pi-lock text-gray-500" />
+              <input [type]="showPassword() ? 'text' : 'password'" 
+                     pInputText 
+                     formControlName="password" 
+                     placeholder="Password" 
+                     class="w-full bg-sidebar-bg! border-border! focus:border-primary! rounded-xl py-3! text-sm" 
+                     [class.ng-invalid]="loginForm.get('password')?.touched && loginForm.get('password')?.invalid" />
+              <p-inputicon [class]="showPassword() ? 'pi pi-eye-slash' : 'pi pi-eye'" 
+                           class="cursor-pointer text-gray-500 hover:text-gray-700 transition-colors" 
+                           (click)="togglePassword()" />
+          </p-iconfield>
+          @if (loginForm.get('password')?.touched && loginForm.get('password')?.errors?.['required']) {
+            <small class="text-red-500 text-[11px] font-medium ps-1">Password is required</small>
+          }
+        </div>
+
+        <!-- Forgot Password Link -->
+        <div class="text-left">
+          <a href="#" class="text-[#3d8b9e] text-sm hover:underline font-medium">forgot password?</a>
+        </div>
+
+        <!-- Login Button -->
+        <button type="submit" 
+                pButton 
+                [disabled]="loginForm.invalid || authFacade.isLoading()" 
+                [loading]="authFacade.isLoading()"
+                class="w-full rounded-xl py-3 bg-primary! hover:bg-primary-hover! border-none! shadow-none! transition-all duration-300">
+           <span class="w-full font-medium">{{ authFacade.isLoading() ? 'Logging in...' : 'Login' }}</span>
+        </button>
+
+      </form>
+
     </div>
   </div>
 </div>

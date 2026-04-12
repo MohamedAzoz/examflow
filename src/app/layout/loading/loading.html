@@ -1,12 +1,12 @@
 @if (loadingService.isLoading()) {
-  <div class="loading-overlay d-flex flex-column justify-content-center align-items-center">
-    <div class="loader-wrapper">
-      <div class="ring ring-teal"></div>
-      <div class="ring ring-orange"></div>
-      <div class="logo-box">
-        <img src="Logo.svg" alt="Logo" class="loading-logo">
+  <div class="fixed inset-0 z-9999 flex flex-col items-center justify-center bg-white/95 backdrop-blur-sm">
+    <div class="relative w-36 h-36 flex items-center justify-center">
+      <div class="absolute w-32 h-32 rounded-full border-4 border-transparent border-t-[#005f56] border-b-[#005f56] animate-spin ring-teal"></div>
+      <div class="absolute w-28 h-28 rounded-full border-4 border-transparent border-r-[#f39c12] border-l-[#f39c12] animate-[spin_1.5s_linear_infinite_reverse] ring-orange"></div>
+      <div class="relative z-10 w-20 h-20 animate-[pulse_2s_infinite_ease-in-out]">
+        <img src="Logo.svg" alt="Logo" class="w-full h-full object-contain" />
       </div>
     </div>
-    <h5 class="loading-text mt-4 fw-bold">Loading...</h5>
+    <h5 class="mt-4 text-xl font-bold tracking-widest text-[#005f56] animate-[fadeInOut_1.5s_infinite]">Loading...</h5>
   </div>
 }

@@ -1,21 +1,34 @@
-<article class="question-card">
-  <div class="card-top-bar">
-    <h2 class="question-title" [dir]="textDirection(title())">{{ title() }}</h2>
+<article
+  class="flex h-full w-full flex-col rounded-xl border border-border bg-card-bg p-3 shadow-sm md:p-6"
+>
+  <div class="mb-4 flex items-start justify-between md:mb-7">
+    <h2
+      class="flex-1 text-lg font-bold leading-snug text-text-dark md:text-2xl"
+      [dir]="textDirection(title())"
+    >
+      {{ title() }}
+    </h2>
   </div>
 
   @if (questType() === essay) {
     @if (imageUrl() !== '' && imageUrl() !== undefined) {
-      <div class="image-container">
-        <img class="question-image" [src]="imageUrl()" />
+      <div class="mb-4 flex items-center justify-center">
+        <img
+          class="h-auto w-full max-w-full rounded-lg border border-border object-contain md:max-w-[80%]"
+          [src]="imageUrl()"
+          alt="Question image"
+        />
       </div>
     }
 
-    <div class="answer-area">
+    <div
+      class="mt-3 flex flex-1 flex-col rounded-lg border border-border bg-surface p-2.5 md:p-3.5"
+    >
       <textarea
         name="answer"
         id="answer"
         rows="5"
-        class="form-control"
+        class="min-h-44 w-full flex-1 resize-none rounded-md border border-border bg-card-bg p-2.5 text-sm text-text-dark outline-none transition focus:border-primary focus:ring-2 focus:ring-primary-light md:text-base"
         [dir]="textDirection(essayValue())"
         placeholder="Write your answer here"
         [value]="essayValue()"
@@ -25,7 +38,7 @@
 
     @if (navigationBlocked()) {
       <div
-        class="alert alert-warning mt-3 mb-2 py-2"
+        class="mt-3 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm font-medium text-amber-700"
         role="alert"
         title="Please save your essay answer before navigating"
       >
@@ -35,44 +48,55 @@
 
     <button
       type="button"
-      class="btn btn-primary w-100 mt-2"
+      class="mt-3 w-full rounded-lg border border-transparent bg-primary px-4 py-2.5 text-base font-semibold text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
       [disabled]="!isDirty() || isSavingEssay()"
       (click)="saveEssay.emit()"
     >
       {{ isSavingEssay() ? 'Saving...' : 'Save Answer' }}
     </button>
   } @else {
-    <div class="options">
+    <div class="flex flex-1 flex-col gap-3 md:gap-4">
       @for (option of options(); track $index) {
-        <label class="option-label" [class.selected]="selectedOptionId() === option.optionId">
+        <label [class]="optionClass(option.optionId)">
           <input
             type="radio"
             name="questionOption"
+            class="sr-only"
             [value]="option.optionId"
             [checked]="selectedOptionId() === option.optionId"
             (change)="optionSelected.emit(option.optionId)"
           />
-          <div class="custom-radio"></div>
-          <span [dir]="textDirection(option.optionText)">{{ option.optionText }}</span>
+          <span [class]="optionRadioClass(option.optionId)">
+            <span [class]="optionRadioDotClass(option.optionId)"></span>
+          </span>
+          <span
+            class="flex-1 text-[0.98rem] leading-relaxed md:text-base"
+            [dir]="textDirection(option.optionText)"
+          >
+            {{ option.optionText }}
+          </span>
         </label>
       }
     </div>
   }
 
-  <div class="paging">
-    <button type="button" class="btn-nav" (click)="previous.emit()" [disabled]="isFirst()">
+  <div class="mt-6 flex flex-wrap items-center justify-between gap-2.5">
+    <button type="button" [class]="navButtonClass" (click)="previous.emit()" [disabled]="isFirst()">
       Previous
     </button>
 
     <button
-      class="btn-mark"
-      [class.marked]="isMarked()"
+      type="button"
+      [class]="markButtonClass()"
       (click)="toggleMark.emit()"
       title="Mark Question"
+      aria-label="Mark question"
     >
-      <i class="bi bi-flag-fill"></i>
+      <i class="pi pi-flag-fill text-sm"></i>
     </button>
 
-    <button type="button" class="btn-nav" (click)="next.emit()" [disabled]="isLast()">Next</button>
+    <button type="button" [class]="navButtonClass" (click)="next.emit()" [disabled]="isLast()">
+      Next
+    </button>
   </div>
 </article>

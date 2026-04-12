@@ -1,9 +1,15 @@
-// add configuration for the extansion Bootstrap 5
 {
-  "bootstrapIntelliSense": {
-    "enable": true,
-    "bsVersion": "5.3.7",
-    "showSuggestions": true,
-    "autoComplete": true
-  }
+  "css.lint.unknownAtRules": "ignore",
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  "tailwindCSS.classAttributes": [
+    "class",
+    "className",
+    "ngClass",
+    "[ngClass]",
+    "[class]",
+    "class:list"
+  ],
+  "tailwindCSS.experimental.classRegex": ["class:list"]
 }

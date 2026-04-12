@@ -14,6 +14,8 @@ export class EssayReviewCardComponent {
   @Input({ required: true }) question!: IExamEssaysQuestion;
   @Input({ required: true }) index!: number;
 
+  imageError = false;
+
   private readonly mediaBaseUrl = environment.apiUrl.replace(/\/api$/, '');
 
   protected get imageUrl(): string | null {

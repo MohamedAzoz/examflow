@@ -5,166 +5,24 @@
   display: block;
 }
 
-/* ─── Shell ─── */
+/* Base layout transition overrides if needed */
 .app-shell {
   min-height: 100vh;
   min-height: 100dvh;
-  background: var(--main-bg);
-  position: relative;
 }
 
-/* ─── Overlay ─── */
-.sidebar-overlay {
-
-}
-@media (max-width: 992px) {
-  .sidebar-overlay {
-    position: fixed;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.3);
-  z-index: 299;
-  cursor: pointer;
-  animation: overlayIn var(--speed) var(--ease);
-  }
-}
 @keyframes overlayIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-/* ─── Main Area ─── */
-.main-area {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  min-height: 100dvh;
-  transition: margin-left var(--speed) var(--ease);
-  margin-left: 250px; /* عرض السايدبار */
-  transition: margin-left 0.3s ease-in-out;
-}
-
-/* لما يختفي السايدبار، المساحة تتمدد */
-.app-shell.is-toggled .main-area {
-  margin-left: 0;
-}
-
-@media (max-width: 992px) {
-  .main-area {
-    margin-left: 0; /* في الموبايل مفيش margin */
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 
-/* Desktop: push content to the right when sidebar is visible */
-.main-area.sidebar-expanded {
-  margin-left: var(--sidebar-width);
+/* Sidebar focus and interactive states */
+button:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-primary) 35%, transparent);
+  outline-offset: 2px;
 }
 
-/* ─── Top Header ─── */
-.top-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 24px;
-  height: var(--header-height);
-  background: var(--sidebar-bg);
-  border-bottom: 0.5px solid var(--border-color);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  position: sticky;
-  top: 0;
-  z-index: 200;
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.hamburger-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  color: var(--primary);
-  cursor: pointer;
-  padding: 6px 8px;
-  border-radius: 6px;
-  transition: background 0.2s ease;
-  line-height: 1;
-}
-
-.hamburger-btn:hover {
-  background: var(--primary-light);
-}
-
-.page-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--primary);
-  margin: 0;
-  white-space: nowrap;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.btn-icon {
-  position: relative;
-  background: none;
-  border: none;
-  font-size: 1.25rem;
-  color: var(--text-secondary);
-  cursor: pointer;
-  padding: 6px;
-  border-radius: 50%;
-  transition: background 0.2s ease, color 0.2s ease;
-  line-height: 1;
-}
-
-.btn-icon:hover {
-  background: var(--primary-light);
-  color: var(--primary);
-}
-
-.notif-dot {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  width: 8px;
-  height: 8px;
-  background: #ef4444;
-  border-radius: 50%;
-  border: 2px solid #ffffff;
-}
-
-/* ─── Page Content ─── */
-.page-content {
-  flex: 1;
-  padding: 24px;
-}
-
-/* ─── Mobile ─── */
-@media (max-width: 991.98px) {
-  .main-area {
-    margin-left: 0 !important;
-  }
-
-  .top-header {
-    padding: 0 16px;
-  }
-
-  .page-content {
-    padding: 16px;
-  }
-}
-
-@media (max-width: 768px) {
-  .page-title {
-    font-size: 1rem;
-  }
-}

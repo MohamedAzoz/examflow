@@ -3,10 +3,25 @@ import { AuthFacade } from '../../services/auth-facade';
 import { Ilogin } from '../../../../data/models/auth/ilogin';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { PasswordModule } from 'primeng/password';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { MessageModule } from 'primeng/message';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [
+    ReactiveFormsModule,
+    CommonModule,
+    ButtonModule,
+    InputTextModule,
+    PasswordModule,
+    IconFieldModule,
+    InputIconModule,
+    MessageModule,
+  ],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })

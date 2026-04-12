@@ -1,9 +1,13 @@
-<div class="exam-session-layout">
-  <app-exam-header [countdown]="countdown()" [studentId]="currentExam()?.studentExamId || ''"> </app-exam-header>
+<div class="flex flex-col h-screen w-screen">
+  <app-exam-header [countdown]="countdown()" [studentId]="currentExam()?.studentExamId || ''">
+  </app-exam-header>
 
-  <main class="exam-content-grid">
+  <main
+    class="mx-auto grid w-full flex-1 items-start gap-3 overflow-y-auto px-3 py-4 sm:px-4 sm:py-5 md:gap-4 md:px-6 md:py-6 lg:grid-cols-[minmax(0,1fr)_240px] xl:grid-cols-[minmax(0,1fr)_280px]"
+  >
     @if (currentQuestion(); as q) {
       <app-question-area
+        class="h-full"
         [title]="q.text"
         [imageUrl]="currentQuestionImage()"
         [questType]="q.questionType"
@@ -25,12 +29,15 @@
       >
       </app-question-area>
     } @else {
-      <div class="loading-state">
-        <p class="text-muted">Loading question data...</p>
+      <div
+        class="flex items-center justify-center rounded-xl border border-border bg-card-bg p-5 text-base font-medium text-text-secondary shadow-sm"
+      >
+        <p>Loading question data...</p>
       </div>
     }
 
     <app-question-map
+      class="h-full min-h-[260px] lg:min-h-[340px]"
       [questionIds]="questionIds()"
       [currentIndex]="questionIndex()"
       [answeredIds]="allAnsweredIds()"

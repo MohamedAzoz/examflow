@@ -1,51 +1,71 @@
-<section class="exam-result-page">
-  <header class="page-hero">
-    <div class="hero-copy">
-      <a class="back-link" routerLink="/main/student/past-results">
-        <i class="bi bi-arrow-left"></i>
-        Back to Results
+<section class="min-h-full m-3 rounded-4xl p-4 md:p-6 lg:p-8 bg-surface-container animate-in fade-in duration-700">
+  <!-- Page Header / Hero -->
+  <header class="flex flex-col lg:flex-row justify-between items-start gap-8 mb-10">
+    <div class="max-w-xl">
+      <a
+        class="inline-flex items-center gap-2 mb-6 text-primary font-bold hover:gap-3 transition-all group"
+        routerLink="/main/student/past-results"
+      >
+        <i class="pi pi-arrow-left text-sm"></i>
+        <span>Back to Results</span>
       </a>
 
-      <p class="eyebrow">Performance Overview</p>
-      <h1 class="page-title">{{ examResult()?.examTitle || 'Exam Result' }}</h1>
-      <p class="page-description">
+      <p class="text-[11px] font-black uppercase tracking-[0.2em] text-text-secondary/60 mb-2">Performance Overview</p>
+      <h1 class="text-3xl md:text-4xl lg:text-5xl font-black text-text-primary leading-tight tracking-tighter">
+        {{ examResult()?.examTitle || 'Exam Result' }}
+      </h1>
+      <p class="mt-4 text-text-secondary/70 text-sm font-semibold leading-relaxed max-w-2xl">
         Review your score, completion details, and question-by-question feedback in one place.
       </p>
     </div>
 
     @if (examResult()) {
-      <div class="hero-metrics">
-        <div class="metric-chip">
-          <span class="metric-label">Correct Answers</span>
-          <strong class="metric-value">{{ answeredCorrectlyCount() }}</strong>
+      <div class="flex flex-wrap gap-4 w-full lg:w-auto">
+        <div class="flex-1 lg:flex-none min-w-[160px] p-6 rounded-3xl bg-white border border-border/10 shadow-sm transition-all hover:shadow-md">
+          <span class="block text-[10px] font-black uppercase tracking-widest text-text-secondary mb-2">Correct Answers</span>
+          <strong class="text-4xl font-black text-text-primary tabular-nums tracking-tighter">{{ answeredCorrectlyCount() }}</strong>
         </div>
-        <div class="metric-chip">
-          <span class="metric-label">Reviewed Items</span>
-          <strong class="metric-value">{{ totalQuestionsCount() }}</strong>
+        <div class="flex-1 lg:flex-none min-w-[160px] p-6 rounded-3xl bg-white border border-border/10 shadow-sm transition-all hover:shadow-md">
+          <span class="block text-[10px] font-black uppercase tracking-widest text-text-secondary mb-2">Reviewed Items</span>
+          <strong class="text-4xl font-black text-text-primary tabular-nums tracking-tighter">{{ totalQuestionsCount() }}</strong>
         </div>
       </div>
     }
   </header>
 
+  <!-- Content States -->
   @if (isLoading()) {
-    <section class="state-card loading-state">
-      <div class="spinner"></div>
-      <h2>Loading result details</h2>
-      <p>Fetching the latest graded data for this exam.</p>
-    </section>
-  } @else if (errorMessage()) {
-    <section class="state-card error-state">
-      <div class="state-icon">
-        <i class="bi bi-exclamation-triangle"></i>
+    <div class="flex flex-col items-center justify-center py-24 text-center gap-6 bg-card-bg/50 rounded-[2.5rem] border border-border/40">
+      <div class="relative w-16 h-16">
+        <div class="absolute inset-0 rounded-full border-4 border-primary/10"></div>
+        <div class="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
       </div>
-      <h2>Unable to load result details</h2>
-      <p>{{ errorMessage() }}</p>
-      <button type="button" class="action-btn" (click)="reload()">
-        Try Again
-      </button>
-    </section>
+      <div class="space-y-2">
+        <h2 class="text-2xl font-bold text-text-primary">Loading result details</h2>
+        <p class="text-text-secondary">Fetching the latest graded data for this exam...</p>
+      </div>
+    </div>
+  } @else if (errorMessage()) {
+    <div class="flex flex-col items-center justify-center py-24 text-center gap-8 bg-card-bg/50 rounded-[2.5rem] border border-border/40 max-w-2xl mx-auto">
+      <div class="w-20 h-20 rounded-full bg-red-50 flex items-center justify-center">
+        <i class="pi pi-exclamation-triangle text-4xl text-red-500"></i>
+      </div>
+      <div class="space-y-3 px-6">
+        <h2 class="text-2xl font-bold text-text-primary">Unable to load result details</h2>
+        <p class="text-text-secondary leading-relaxed font-medium">{{ errorMessage() }}</p>
+      </div>
+      <button
+        type="button"
+        pButton
+        label="Try Again"
+        icon="pi pi-refresh"
+        class="rounded-2xl! p-button-lg shadow-lg shadow-primary/20"
+        (click)="reload()"
+      ></button>
+    </div>
   } @else if (examResult(); as result) {
-    <div class="content-stack">
+    <div class="space-y-12">
+      <!-- Summary Card -->
       <app-result-summary-card
         [examTitle]="result.examTitle"
         [studentScore]="result.studentScore"
@@ -56,59 +76,71 @@
         [essayCount]="essayQuestions().length"
       />
 
-      <section class="review-section">
-        <div class="section-heading">
+      <!-- Objective Review Section -->
+      <section class="space-y-8 bg-white border border-border/10 rounded-[2.5rem] p-8 sm:p-10 shadow-sm">
+        <div class="flex items-center justify-between">
           <div>
-            <p class="section-eyebrow">Objective Questions</p>
-            <h2>Question Review</h2>
+            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-text-secondary/60 mb-2">Objective Questions</p>
+            <h2 class="text-2xl sm:text-3xl font-black text-text-primary uppercase flex items-center gap-3">
+              Question Review
+            </h2>
           </div>
-          <span class="section-meta">{{ objectiveQuestions().length }} items</span>
+          <span class="text-[10px] font-black bg-surface-container px-4 py-2 rounded-full text-text-secondary uppercase tracking-widest border border-border/10">
+            {{ objectiveQuestions().length }} items
+          </span>
         </div>
 
         @if (objectiveQuestions().length > 0) {
-          <div class="review-grid">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             @for (question of objectiveQuestions(); track $index) {
               <app-question-review-card [question]="question" [index]="$index + 1" />
             }
           </div>
         } @else {
-          <div class="empty-panel">
-            <i class="bi bi-ui-checks-grid"></i>
-            <p>No objective question details were returned for this exam.</p>
+          <div class="flex flex-col items-center justify-center py-20 text-center gap-4 border-2 border-dashed border-border/40 rounded-4xl bg-surface/30">
+            <i class="pi pi-list text-3xl text-text-secondary/40"></i>
+            <p class="text-text-secondary font-medium">No objective question details found.</p>
           </div>
         }
       </section>
 
-      <section class="review-section">
-        <div class="section-heading">
+      <!-- Essay Review Section -->
+      <section class="space-y-8 bg-white border border-border/10 rounded-[2.5rem] p-8 sm:p-10 shadow-sm">
+        <div class="flex items-center justify-between">
           <div>
-            <p class="section-eyebrow">Essay Questions</p>
-            <h2>Written Answers</h2>
+            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-text-secondary/60 mb-2">Essay Questions</p>
+            <h2 class="text-2xl sm:text-3xl font-black text-text-primary uppercase flex items-center gap-3">
+              Written Answers
+            </h2>
           </div>
-          <span class="section-meta">{{ essayQuestions().length }} items</span>
+          <span class="text-[10px] font-black bg-surface-container px-4 py-2 rounded-full text-text-secondary uppercase tracking-widest border border-border/10">
+            {{ essayQuestions().length }} items
+          </span>
         </div>
 
         @if (essayQuestions().length > 0) {
-          <div class="essay-grid">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             @for (question of essayQuestions(); track $index) {
               <app-essay-review-card [question]="question" [index]="$index + 1" />
             }
           </div>
         } @else {
-          <div class="empty-panel">
-            <i class="bi bi-journal-text"></i>
-            <p>This exam does not include essay answers to review.</p>
+          <div class="flex flex-col items-center justify-center py-20 text-center gap-4 border-2 border-dashed border-border/40 rounded-4xl bg-surface/30">
+            <i class="pi pi-file-edit text-3xl text-text-secondary/40"></i>
+            <p class="text-text-secondary font-medium">This exam does not include essay answers.</p>
           </div>
         }
       </section>
     </div>
   } @else {
-    <section class="state-card empty-state">
-      <div class="state-icon">
-        <i class="bi bi-journal-x"></i>
+    <div class="flex flex-col items-center justify-center py-32 text-center gap-6 bg-card-bg rounded-[2.5rem] border border-border/40">
+      <div class="w-20 h-20 rounded-full bg-surface-container flex items-center justify-center">
+        <i class="pi pi-file-excel text-4xl text-text-secondary/50"></i>
       </div>
-      <h2>No result data found</h2>
-      <p>The selected exam does not have available result details yet.</p>
-    </section>
+      <div class="space-y-2">
+        <h2 class="text-2xl font-bold text-text-primary">No result data found</h2>
+        <p class="text-text-secondary max-w-sm mx-auto">The selected exam does not have available result details yet.</p>
+      </div>
+    </div>
   }
 </section>

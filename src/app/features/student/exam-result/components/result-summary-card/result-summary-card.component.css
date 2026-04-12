@@ -1,192 +1,63 @@
-.summary-card {
-  display: grid;
-  grid-template-columns: minmax(16rem, 18rem) minmax(0, 1fr);
-  gap: 1.5rem;
-  padding: 1.6rem;
-  border-radius: 1.75rem;
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(238, 244, 250, 0.92)),
-    var(--surface-container-lowest);
-  border: 1px solid rgba(191, 200, 202, 0.75);
-  box-shadow: 0 22px 44px rgba(22, 28, 33, 0.08);
-}
-
-.score-panel {
-  display: grid;
-  place-items: center;
-  padding: 1rem;
-  border-radius: 1.4rem;
-  background:
-    radial-gradient(circle at top, rgba(98, 206, 194, 0.26), transparent 55%),
-    rgba(243, 244, 246, 0.9);
-}
-
-.score-ring {
-  --progress: 0%;
-  --score-color: var(--success);
-  width: min(100%, 15rem);
-  aspect-ratio: 1;
-  padding: 1rem;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background:
-    radial-gradient(closest-side, rgba(255, 255, 255, 0.95) 73%, transparent 74% 100%),
-    conic-gradient(var(--score-color) var(--progress), rgba(191, 200, 202, 0.5) 0);
-  box-shadow: inset 0 0 0 1px rgba(19, 98, 108, 0.06);
-}
-
-.score-core {
-  display: grid;
-  gap: 0.35rem;
-  place-items: center;
-  text-align: center;
-}
-
-.score-label {
-  color: var(--on-surface-variant);
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  font-size: 0.76rem;
-  font-weight: 800;
-}
-
-.score-value {
-  color: var(--on-surface);
-  font-family: var(--font-headline);
-  font-size: 2rem;
-  line-height: 1;
-}
-
-.score-value span {
-  margin-left: 0.2rem;
-  color: var(--on-surface-variant);
-  font-size: 1rem;
-  font-family: var(--font-body);
-  font-weight: 700;
-}
-
-.score-percentage {
-  color: var(--score-color, var(--success));
-  font-weight: 800;
-  font-size: 0.95rem;
-}
-
-.summary-content {
-  display: grid;
-  align-content: center;
-}
-
-.summary-kicker {
-  margin: 0 0 0.5rem;
-  color: var(--primary-container);
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  font-size: 0.78rem;
-  font-weight: 800;
-}
-
-.summary-title {
-  margin: 0;
-  color: var(--on-surface);
-  font-size: clamp(1.7rem, 3vw, 2.4rem);
-  font-family: var(--font-headline);
-}
-
-.status-row {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-  margin: 1.1rem 0 1.35rem;
-}
-
-.status-pill,
-.grade-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0.65rem 0.9rem;
-  border-radius: 999px;
-  font-weight: 800;
-}
-
-.status-pill {
-  background: var(--surface-container-low);
-}
-
-.status-absent {
-  color: var(--on-surface-variant);
-}
-
-.status-progress {
-  color: var(--blue);
-}
-
-.status-submitted{
-  color: var(--secondary);
-}
-.status-completed {
-  color: var(--success);
-}
-
-.status-evaluating {
-  color: var(--orange);
-}
-
-.status-pending {
-  color: var(--secondary);
-}
-
-.grade-pill {
-  background: var(--score-bg, rgba(41, 158, 91, 0.12));
-  color: var(--score-color, var(--success));
-}
-
-/* Grade Color Logic Mapping */
-.grade-a { --score-color: var(--success); --score-bg: rgba(41, 158, 91, 0.12); }
-.grade-b { --score-color: var(--blue); --score-bg: rgba(117, 142, 253, 0.12); }
-.grade-c { --score-color: var(--orange); --score-bg: rgba(245, 158, 11, 0.12); }
-.grade-d { --score-color: var(--secondary); --score-bg: rgba(0, 106, 98, 0.12); }
-.grade-f { --score-color: var(--error); --score-bg: rgba(186, 26, 26, 0.12); }
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
-  gap: 0.9rem;
-}
-
-.stat-tile {
-  padding: 1rem;
-  border-radius: 1.1rem;
-  background: rgba(255, 255, 255, 0.72);
-  border: 1px solid rgba(191, 200, 202, 0.6);
-}
-
-.stat-tile.accent {
-  background: var(--score-bg, linear-gradient(135deg, rgba(19, 98, 108, 0.12), rgba(98, 206, 194, 0.12)));
-}
-
-.stat-label {
+:host {
   display: block;
-  margin-bottom: 0.45rem;
-  color: var(--on-surface-variant);
-  font-size: 0.82rem;
-  font-weight: 700;
 }
 
-.stat-value {
-  color: var(--on-surface);
-  font-size: 1.2rem;
-  font-weight: 800;
+/* Status variants for Summary Card */
+.status-absent-light-alt {
+  background: rgba(239, 68, 68, 0.05);
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.2);
+}
+.status-progress-light-alt {
+  
+  background: rgba(19, 98, 108, 0.05);
+  color: #13626c;
+  border-color: rgba(19, 98, 108, 0.2);
+}
+.status-submitted-light-alt {
+  background: rgba(34, 197, 94, 0.05);
+  color: #22c55e;
+  border-color: rgba(34, 197, 94, 0.2);
+}
+.status-evaluating-light-alt {
+  background: rgba(245, 158, 11, 0.05);
+  color: #f59e0b;
+  border-color: rgba(245, 158, 11, 0.2);
+}
+.status-pending-light-alt {
+  background: rgba(124, 58, 237, 0.05);
+  color: #7c3aed;
+  border-color: rgba(124, 58, 237, 0.2);
+}
+.status-completed-light-alt {
+  background: rgba(16, 185, 129, 0.05);
+  color: #10b981;
+  border-color: rgba(16, 185, 129, 0.2);
 }
 
-@media (max-width: 900px) {
-  .summary-card {
-    grid-template-columns: 1fr;
-  }
-
-  .score-ring {
-    width: min(100%, 13rem);
-  }
+/* Grade-specific stats styling */
+.grade-a-stat {
+  background: rgba(16, 185, 129, 0.05);
+  color: #10b981;
+  border-color: rgba(16, 185, 129, 0.2);
+}
+.grade-b-stat {
+  background: rgba(34, 197, 94, 0.05);
+  color: #22c55e;
+  border-color: rgba(34, 197, 94, 0.2);
+}
+.grade-c-stat {
+  background: rgba(245, 158, 11, 0.05);
+  color: #f59e0b;
+  border-color: rgba(245, 158, 11, 0.2);
+}
+.grade-d-stat {
+  background: rgba(251, 146, 60, 0.05);
+  color: #fb923c;
+  border-color: rgba(251, 146, 60, 0.2);
+}
+.grade-f-stat {
+  background: rgba(239, 68, 68, 0.05);
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.2);
 }

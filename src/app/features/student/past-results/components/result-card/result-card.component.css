@@ -1,138 +1,74 @@
-.result-card {
-  background: var(--surface-container-lowest);
-  border-radius: 1rem;
-  padding: 1.25rem;
-  display: flex;
-  flex-direction: column;
+:host {
+  display: block;
   height: 100%;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-  border-top: 4px solid transparent;
+  --status-absent-color: #ef4444;
+  --status-progress-color: #13626c;
+  --status-submitted-color: #22c55e;
+  --status-evaluating-color: #f59e0b;
+  --status-pending-color: #7c3aed;
+  --status-completed-color: #10b981;
 }
 
-.result-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(22, 28, 33, 0.08);
+/* Status: Absent (Red) */
+.status-absent-light {
+  background-color: rgba(239, 68, 68, 0.08);
+  color: #ef4444;
 }
-/*
-  Completed = 2, // تم ارسال الامتحان
-  Flushed = 3, // جاري التصحيح
-  PendingEassysManualGrading = 4, // تم الانتهاء من الامتحان و ينتظر تصحيح المقالى
-  AllGraded = 5,
-*/
-/* Status Variants */
-.status-absent { border-top-color: var(--danger-color); }
-.status-progress { border-top-color: var(--primary); }
-.status-submitted { border-top-color:  rgb(102, 196, 102); }
-.status-evaluating { border-top-color: var(--orange); }
-.status-pending { border-top-color:#7c3aed; }
-.status-completed { border-top-color: var(--success); }
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
+.status-absent-circle {
+  border-color: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
 }
 
-.status-badge {
-  font-size: 0.8rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 0.25rem 0.6rem;
-  border-radius: 6px;
-  background: var(--surface-container);
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
+/* Status: Progress (Teal) */
+.status-progress-light {
+  background-color: rgba(19, 98, 108, 0.08);
+  color: #13626c;
+}
+.status-progress-circle {
+  border-color: rgba(19, 98, 108, 0.2);
+  color: #13626c;
 }
 
-.status-absent .status-badge, .status-absent .card-icon { color: var(--danger-color); }
-.status-progress .status-badge, .status-progress .card-icon { color: var(--primary); }
-.status-submitted .status-badge, .status-submitted .card-icon { color: rgb(102, 196, 102); }
-.status-evaluating .status-badge, .status-evaluating .card-icon { color: var(--orange); }
-.status-pending .status-badge, .status-pending .card-icon { color: #7c3aed; }
-.status-completed .status-badge, .status-completed .card-icon { color: var(--success); }
-
-.card-icon {
-  font-size: 1.5rem;
-  color: var(--on-surface-variant);
-  font-weight: 900;
+/* Status: Submitted (Green) */
+.status-submitted-light {
+  background-color: rgba(34, 197, 94, 0.08);
+  color: #22c55e;
+}
+.status-submitted-circle {
+  border-color: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
 }
 
-.card-body {
-  margin-bottom: 1.25rem;
+/* Status: Evaluating (Orange) */
+.status-evaluating-light {
+  background-color: rgba(245, 158, 11, 0.08);
+  color: #f59e0b;
+}
+.status-evaluating-circle {
+  border-color: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
 }
 
-.exam-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--primary);
-  margin-bottom: 0.25rem;
-  line-height: 1.3;
-  /* display: -webkit-box; */
-  /* -webkit-line-clamp: 2; */
-  /* line-clamp: 2; */
-  /* -webkit-box-orient: vertical; */
-  /* overflow: hidden; */
+/* Status: Pending (Purple) */
+.status-pending-light {
+  background-color: rgba(124, 58, 237, 0.08);
+  color: #7c3aed;
+}
+.status-pending-circle {
+  border-color: rgba(124, 58, 237, 0.2);
+  color: #7c3aed;
 }
 
-.exam-subtitle {
-  color: var(--on-surface-variant);
-  font-size: 0.75rem;
-  font-weight: 500;
+/* Status: Completed (Success Green) */
+.status-completed-light {
+  background-color: rgba(16, 185, 129, 0.08);
+  color: #10b981;
+}
+.status-completed-circle {
+  border-color: rgba(16, 185, 129, 0.2);
+  color: #10b981;
 }
 
-.card-footer {
-  margin-top: auto;
-}
-
-.score-container {
-  display: flex;
-  align-items: baseline;
-  gap: 0.25rem;
-  margin-bottom: 1rem;
-}
-
-.score-value {
-  font-size: 1.8rem;
-  font-weight: 800;
-}
-
-.score-total {
-  color: var(--on-surface-variant);
-  font-weight: 600;
-  font-size: 0.85rem;
-}
-
-.view-results-btn {
-  width: 100%;
-  background: var(--primary-container);
-  color: white;
-  font-weight: 700;
-  padding: 0.75rem;
-  border: none;
-  border-radius: 9999px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 0.85rem;
-}
-
-.view-results-btn:hover {
-  background: var(--primary);
-}
-
-.text-success { color: var(--success); }
-.text-danger { color: var(--error); }
-
-@media (max-width: 640px) {
-  .score-value { font-size: 1.5rem; }
-  .exam-title { font-size: 1rem; }
-  .result-card { padding: 1rem; }
-}
+/* Success/Danger Score Text */
+.text-success { color: #10b981; }
+.text-danger { color: #ef4444; }

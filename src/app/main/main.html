@@ -1,14 +1,28 @@
-<div class="app-shell">
+<div class="min-h-screen relative">
   <!-- Overlay: mobile only, when sidebar open -->
-  @if (toggle.value() && isMobile() && !toggle.isExamMode()) {
-    <div class="sidebar-overlay" (click)="onOverlayClick()" aria-hidden="true"></div>
+  @if (toggle.value() && isMobile()) {
+    <div
+      class="fixed inset-0 bg-black/40 backdrop-blur-sm z-300 transition-opacity duration-300"
+      (click)="onOverlayClick()"
+      aria-hidden="true"
+    ></div>
   }
 
-  <div class="app-shell" [class.is-toggled]="toggle.value()">
-    @if (toggle.value() && !isMobile()&& toggle.isExamMode()) {
-      <div class="sidebar-overlay" (click)="onOverlayClick()" aria-hidden="true"></div>
-    }
+  @if (toggle.isExamMode() && isMobile() && !toggle.value()) {
+    <button
+      type="button"
+      class="fixed left-2 top-2 z-300 inline-flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-card-bg text-primary shadow-sm"
+      (click)="toggle.toggle()"
+      aria-label="Show sidebar"
+    >
+      <i class="pi pi-bars text-base"></i>
+    </button>
+  }
 
+  <!-- Layout Container -->
+  <div class="flex w-full">
+    <!-- Sidebar component -->
+     @if (!toggle.isExamMode() || !isMobile()) {
     <app-sidebar
       [navItems]="navItems()"
       [userName]="userName()"
@@ -17,67 +31,52 @@
       [isStudent]="isStudent()"
       (navItemSelected)="onNavItemSelected($event)"
     />
+     }
 
-    <div class="main-area">
-
+    <!-- Main Content Area -->
+    <div
+      class=" flex flex-col"
+    >
       <!-- Header -->
       @if (!toggle.isExamMode()) {
-        <header class="top-header">
-          <div class="header-left">
-            @if (isMobile() || toggle.value()) {
+        <header
+          class="h-14 px-4 md:px-6 bg-sidebar-bg/80 backdrop-blur-md border-b border-border flex items-center justify-between shadow-sm"
+        >
+          <div class="flex items-center overflow-hidden">
+            @if (isMobile() && !toggle.value()) {
               <button
                 type="button"
-                class="hamburger-btn"
+                class="p-2 -ml-2 rounded-lg text-primary hover:bg-primary/5 transition-colors focus-visible:outline-2 focus-visible:outline-primary/50"
                 (click)="toggle.toggle()"
                 aria-label="Toggle menu"
               >
-                <i class="bi bi-list" style="font-weight: bold; font-size: 1.5rem"></i>
+                <i class="pi pi-bars text-xl font-bold" aria-hidden="true"></i>
               </button>
             }
 
-            <h1 class="page-title">{{ pageTitle() }}</h1>
+            <h1 class="text-lg md:text-xl font-bold text-primary truncate">
+              {{ pageTitle() }}
+            </h1>
           </div>
+
           @if (showNotifications()) {
-            <div class="header-right">
-              <button type="button" class="btn-icon" aria-label="Notifications">
-                <i class="bi bi-bell"></i>
-                <span class="notif-dot"></span>
+            <div class="flex items-center gap-2">
+              <button
+                type="button"
+                class="relative p-2 rounded-full text-text-secondary hover:bg-primary/5 hover:text-primary transition-all group"
+                aria-label="Notifications"
+              >
+                <i class="pi pi-bell text-xl" aria-hidden="true"></i>
+                <span
+                  class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-sidebar-bg ring-1 ring-red-500/20"
+                ></span>
               </button>
             </div>
-
-            
           }
         </header>
       }
-<!--
-      @if (isStudent() && isMobile() && !toggle.isExamMode()) {
-        <header class="top-header">
-          <div class="header-left">
-            <button
-              [hidden]="!toggle.value() && !isMobile()"
-              type="button"
-              class="hamburger-btn"
-              (click)="toggle.toggle()"
-              aria-label="Toggle menu"
-            >
-              <i class="bi bi-list" style="font-weight: bold; font-size: 1.5rem"></i>
-            </button>
 
-            <h1 class="page-title">{{ pageTitle() }}</h1>
-          </div>
-          @if (showNotifications()) {
-            <div class="header-right">
-              <button type="button" class="btn-icon" aria-label="Notifications">
-                <i class="bi bi-bell"></i>
-                <span class="notif-dot"></span>
-              </button>
-            </div>
-          }
-        </header>
-      } -->
-
-      <!-- Page content -->
-      <main class="page-content">
+      <main class="flex-1 overflow-x-hidden">
         <router-outlet />
       </main>
     </div>

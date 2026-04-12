@@ -1,28 +1,87 @@
-<section class="exam-card">
-  <header class="card-header">
-    <h5 class="card-title">Upcoming Exams</h5>
-    <span class="card-icon" aria-hidden="true">
-      <i class="bi bi-calendar-event"></i>
-    </span>
+<section
+  class="h-full bg-card-bg rounded-3xl sm:rounded-4xl border border-border/10 p-5 sm:p-8 shadow-xl shadow-primary/5 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/10 group overflow-hidden"
+>
+  <header class="flex items-center justify-between mb-6 sm:mb-8 shrink-0">
+    <div class="flex items-center gap-3 sm:gap-4">
+      <div
+        class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-primary/5 flex items-center justify-center border border-primary/20 group-hover:bg-primary/10 transition-colors"
+      >
+        <i class="pi pi-calendar-clock text-primary text-lg sm:text-xl"></i>
+      </div>
+      <div>
+        <p
+          class="text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-text-secondary/60 mb-0.5"
+        >
+          Academic Calendar
+        </p>
+        <h2 class="text-lg sm:text-xl lg:text-2xl font-black text-text-primary tracking-tight">
+          Upcoming Exams
+        </h2>
+      </div>
+    </div>
+    <div
+      class="hidden xs:flex w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-surface-container items-center justify-center text-text-secondary/30"
+    >
+      <i class="pi pi-calendar text-sm"></i>
+    </div>
   </header>
 
   @if (exams().length > 0) {
-    <article class="upcoming-item">
-      <div class="exam-symbol" aria-hidden="true">
-        <i class="bi bi-link-45deg"></i>
-      </div>
-      <div class="exam-info">
-        <h6 class="exam-name">{{ exams()[0].title }}</h6>
-        <p class="exam-meta">Scheduled for {{ exams()[0].startTime | date: 'MMM d' }}</p>
-      </div>
-      <div class="exam-time">
-        <span class="time-value">{{ exams()[0].startTime | date: 'MMM d, h:mm a' }}</span>
-        <span class="time-status">Starting soon</span>
-      </div>
-    </article>
+    <div class="space-y-4 sm:space-y-6">
+      @for (exam of exams(); track $index) {
+        <article
+          class="flex lg:items-center items-start flex-col lg:flex-row gap-3 sm:gap-6 p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-white border border-border/10"
+        >
+          <!-- Link Icon Container -->
+          <div
+            class="w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-primary-hover/20 flex items-center justify-center shrink-0"
+          >
+            <i class="pi pi-link text-primary text-lg sm:text-xl"></i>
+          </div>
+
+          <div class="min-w-0 flex-1">
+            <h3
+              class="text-sm sm:text-lg font-black text-text-primary truncate uppercase tracking-tight"
+            >
+              {{ exam.title }}
+            </h3>
+            <p
+              class="text-[10px] sm:text-xs font-bold text-text-secondary/50 flex items-center gap-1.5 mt-0.5 sm:mt-1"
+            >
+              <i class="pi pi-calendar text-[9px] sm:text-[10px]"></i>
+              <span class="truncate">Scheduled for {{ exam.startTime | date: 'MMM d, y' }}</span>
+            </p>
+          </div>
+
+          <div class="flex flex-col items-end gap-1 sm:gap-2 shrink-0">
+            <span class="text-xs sm:text-md font-black text-text-primary tabular-nums">{{
+              exam.startTime | date: 'h:mm a'
+            }}</span>
+            <span
+              class="text-[8px] sm:text-[9px] font-black uppercase tracking-widest px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-surface-container text-text-secondary/70 border border-border/20 whitespace-nowrap"
+              >soon</span
+            >
+          </div>
+        </article>
+      }
+    </div>
   } @else {
-    <p class="empty">
-      <i class="bi bi-mortarboard"></i>
-    </p>
+    <div
+      class="flex flex-col items-center justify-center py-20 text-center gap-6 border-2 border-dashed border-border/40 rounded-4xl bg-surface/50"
+    >
+      <div
+        class="w-16 h-16 rounded-full bg-surface-container flex items-center justify-center shadow-inner"
+      >
+        <i class="pi pi-calendar-minus text-text-secondary/20"></i>
+      </div>
+      <div class="space-y-1">
+        <h3 class="text-lg font-bold text-text-primary/30 uppercase tracking-tight">
+          No upcoming exams
+        </h3>
+        <p class="text-gray text-xs font-medium max-w-[200px]">
+          Check back later for new scheduled sessions.
+        </p>
+      </div>
+    </div>
   }
 </section>

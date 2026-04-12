@@ -1,66 +1,9 @@
-.not-found-wrapper {
-  min-height: 100vh;
-  background-color: var(--main-bg-color);
-  padding: 2rem;
+/* float animation for the error icon */
+.notFound{
+  font-size: 2.3rem;
+  background-color: var(--error);
 }
-
-/* حركة الأيقونة */
-.error-icon {
-  font-size: 6rem;
-  color: var(--danger-color);
-  display: block;
-  animation: float 3s ease-in-out infinite;
-}
-
-.error-code {
-  color: var(--primary-color);
-  margin-top: -10px;
-  letter-spacing: 5px;
-}
-
-.error-description {
-  color: var(--text-gray-color);
-  font-size: 1.1rem;
-}
-
-/* تخصيص زر العودة */
-.btn-back {
-  background-color: var(--primary-color);
-  color: var(--text-white-color);
-  padding: 10px 25px;
-  border-radius: 8px;
-  border: none;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(53, 123, 133, 0.3);
-}
-
-.btn-back:hover {
-  background-color: #2a626a; /* درجة أغمق قليلاً من primary */
-  color: var(--text-white-color);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(53, 123, 133, 0.4);
-}
-
-/* أنيميشن الطفو للأيقونة */
 @keyframes float {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-20px);
-  }
-}
-
-/* توافق الشاشات الصغيرة */
-@media (max-width: 576px) {
-  .error-code {
-    font-size: 4rem;
-  }
-  .error-icon {
-    font-size: 4.5rem;
-  }
-  .btn-back {
-    width: 100%;
-    justify-content: center;
-  }
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-20px); }
 }

@@ -4,6 +4,6 @@ export interface IsendAnswer {
   questionId: number;
   selectedOptionId: number;
   eassayAnswer: string;
-  copyPasteCnt: number;
-  tabSwitchCnt: number;
-} 
+  serverResponses: number;
+  sessionId: number;
+}

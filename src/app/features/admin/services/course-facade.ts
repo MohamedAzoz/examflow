@@ -53,39 +53,38 @@ export class CourseFacade {
    * @deprecated Use allCourses resource value directly.
    * Call refreshCourses() or allCourses.reload() if needed.
    */
-  getAllCourses(): void {
-    this.allCourses.reload();
-  }
+  // getAllCourses(): void {
+  //   this.allCourses.reload();
+  // }
 
   //#endregion
 
-  refreshCourses(): Observable<ICoueseResponse[]> {
-    this.startRequest();
-    return this.courseService.getAllCourses().pipe(
-      catchError((err) => this.handleRequestError(err)),
-      finalize(() => this.loading.set(false)),
-    );
-  }
+  // refreshCourses(): Observable<ICoueseResponse[]> {
+  //   this.startRequest();
+  //   return this.courseService.getAllCourses().pipe(
+  //     catchError((err) => this.handleRequestError(err)),
+  //     finalize(() => this.loading.set(false)),
+  //   );
+  // }
 
-  assignCourseDepartments(courseId: number): void {
-    this.startRequest();
-    this.courseService
-      .assignDepartments(courseId)
-      .pipe(
-        catchError((err) => this.handleRequestError(err)),
-        finalize(() => this.loading.set(false)),
-      )
-      .subscribe((departments) => {
-        this.assignToDepartment.set(departments);
-      });
-  }
+  // assignCourseDepartments(courseId: number): void {
+  //   this.startRequest();
+  //   this.courseService
+  //     .assignDepartments(courseId)
+  //     .pipe(
+  //       catchError((err) => this.handleRequestError(err)),
+  //       finalize(() => this.loading.set(false)),
+  //     )
+  //     .subscribe((departments) => {
+  //       this.assignToDepartment.set(departments);
+  //     });
+  // }
 
   createCourse(course: ICoueseRequest): Observable<any> {
     this.startRequest();
     return this.courseService.postCourse(course).pipe(
       catchError((err) => this.handleRequestError(err)),
-      finalize(() => {
-        this.loading.set(false);
+      finalize(() => {         
         this.allCourses.reload();
       })
     );
@@ -96,7 +95,6 @@ export class CourseFacade {
     return this.courseService.putCourse(course).pipe(
       catchError((err) => this.handleRequestError(err)),
       finalize(() => {
-        this.loading.set(false);
         this.allCourses.reload();
       })
     );
@@ -107,7 +105,6 @@ export class CourseFacade {
     return this.courseService.deleteCourse(id).pipe(
       catchError((err) => this.handleRequestError(err)),
       finalize(() => {
-        this.loading.set(false);
         this.allCourses.reload();
       })
     );

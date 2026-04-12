@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, computed, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ExamStatus } from '../../../../../data/enums/ExamStatus';
-import { getExamStatusMeta } from '../../../../../shared/utils/exam-status-meta';
+import { ExamStatusMeta, getExamStatusMeta } from '../../../../../shared/utils/exam-status-meta';
 
 @Component({
   selector: 'app-result-summary-card',
@@ -44,6 +44,12 @@ export class ResultSummaryCardComponent {
   protected readonly progressStyle = computed(() => `${this.percentage()}%`);
   protected readonly statusMeta = computed(() => getExamStatusMeta(this.examStatus()));
 
+  protected readonly progressDashArray = computed(() => {
+    const circumference = 2 * Math.PI * 40; // radius = 40
+    const offset = circumference - (this.percentage() / 100) * circumference;
+    return `${circumference - offset} ${circumference}`;
+  });
+
   protected readonly gradeClass = computed(() => {
     const percentage = this.percentage();
     if (percentage >= 90) return 'grade-a';
@@ -51,6 +57,14 @@ export class ResultSummaryCardComponent {
     if (percentage >= 70) return 'grade-c';
     if (percentage >= 50) return 'grade-d';
     return 'grade-f';
+  });
+  protected readonly colorGrade = computed(() => {
+    const percentage = this.percentage();
+    if (percentage >= 90) return 'success';
+    if (percentage >= 80) return 'primary';
+    if (percentage >= 70) return 'info';
+    if (percentage >= 50) return 'warning';
+    return 'danger';
   });
 
   protected formatTime(totalMinutes: number): string {

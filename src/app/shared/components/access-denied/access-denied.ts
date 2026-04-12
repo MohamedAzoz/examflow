@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-access-denied',
-  standalone: true,
   imports: [],
   templateUrl: './access-denied.html',
   styleUrl: './access-denied.css',
@@ -18,6 +17,6 @@ export class AccessDenied {
   }
 
   goHome(): void {
-    this.router.navigate(['/']); // افترضنا أن المسار الرئيسي هو '/'
+    this.router.navigate(['/']);
   }
 }
