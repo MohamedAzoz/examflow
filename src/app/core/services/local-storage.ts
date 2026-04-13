@@ -13,6 +13,14 @@ export class LocalStorage {
   remove(key: string) {
     localStorage.removeItem(key);
   }
+  removeAll(prefix: string) {
+    const keys = Object.keys(localStorage);
+    keys.forEach((key) => {
+      if (key.startsWith(prefix)) {
+        localStorage.removeItem(key);
+      }
+    });
+  }
   clear() {
     localStorage.clear();
   }

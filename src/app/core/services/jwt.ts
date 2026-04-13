@@ -5,7 +5,7 @@ import { jwtDecode } from 'jwt-decode';
   providedIn: 'root',
 })
 export class JWT {
-  public decodeToken( token: string) {
+  public decodeToken(token: string) {
     return jwtDecode(token);
   }
   // public isTokenExpired() {

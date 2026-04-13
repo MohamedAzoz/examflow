@@ -1,5 +1,6 @@
 {
   "css.lint.unknownAtRules": "ignore",
+  "scss.lint.unknownAtRules": "ignore",
   "files.associations": {
     "*.css": "tailwindcss"
   },
@@ -11,5 +12,10 @@
     "[class]",
     "class:list"
   ],
-  "tailwindCSS.experimental.classRegex": ["class:list"]
+  "tailwindCSS.experimental.classRegex": ["class:list", "ngClass", "[ngClass]", "[class]", "class"],
+  "files.autoSave": "afterDelay",
+  "editor.quickSuggestions": {
+    "strings": "on"
+  },
+  "tailwindCSS.experimental.configFile": "src/styles.css"
 }

@@ -1,6 +1,6 @@
-<div class="min-h-screen relative">
+<div class="relative min-h-dvh">
   <!-- Overlay: mobile only, when sidebar open -->
-  @if (toggle.value() && isMobile()) {
+  @if (toggle.value() && (isMobile() || !isMobile()) && !toggle.isExamMode()) {
     <div
       class="fixed inset-0 bg-black/40 backdrop-blur-sm z-300 transition-opacity duration-300"
       (click)="onOverlayClick()"
@@ -8,39 +8,36 @@
     ></div>
   }
 
-  @if (toggle.isExamMode() && isMobile() && !toggle.value()) {
-    <button
-      type="button"
-      class="fixed left-2 top-2 z-300 inline-flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-card-bg text-primary shadow-sm"
-      (click)="toggle.toggle()"
-      aria-label="Show sidebar"
-    >
-      <i class="pi pi-bars text-base"></i>
-    </button>
-  }
-
   <!-- Layout Container -->
-  <div class="flex w-full">
+  <div class="w-full min-h-dvh lg:pl-65">
+    @if (toggle.isExamMode() && isMobile() && toggle.value()) {
+      <button
+        type="button"
+        class="fixed left-2 top-2 z-300 inline-flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-card-bg text-primary shadow-sm"
+        (click)="toggle.toggle()"
+        aria-label="Show sidebar"
+      >
+        <i class="pi pi-bars text-base"></i>
+      </button>
+    }
     <!-- Sidebar component -->
-     @if (!toggle.isExamMode() || !isMobile()) {
-    <app-sidebar
-      [navItems]="navItems()"
-      [userName]="userName()"
-      [userRole]="userRoleLabel()"
-      [activeRoute]="activeRoute()"
-      [isStudent]="isStudent()"
-      (navItemSelected)="onNavItemSelected($event)"
-    />
-     }
+    @if (!toggle.isExamMode() || !isMobile()) {
+      <app-sidebar
+        [navItems]="navItems()"
+        [userName]="userName()"
+        [userRole]="userRoleLabel()"
+        [activeRoute]="activeRoute()"
+        [isStudent]="isStudent()"
+        (navItemSelected)="onNavItemSelected($event)"
+      />
+    }
 
     <!-- Main Content Area -->
-    <div
-      class=" flex flex-col"
-    >
+    <div class="flex min-h-dvh flex-col">
       <!-- Header -->
       @if (!toggle.isExamMode()) {
         <header
-          class="h-14 px-4 md:px-6 bg-sidebar-bg/80 backdrop-blur-md border-b border-border flex items-center justify-between shadow-sm"
+          class="sticky top-0 z-30 h-14 px-4 md:px-6 bg-sidebar-bg/90 backdrop-blur-md border-b border-border flex items-center justify-between shadow-sm"
         >
           <div class="flex items-center overflow-hidden">
             @if (isMobile() && !toggle.value()) {

@@ -1,11 +1,12 @@
 <aside
-  class="sidebar fixed lg:sticky top-0 lg:top-3 w-[260px] h-screen flex flex-col z-400 bg-sidebar-bg border-r border-border shadow-sm"
-  [class.translate-x-0]="toggle.value() || !isMobile()"
+  class="sidebar fixed left-0 top-0 z-400 flex h-dvh w-65 flex-col overflow-auto overflow-y-hidden border-r border-border bg-sidebar-bg shadow-sm"
   [class.-translate-x-full]="!toggle.value() && isMobile()"
+  [class.translate-x-0]="toggle.value() || !isMobile()"
   [class.hidden]="toggle.isExamMode() && (!isMobile() || !toggle.value())"
   role="complementary"
   aria-label="Sidebar navigation"
 >
+
   <!-- Hamburger/Close (Mobile Toggle) -->
   @if (isStudent() && isMobile()) {
     <div class="flex justify-start px-4 pt-2">
@@ -75,14 +76,14 @@
   }
 
   <!-- Navigation -->
-  <nav class="px-3 py-1 overflow-y-auto lg:max-h-[calc(100dvh-17rem)]" role="navigation">
+  <nav class="flex-1 min-h-0 overflow-y-auto px-3 py-1" role="navigation">
     <ul class="list-none flex flex-col" [ngClass]="[isStudent() ? 'gap-2' : 'gap-0']">
       @for (item of navItems(); track $index) {
         <li class="w-full">
           <a
             [routerLink]="[url(item.route)]"
             (click)="onNavClick(item.route)"
-            class="group flex items-center gap-3 w-full px-3 rounded-lg no-underline transition-all duration-200 text-text-secondary font-semibold text-sm hover:bg-primary-light hover:text-primary"
+            class="group flex items-center gap-3 w-full px-3 rounded-lg no-underline transition-all duration-200 text-text-secondary font-semibold text-sm lg:text-base hover:bg-primary-light hover:text-primary"
             [ngClass]="isStudent() ? 'py-3.5' : 'py-2.5'"
             routerLinkActive="bg-color-link text-white active-item shadow-md"
             [attr.aria-current]="activeRoute() === item.route ? 'page' : null"
@@ -99,7 +100,7 @@
   </nav>
 
   <!-- Logout Footer -->
-  <div class="p-3 border-t border-black/10">
+  <div class="mt-auto shrink-0 border-t border-black/10 p-3 bg-sidebar-bg">
     <button
       type="button"
       (click)="onLogout()"

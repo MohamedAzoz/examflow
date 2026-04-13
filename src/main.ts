@@ -3,6 +3,7 @@ import * as Sentry from '@sentry/angular';
 import { appConfig } from './app/app.config';
 import { App } from './app/app';
 import { environment } from './environments/environment';
+import DisableDevtool from 'disable-devtool';
 
 Sentry.init({
   dsn: environment.sentryDsn,
@@ -20,5 +21,22 @@ Sentry.init({
   ],
   enableLogs: !environment.production,
 });
+
+if (environment.production) {
+  DisableDevtool({
+    disableMenu: true,
+    clearLog: true,
+    interval: 200,
+    ondevtoolopen: (type: any, next: () => void) => {
+      console.log('DevTools detected! Type:', type);
+      // next();
+    },
+    ondevtoolclose: () => {
+      console.log('DevTools closed');
+    },
+    url: 'https://example.com/blocked',
+    tkName: 'ddtk',
+  });
+}
 
 bootstrapApplication(App, appConfig).catch((err) => console.error(err));

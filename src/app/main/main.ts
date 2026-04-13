@@ -11,7 +11,7 @@ import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { SidebarComponent } from '../layout/sidebar/sidebar';
 import { Toggle } from '../core/services/toggle';
 import { NavItem } from '../layout/nav-item';
-import { ADMIN_NAV_ITEMS, STUDENT_NAV_ITEMS } from '../shared/Config/sideBar.config';
+import { ADMIN_NAV_ITEMS, STUDENT_NAV_ITEMS } from '../core/Config/sideBar.config';
 import { IdentityService } from '../core/services/identity-service';
 import { filter } from 'rxjs';
 

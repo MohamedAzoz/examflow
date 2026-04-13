@@ -1,23 +1,31 @@
-/* 
-  Sidebar Specific Styles 
-  Handles the core layout states that are easier to manage with a few lines of CSS 
-  than complex Tailwind class toggles.
-*/
-
 :host {
   --color-link: #2d7a7a;
   display: block;
   flex: 0 0 auto;
 }
-
-/* On desktop, host should occupy the sidebar width */
-@media (min-width: 1024px) {
-  :host {
-    width: 260px;
-    align-self: flex-start;
-  }
+/* .sidebar {
+ overflow-y: auto;
+  overflow-x: hidden;
+  transition: transform var(--speed) var(--ease);
+  will-change: transform;
+  transform: translateX(0);
+}
+.sidebar.is-toggled {
+  transform: translateX(-100%);
 }
 
+.sidebar.force-hidden {
+  display: none !important;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+} */
 /* Ensure active item styles are high priority */
 .sidebar .active-item {
   background-color: #13626c !important;
