@@ -10,6 +10,7 @@ import { IsubmitExam } from '../../../data/models/StudentExam/IsubmitExam';
 import { IstartExam } from '../../../data/models/StudentExam/IstartExam';
 import { IsendAnswer } from '../../../data/models/StudentExam/isend-answer';
 import { StudentExam } from '../../../data/services/student-exam';
+import { AppMessageService } from '../../../core/services/app-message';
 
 @Injectable({
   providedIn: 'root',
@@ -20,6 +21,7 @@ export class StudentExamFacade {
   private readonly router = inject(Router);
   private readonly toggleService = inject(Toggle);
   private readonly timerService = inject(Timer);
+  private readonly appMessage = inject(AppMessageService);
   private readonly isOnline = connectivitySignal();
 
   readonly upcomingExams = signal<IavailableExams[]>([]);
@@ -97,7 +99,10 @@ export class StudentExamFacade {
   }
 
   loadAvailableExams(): void {
-    if (!this.isOnline()) return;
+    if (!this.isOnline()) {
+      this.appMessage.addWarnMessage('No internet connection.');
+      return;
+    }
 
     this.isLoading.set(true);
     this.errorMessage.set(null);
@@ -109,13 +114,17 @@ export class StudentExamFacade {
       },
       error: (error) => {
         this.isLoading.set(false);
-        this.errorMessage.set('Failed to load upcoming exams.');
+        const detail = this.appMessage.showHttpError(error, 'Failed to load upcoming exams.');
+        this.errorMessage.set(detail);
       },
     });
   }
 
   startExam(examId: number): void {
-    if (!this.isOnline()) return;
+    if (!this.isOnline()) {
+      this.appMessage.addWarnMessage('No internet connection.');
+      return;
+    }
 
     this.setSessionExamId(examId);
     this.setCurrentQuestionIndex(0);
@@ -135,13 +144,17 @@ export class StudentExamFacade {
       },
       error: (error) => {
         this.isLoading.set(false);
-        this.errorMessage.set('Failed to start the exam.');
+        const detail = this.appMessage.showHttpError(error, 'Failed to start the exam.');
+        this.errorMessage.set(detail);
       },
     });
   }
 
   getExamResults(examId: number): void {
-    if (!this.isOnline()) return;
+    if (!this.isOnline()) {
+      this.appMessage.addWarnMessage('No internet connection.');
+      return;
+    }
 
     this.isLoading.set(true);
     this.errorMessage.set(null);
@@ -154,23 +167,34 @@ export class StudentExamFacade {
       error: (error) => {
         this.isLoading.set(false);
         this.examResults.set(null);
-        this.errorMessage.set('Failed to load exam results.');
+        const detail = this.appMessage.showHttpError(error, 'Failed to load exam results.');
+        this.errorMessage.set(detail);
       },
     });
   }
 
   submitExam(exam: IsubmitExam) {
-    if (!this.isOnline()) return of(null);
+    if (!this.isOnline()) {
+      this.appMessage.addWarnMessage('No internet connection.');
+      return of(null);
+    }
 
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
     return this.studentExamService.submitExam(exam).pipe(
-      tap(() => {
-        this.toggleService.examMode(false);
-        this.resetExamSessionState();
-        this.router.navigate(['/main/student/past-results']);
-      }),
+      tap(
+        () => {
+          this.toggleService.examMode(false);
+          this.resetExamSessionState();
+          this.appMessage.addSuccessMessage('Exam submitted successfully.');
+          this.router.navigate(['/main/student/past-results']);
+        },
+        (error) => {
+          const detail = this.appMessage.showHttpError(error, 'Failed to submit exam.');
+          this.errorMessage.set(detail);
+        },
+      ),
       finalize(() => this.isLoading.set(false)),
     );
   }
@@ -185,7 +209,10 @@ export class StudentExamFacade {
   }
 
   loadPastExams(page: number = 1, pageSize: number = 2): void {
-    if (!this.isOnline()) return;
+    if (!this.isOnline()) {
+      this.appMessage.addWarnMessage('No internet connection.');
+      return;
+    }
 
     this.isLoading.set(true);
     this.errorMessage.set(null);
@@ -204,7 +231,8 @@ export class StudentExamFacade {
         this.pastExams.set([]);
         this.totalPages.set(0);
         this.pastExamResult.set([]);
-        this.errorMessage.set(error.message);
+        const detail = this.appMessage.showHttpError(error, 'Failed to load past exams.');
+        this.errorMessage.set(detail);
       },
     });
   }

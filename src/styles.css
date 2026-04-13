@@ -1,9 +1,9 @@
 /* ====================== Fonts ====================== */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@500;600;700&display=swap');
 /* ====================== Tailwind + PrimeNG ====================== */
-@import "tailwindcss";
-@import "tailwindcss-primeui";
-@import "primeicons/primeicons.css";
+@import 'tailwindcss';
+@import 'tailwindcss-primeui';
+@import 'primeicons/primeicons.css';
 
 /* ====================== Dark Mode Variant (مهم جداً) ====================== */
 @custom-variant dark (&:where(.dark, .dark *));
@@ -27,16 +27,23 @@
   --color-text-secondary: #6b7280;
 
   --color-main-bg: #e0e0e0;
+
   --color-sidebar-bg: #f3f4f6;
+  --color-link: #2d7a7a;
 
   --color-card-bg: #fafafa;
-  
+
   --color-border: #e5e7eb;
   --color-border-teal: #62cec2;
+
+  --color-white-red: #fda6a6;
 
   --color-surface: #f5faff;
   --color-surface-container: #e9eef5;
   --color-surface-container-high: #e3e9ef;
+
+  --color-mode-toggle-bg: #dbdcdd;
+  --color-mode-toggle-hover-bg: oklch(91.22% 0.11984 94.112);
 
   /* خطوط */
   --font-headline: 'Manrope', system-ui, sans-serif;
@@ -54,9 +61,14 @@
   --color-text-secondary: #94a3b8;
   --color-text-gray: #cbd5e1;
 
+  --color-link: #2d7a7a;
+  --color-white-red: #f87171;
+
   --color-surface: #1e2937;
   --color-surface-container: #334155;
   --color-surface-container-high: #475569;
+  --color-mode-toggle-bg: oklch(87.9% 0.169 91.605);
+  --color-mode-toggle-hover-bg: #ececec;
 }
 
 /* ====================== Base Styles ====================== */
@@ -68,22 +80,64 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-headline);
   }
 }
 
-/* ====================== Utilities إضافية ====================== */
+/* ====================== Utilities ====================== */
 @layer utilities {
   .glass {
     background: rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(10px);
   }
-  
+
   .dark .glass {
     background: rgba(30, 41, 55, 0.7);
+  }
+}
+
+/* ====================== Responsive Toast ====================== */
+@media (max-width: 768px) {
+  .p-toast.app-toast {
+    width: min(78vw, 20rem) !important;
+    right: 0.45rem !important;
+    left: auto !important;
+    top: 0.55rem !important;
+  }
+
+  .p-toast.app-toast .p-toast-message {
+    margin-bottom: 0.45rem;
+  }
+
+  .p-toast.app-toast .p-toast-summary {
+    font-size: 0.95rem;
+    line-height: 1.2;
+  }
+
+  .p-toast.app-toast .p-toast-detail {
+    font-size: 0.8rem;
+    line-height: 1.3;
+    margin-top: 0.25rem;
+  }
+
+  .p-toast.app-toast .p-toast-message-icon,
+  .p-toast.app-toast .p-toast-icon-close {
+    font-size: 0.95rem;
+  }
+
+  .p-toast.app-toast .p-toast-message-content {
+    padding: 0.75rem;
+    gap: 0.5rem;
   }
 }

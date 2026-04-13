@@ -3,3 +3,11 @@
   display: block;
 }
 
+.icon {
+  font-size: 2rem;
+}
+@media (max-width: 1040px) {
+  .icon {
+    font-size: 1.65rem;
+  }
+}

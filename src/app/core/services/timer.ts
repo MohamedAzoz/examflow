@@ -1,14 +1,16 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
-import { catchError, finalize, interval, map, of, Subscription, switchMap, take } from 'rxjs';
+import { Injectable, computed, effect, inject, signal } from '@angular/core';
+import { catchError, finalize, interval, map, of, Subscription, take } from 'rxjs';
 import { System } from '../../data/services/system';
+import { IdentityService } from './identity-service';
 
 @Injectable({ providedIn: 'root' })
 export class Timer {
   private readonly systemService = inject(System);
+  private readonly identityService = inject(IdentityService);
 
   private readonly _timeLeftSeconds = signal<number>(0);
   readonly timeLeftSeconds = this._timeLeftSeconds.asReadonly();
- 
+
   private readonly _serverOffsetMs = signal<number>(0);
   private readonly _tick = signal<number>(Date.now());
   readonly now = computed(() => this._tick() + this._serverOffsetMs());
@@ -16,24 +18,78 @@ export class Timer {
   private readonly _isRunning = signal<boolean>(false);
   readonly isRunning = this._isRunning.asReadonly();
 
+  private readonly _syncRequest = signal<{ version: number; force: boolean }>({
+    version: 0,
+    force: true,
+  });
+
   readonly isFinished = computed(() => this._timeLeftSeconds() <= 0);
   readonly countdown = computed(() => this.formatTime(this._timeLeftSeconds()));
 
   private clockSub: Subscription | null = null;
-  private resyncSub: Subscription | null = null;
   private onExpire: (() => void) | null = null;
-  private examEndMs = 0; 
+  private examEndMs = 0;
   private startToken = 0;
   private lastSyncMs = 0;
   private syncInProgress: any = null;
 
   constructor() {
     this.initGlobalClock();
+    this.initSignalDrivenSync();
+    this.bindBrowserSyncEvents();
   }
 
   private initGlobalClock(): void {
-    this.syncServerTime().subscribe();
     interval(1000).subscribe(() => this._tick.set(Date.now()));
+  }
+
+  private initSignalDrivenSync(): void {
+    effect(() => {
+      const request = this._syncRequest();
+
+      this.syncServerTime(request.force)
+        .pipe(take(1))
+        .subscribe(() => {
+          if (this._isRunning()) {
+            this.tick();
+          }
+        });
+    });
+  }
+
+  private bindBrowserSyncEvents(): void {
+    if (typeof window === 'undefined' || typeof document === 'undefined') {
+      return;
+    }
+
+    window.addEventListener('online', () => {
+      if (!this.shouldAllowSync()) {
+        return;
+      }
+
+      this.requestServerTimeSync(true);
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && this.shouldAllowSync()) {
+        this.requestServerTimeSync(false);
+      }
+    });
+  }
+
+  private requestServerTimeSync(force: boolean): void {
+    if (!this.shouldAllowSync()) {
+      return;
+    }
+
+    this._syncRequest.update((current) => ({
+      version: current.version + 1,
+      force,
+    }));
+  }
+
+  private shouldAllowSync(): boolean {
+    return this.identityService.isAuthenticated() && this._isRunning();
   }
 
   startExam(startTime: string, durationMinutes: number, onExpire?: () => void): void {
@@ -48,29 +104,21 @@ export class Timer {
     this.onExpire = onExpire ?? null;
     this.examEndMs = parsedStart + durationMinutes * 60_000;
 
-    this.syncServerTime()
-      .pipe(take(1))
-      .subscribe(() => {
-        if (token !== this.startToken) return;
+    this._isRunning.set(true);
+    this.requestServerTimeSync(true);
+    this.tick();
 
-        this._isRunning.set(true);
-        this.tick();
+    this.clockSub = interval(1000).subscribe(() => this.tick());
 
-        this.clockSub = interval(1000).subscribe(() => this.tick());
-        this.resyncSub = interval(60_000)
-          .pipe(
-            switchMap(() => this.syncServerTime().pipe(catchError(() => of(void 0)))),
-          )
-          .subscribe(() => this.tick());
-      });
+    if (token !== this.startToken) {
+      this.stopExam(false);
+    }
   }
 
   stopExam(resetCountdown: boolean = true): void {
     this.startToken++;
     this.clockSub?.unsubscribe();
-    this.resyncSub?.unsubscribe();
     this.clockSub = null;
-    this.resyncSub = null;
     this.onExpire = null;
     this.examEndMs = 0;
     this._isRunning.set(false);
@@ -80,15 +128,19 @@ export class Timer {
     }
   }
 
-  private syncServerTime() {
+  private syncServerTime(force: boolean = false) {
+    if (!this.shouldAllowSync()) {
+      return of(void 0);
+    }
+
     // If a sync is already in progress, return the existing observable
     if (this.syncInProgress) {
       return this.syncInProgress;
     }
 
-    // Cooldown: Don't sync more than once every 5 minutes unless explicitly forced (if needed)
+    // Cooldown: avoid frequent sync unless a forced state change requests it.
     const nowMs = Date.now();
-    if (this.lastSyncMs > 0 && nowMs - this.lastSyncMs < 300_000) {
+    if (!force && this.lastSyncMs > 0 && nowMs - this.lastSyncMs < 300_000) {
       return of(void 0);
     }
 
@@ -126,9 +178,7 @@ export class Timer {
     if (remaining === 0 && this._isRunning()) {
       this._isRunning.set(false);
       this.clockSub?.unsubscribe();
-      this.resyncSub?.unsubscribe();
       this.clockSub = null;
-      this.resyncSub = null;
 
       const callback = this.onExpire;
       this.onExpire = null;

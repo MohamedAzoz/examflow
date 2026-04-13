@@ -15,6 +15,11 @@ import { authInterceptor } from './core/interceptors/auth-interceptor';
 import { loadingInterceptor } from './core/interceptors/loading-interceptor';
 import { definePreset } from '@primeuix/themes';
 import Aura from '@primeuix/themes/aura';
+import { MessageService } from 'primeng/api';
+import { provideAnimations } from '@angular/platform-browser/animations';
+import { IdentityService } from './core/services/identity-service';
+import { Theme } from './core/services/theme';
+import { StorageMigrationService } from './core/AppDbContext/storage-migration.service';
 // const MyCustomPreset = definePreset(Aura, {
 //   semantic: {
 //     primary: {
@@ -43,6 +48,8 @@ export const appConfig: ApplicationConfig = {
         },
       },
     }),
+    MessageService,
+    provideAnimations(),
     {
       provide: ErrorHandler,
       useValue: Sentry.createErrorHandler({
@@ -56,6 +63,15 @@ export const appConfig: ApplicationConfig = {
 
     provideAppInitializer(() => {
       inject(Sentry.TraceService);
+    }),
+
+    provideAppInitializer(async () => {
+      const migration = inject(StorageMigrationService);
+      const identity = inject(IdentityService);
+      const theme = inject(Theme);
+
+      await migration.migrateLegacyLocalStorageOnce();
+      await Promise.all([identity.init(), theme.init()]);
     }),
 
     provideRouter(routes, withPreloading(NoPreloading)),

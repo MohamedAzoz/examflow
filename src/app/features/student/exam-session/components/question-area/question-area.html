@@ -1,9 +1,9 @@
 <article
-  class="flex h-full w-full flex-col rounded-xl border border-border bg-card-bg p-3 shadow-sm md:p-6"
+  class="flex h-full w-full min-h-75 flex-col rounded-xl border border-border bg-surface p-3 shadow-sm md:p-6"
 >
-  <div class="mb-4 flex items-start justify-between md:mb-7">
+  <div class="mb-2 flex items-start justify-between md:mb-4">
     <h2
-      class="flex-1 text-lg font-bold leading-snug text-text-dark md:text-2xl"
+      class="mx-auto max-w-[92%] text-center text-base font-bold leading-snug text-text-dark md:text-lg lg:text-xl"
       [dir]="textDirection(title())"
     >
       {{ title() }}
@@ -55,7 +55,7 @@
       {{ isSavingEssay() ? 'Saving...' : 'Save Answer' }}
     </button>
   } @else {
-    <div class="flex flex-1 flex-col gap-3 md:gap-4">
+    <div class="mx-auto flex w-full max-w-[96%] flex-1 flex-col gap-3.5 md:gap-4.5">
       @for (option of options(); track $index) {
         <label [class]="optionClass(option.optionId)">
           <input
@@ -80,7 +80,7 @@
     </div>
   }
 
-  <div class="mt-6 flex flex-wrap items-center justify-between gap-2.5">
+  <div class="mt-7 flex flex-wrap items-center justify-between gap-3">
     <button type="button" [class]="navButtonClass" (click)="previous.emit()" [disabled]="isFirst()">
       Previous
     </button>

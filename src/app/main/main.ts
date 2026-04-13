@@ -13,6 +13,7 @@ import { Toggle } from '../core/services/toggle';
 import { NavItem } from '../layout/nav-item';
 import { ADMIN_NAV_ITEMS, STUDENT_NAV_ITEMS } from '../core/Config/sideBar.config';
 import { IdentityService } from '../core/services/identity-service';
+import { Theme } from '../core/services/theme';
 import { filter } from 'rxjs';
 
 @Component({
@@ -24,6 +25,7 @@ import { filter } from 'rxjs';
 })
 export class Main {
   protected readonly toggle = inject(Toggle);
+  protected readonly theme = inject(Theme);
   private readonly identityService = inject(IdentityService);
   private readonly router = inject(Router);
 
@@ -80,6 +82,9 @@ export class Main {
   });
 
   protected readonly showNotifications = computed(() => this.userRole() === 'admin');
+  protected readonly themeLabel = computed(() =>
+    this.theme.isDark() ? 'Dark mode' : 'Light mode',
+  );
 
   constructor() {
     this.syncActiveRouteWithUrl(this.router.url);
@@ -94,6 +99,10 @@ export class Main {
 
   protected onOverlayClick(): void {
     this.toggle.closeSidebar();
+  }
+
+  protected toggleTheme(): void {
+    this.theme.toggleTheme();
   }
 
   @HostListener('window:resize', ['$event'])

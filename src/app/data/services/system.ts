@@ -6,7 +6,7 @@ import { SkipLoading } from '../../core/interceptors/loading-interceptor';
 @Injectable({
   providedIn: 'root',
 })
-export class System {
+export class System { 
   private http = inject(HttpClient);
 
   // /api/System/server-time

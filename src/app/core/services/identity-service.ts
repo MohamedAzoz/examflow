@@ -1,25 +1,30 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { LocalStorage } from './local-storage';
 import { JWT } from './jwt';
 import { IJWT } from '../../data/models/auth/ijwt';
-import { Cryptography } from './cryptography';
+import { AppDatabase } from '../AppDbContext/app-database';
+import { PersistedAuthState } from '../AppDbContext/storage.models';
 
 @Injectable({
   providedIn: 'root',
 })
 export class IdentityService {
-  private readonly localStorage = inject(LocalStorage);
+  private readonly appDb = inject(AppDatabase);
   private readonly jwt = inject(JWT);
-  private readonly cryptography = inject(Cryptography);
+
+  private initPromise: Promise<void> | null = null;
 
   // State signals
-  private readonly _token = signal<string | null>(this.getStoredToken());
+  private readonly _token = signal<string | null>(null);
   private readonly _role = signal<string | null>(null);
-  private readonly _name = signal<string | null>(this.getStoredName());
+  private readonly _name = signal<string | null>(null);
   private readonly _exp = signal<number | null>(null);
 
-  constructor() {
-    this.hydrateFromStoredToken();
+  async init(): Promise<void> {
+    if (!this.initPromise) {
+      this.initPromise = this.hydrate();
+    }
+
+    await this.initPromise;
   }
 
   // Read-only public reactive views
@@ -45,48 +50,51 @@ export class IdentityService {
     return '/login';
   });
 
-  private getStoredToken(): string | null {
-    const encryptedToken = this.localStorage.get('ef_at');
-    if (!encryptedToken) {
-      return null;
-    }
+  private async hydrate(): Promise<void> {
+    const storedState = await this.appDb.getAuthState();
 
-    try {
-      return this.cryptography.decode(encryptedToken);
-    } catch {
-      return encryptedToken;
-    }
-  }
-
-  private getStoredName(): string {
-    const encryptedName = this.localStorage.get('ef_n');
-    if (!encryptedName) {
-      return "unknown";
-    }
-
-    try {
-      return this.cryptography.decode(encryptedName);
-    } catch {
-      return encryptedName;
-    }
-  }
-
-  private hydrateFromStoredToken(): void {
-    const token = this._token();
-    if (!token) {
+    if (storedState && this.hydrateFromState(storedState)) {
       return;
     }
-    try {
-      const decoded = this.jwt.decodeToken(token) as IJWT;
-      this._role.set(decoded.role ?? null);
-      this._exp.set(Number(decoded.exp) || null);
 
-      if (!this._name() && decoded.unique_name) {
-        this._name.set(decoded.unique_name);
-      }
-    } catch {
-      this.clearAuth();
+    if (storedState) {
+      await this.appDb.clearAuthState();
     }
+  }
+
+  private hydrateFromState(state: PersistedAuthState): boolean {
+    try {
+      const decoded = this.jwt.decodeToken(state.token) as IJWT;
+      const normalizedState = this.normalizeState(state, decoded);
+      this.applyAuthState(normalizedState);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  private normalizeState(state: PersistedAuthState, decoded: IJWT): PersistedAuthState {
+    return {
+      token: state.token,
+      role: state.role ?? decoded.role ?? null,
+      userName: state.userName ?? decoded.unique_name ?? null,
+      userId: state.userId ?? decoded.nameid ?? null,
+      issuedAt: state.issuedAt ?? this.toNumberOrNull(decoded.iat),
+      notBefore: state.notBefore ?? this.toNumberOrNull(decoded.nbf),
+      expiresAt: state.expiresAt ?? this.toNumberOrNull(decoded.exp),
+    };
+  }
+
+  private applyAuthState(state: PersistedAuthState): void {
+    this._token.set(state.token);
+    this._role.set(state.role);
+    this._name.set(state.userName);
+    this._exp.set(state.expiresAt);
+  }
+
+  private toNumberOrNull(value: unknown): number | null {
+    const numberValue = Number(value);
+    return Number.isFinite(numberValue) ? numberValue : null;
   }
 
   /**
@@ -95,32 +103,26 @@ export class IdentityService {
    */
   setAuth(token: string): void {
     const decoded = this.jwt.decodeToken(token) as IJWT;
+    const authState: PersistedAuthState = {
+      token,
+      role: decoded.role ?? null,
+      userName: decoded.unique_name ?? null,
+      userId: decoded.nameid ?? null,
+      issuedAt: this.toNumberOrNull(decoded.iat),
+      notBefore: this.toNumberOrNull(decoded.nbf),
+      expiresAt: this.toNumberOrNull(decoded.exp),
+    };
 
-    // Update LocalStorage (Persistence)
-    this.localStorage.set('ef_at', this.cryptography.encode(token));
-    // this.localStorage.set('ef_r', this.cryptography.encode(decoded.role));
-    this.localStorage.set('ef_n', this.cryptography.encode(decoded.unique_name));
-    // this.localStorage.set('ef_e', this.cryptography.encode(decoded.exp.toString()));
-    this.localStorage.set('ef_uI', this.cryptography.encode(decoded.nameid));
-    this.localStorage.set('ef_iat', this.cryptography.encode(decoded.iat.toString()));
-    this.localStorage.set('ef_nbf', this.cryptography.encode(decoded.nbf.toString()));
-
-    // Update Signals (Reactivity)
-    this._token.set(token);
-    this._role.set(decoded.role);
-
-    this._name.set(decoded.unique_name);
-    this._exp.set(Number(decoded.exp));
+    this.applyAuthState(authState);
+    void this.appDb.saveAuthState(authState);
   }
 
   /**
    * Clears the authentication state.
    */
   clearAuth(): void {
-    // Clear LocalStorage
-    this.localStorage.removeAll('ef_');
+    void this.appDb.clearAuthState();
 
-    // Reset Signals
     this._token.set(null);
     this._role.set(null);
     this._name.set(null);

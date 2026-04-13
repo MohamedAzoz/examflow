@@ -1,9 +1,9 @@
-<div class="max-w-[1400px] mx-auto p-4 md:p-8 lg:p-12 min-h-full flex flex-col">
+<div class="max-w-350 mx-auto p-4 md:p-8 lg:p-12 min-h-full flex flex-col">
   <main class="flex-1">
     <!-- Loading State -->
     @if (isLoading()) {
       <div class="flex flex-col items-center justify-center py-20 text-center gap-4 animate-in fade-in duration-500">
-        <i class="pi pi-spin pi-spinner text-5xl text-primary" aria-hidden="true"></i>
+        <i class="pi pi-spin pi-spinner icon text-primary" aria-hidden="true"></i>
         <p class="text-sm font-semibold uppercase tracking-widest text-text-secondary">
           Fetching academic records...
         </p>
@@ -14,7 +14,7 @@
     @if (errorMessage()) {
       <div class="flex flex-col items-center justify-center py-20 text-center gap-6 max-w-lg mx-auto animate-in zoom-in-95 duration-300">
         <div class="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center">
-          <i class="pi pi-exclamation-circle text-4xl text-red-600" aria-hidden="true"></i>
+          <i class="pi pi-exclamation-circle icon text-red-600" aria-hidden="true"></i>
         </div>
         <p class="text-text-secondary leading-relaxed">{{ errorMessage() }}</p>
         <button
@@ -40,8 +40,8 @@
     <!-- Empty State -->
     @if (!isLoading() && !errorMessage() && pastExams().length === 0) {
       <div class="flex flex-col items-center justify-center py-24 text-center gap-4 bg-surface/50 rounded-3xl border border-dashed border-border/60">
-        <div class="w-20 h-20 rounded-full bg-surface-container flex items-center justify-center">
-          <i class="pi pi-graduation-cap text-4xl text-text-secondary/50"></i>
+        <div class="w-25 h-25 rounded-full bg-surface-container flex items-center justify-center">
+          <i class="pi pi-box icon text-text-secondary/50"></i>
         </div>
         <p class="text-text-secondary font-medium">No exam results found in your records.</p>
       </div>
@@ -65,8 +65,8 @@
             <button
               type="button"
               class="w-9 h-9 flex items-center justify-center rounded-full text-sm font-semibold transition-all"
-              [class]="currentPage() === page 
-                ? 'bg-primary text-white shadow-md shadow-primary/20 scale-110' 
+              [class]="currentPage() === page
+                ? 'bg-primary text-white shadow-md shadow-primary/20 scale-110'
                 : 'text-text-secondary hover:bg-surface'"
               (click)="changePage(page)"
             >

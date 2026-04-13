@@ -85,7 +85,7 @@
             (click)="onNavClick(item.route)"
             class="group flex items-center gap-3 w-full px-3 rounded-lg no-underline transition-all duration-200 text-text-secondary font-semibold text-sm lg:text-base hover:bg-primary-light hover:text-primary"
             [ngClass]="isStudent() ? 'py-3.5' : 'py-2.5'"
-            routerLinkActive="bg-color-link text-white active-item shadow-md"
+            routerLinkActive="bg-link text-white active-item shadow-md"
             [attr.aria-current]="activeRoute() === item.route ? 'page' : null"
           >
             <!-- Nav Icon -->
@@ -104,7 +104,7 @@
     <button
       type="button"
       (click)="onLogout()"
-      class="flex items-center justify-center gap-3 w-full px-1 py-3 rounded-lg bg-white border border-danger/40 text-danger text-sm font-bold cursor-pointer no-underline transition-all duration-200 hover:bg-[#fff5f5] hover:border-danger/80 hover:shadow-sm"
+      class="flex items-center justify-center gap-3 w-full px-1 py-3 rounded-lg bg-main-bg border border-danger/40 text-danger text-sm font-bold cursor-pointer no-underline transition-all duration-200 hover:bg-white-red hover:border-danger/80 hover:shadow-sm"
     >
       <i class="pi pi-sign-out text-lg"></i>
       <span>Logout</span>

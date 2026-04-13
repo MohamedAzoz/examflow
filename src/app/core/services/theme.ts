@@ -1,28 +1,52 @@
-import { Injectable, signal, effect } from '@angular/core';
+import { Injectable, effect, inject, signal } from '@angular/core';
+import { AppDatabase } from '../AppDbContext/app-database';
+import { ThemePreference } from '../AppDbContext/storage.models';
 
 @Injectable({ providedIn: 'root' })
 export class Theme {
-  isDark = signal<boolean>(this.getInitialTheme());
+  private readonly appDb = inject(AppDatabase);
+
+  private initialized = false;
+  private initPromise: Promise<void> | null = null;
+
+  isDark = signal<boolean>(false);
 
   constructor() {
     effect(() => {
       const html = document.documentElement;
+
       if (this.isDark()) {
         html.classList.add('dark');
-        localStorage.setItem('theme', 'dark');
       } else {
         html.classList.remove('dark');
-        localStorage.setItem('theme', 'light');
+      }
+
+      if (this.initialized) {
+        const nextTheme: ThemePreference = this.isDark() ? 'dark' : 'light';
+        void this.appDb.saveThemePreference(nextTheme);
       }
     });
   }
 
-  private getInitialTheme(): boolean {
-    const saved = localStorage.getItem('theme');
-    if (saved) return saved === 'dark';
+  async init(): Promise<void> {
+    if (!this.initPromise) {
+      this.initPromise = this.hydrateTheme();
+    }
 
-    // افتراضياً حسب إعدادات الجهاز
-    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    await this.initPromise;
+  }
+
+  private async hydrateTheme(): Promise<void> {
+    const savedTheme = await this.appDb.getThemePreference();
+
+    if (savedTheme) {
+      this.isDark.set(savedTheme === 'dark');
+      this.initialized = true;
+      return;
+    }
+
+    this.isDark.set(window.matchMedia('(prefers-color-scheme: dark)').matches);
+    this.initialized = true;
   }
 
   toggleTheme() {

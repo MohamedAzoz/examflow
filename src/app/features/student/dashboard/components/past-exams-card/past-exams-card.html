@@ -9,14 +9,20 @@
         <i class="pi pi-history text-primary text-lg sm:text-xl"></i>
       </div>
       <div>
-        <p class="text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-text-secondary/60 mb-0.5">
+        <p
+          class="text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-text-secondary/60 mb-0.5"
+        >
           Recent Activity
         </p>
-        <h2 class="text-xl lg:text-2xl font-black text-text-primary tracking-tight">Past Results</h2>
+        <h2 class="text-xl lg:text-2xl font-black text-text-primary tracking-tight">
+          Past Results
+        </h2>
       </div>
     </div>
-    <div class="hidden xs:flex w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-surface-container items-center justify-center text-text-secondary/30">
-        <i class="pi pi-clock text-sm"></i>
+    <div
+      class="hidden xs:flex w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-surface-container items-center justify-center text-text-secondary/30"
+    >
+      <i class="pi pi-clock text-sm"></i>
     </div>
   </header>
 
@@ -25,42 +31,65 @@
       @if (exam.examStatus !== ExamStatus.InProgress) {
         <article
           class="flex items-center justify-between gap-3 sm:gap-4 p-4 sm:p-6 rounded-3xl sm:rounded-4xl transition-all hover:shadow-lg group/item cursor-default border border-transparent"
-          [style.background-color]="'color-mix(in srgb, var(--color-' + getMeta(exam.examStatus).colorClass + ') 8%, transparent)'"
-          [style.border-color]="'color-mix(in srgb, var(--color-' + getMeta(exam.examStatus).colorClass + ') 20%, transparent)'"
+          [style.background-color]="
+            'color-mix(in srgb, var(--color-' +
+            getMeta(exam.examStatus).colorClass +
+            ') 8%, transparent)'
+          "
+          [style.border-color]="
+            'color-mix(in srgb, var(--color-' +
+            getMeta(exam.examStatus).colorClass +
+            ') 20%, transparent)'
+          "
         >
           <div class="min-w-0 space-y-1.5 sm:space-y-2">
-            <h3 class="text-sm sm:text-lg font-black text-text-primary truncate uppercase tracking-tight group-hover/item:text-primary transition-colors">
+            <h3
+              class="text-sm sm:text-lg font-black text-text-primary truncate uppercase tracking-tight group-hover/item:text-primary transition-colors"
+            >
               {{ exam.examTitle }}
             </h3>
-            
+
             <!-- Status Badge with Dot -->
-            <div class="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-white/60 backdrop-blur-sm border border-border/10">
-              <span 
+            <div
+              class="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-white/60 backdrop-blur-sm border border-border/10"
+            >
+              <span
                 class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full"
-                [style.background-color]="'var(--color-' + getMeta(exam.examStatus).colorClass + ')'"
+                [style.background-color]="
+                  'var(--color-' + getMeta(exam.examStatus).colorClass + ')'
+                "
               ></span>
-              <span class="text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-text-secondary/80">
+              <span
+                class="text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-text-secondary/80"
+              >
                 {{ getMeta(exam.examStatus).label }}
               </span>
             </div>
           </div>
-          
+
           <div class="text-right shrink-0">
             <div class="flex items-baseline justify-end gap-0.5 sm:gap-1">
-                <span class="text-xl sm:text-3xl font-black text-text-primary tabular-nums tracking-tighter">{{ exam.studentScore }}</span>
-                <span class="text-[10px] sm:text-sm font-bold text-text-secondary/40">/ {{ exam.examMaxScore }}</span>
+              <span
+                class="text-xl sm:text-3xl font-black text-text-primary tabular-nums tracking-tighter"
+                >{{ exam.studentScore }}</span
+              >
+              <span class="text-[10px] sm:text-sm font-bold text-text-secondary/40"
+                >/ {{ exam.examMaxScore }}</span
+              >
             </div>
           </div>
         </article>
       }
     } @empty {
       <div
-        class="flex flex-col items-center justify-center py-20 text-center gap-6 border-2 border-dashed border-border/40 rounded-4xl bg-surface/30"
+        class="h-full min-h-50 flex flex-col items-center justify-center py-5 lg:py-10 text-center gap-6 border-2 border-dashed border-border/40 rounded-4xl bg-surface/30"
       >
-        <div class="w-16 h-16 rounded-full bg-surface-container flex items-center justify-center shadow-inner">
-          <i class="pi pi-graduation-cap text-3xl text-text-secondary/30"></i>
+        <div
+          class="w-16 h-16 rounded-full bg-surface-container flex items-center justify-center shadow-inner"
+        >
+          <i class="pi pi-graduation-cap text-text-secondary/30 icon"></i>
         </div>
-        <p class="text-text-secondary/40 text-sm font-medium">No past exams found.</p>
+        <p class="text-text-secondary/40 text-xs lg:text-sm font-medium">No past exams found.</p>
       </div>
     }
   </div>

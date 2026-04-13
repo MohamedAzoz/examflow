@@ -30,12 +30,12 @@ if (environment.production) {
     ondevtoolopen: (type: any, next: () => void) => {
       console.log('DevTools detected! Type:', type);
       // next();
-    },
+    }, 
     ondevtoolclose: () => {
       console.log('DevTools closed');
     },
     url: 'https://example.com/blocked',
-    tkName: 'ddtk',
+    tkName: '@Ef_Dev-tool2026',
   });
 }
 

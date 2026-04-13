@@ -15,6 +15,8 @@ import { QuestionType } from '../../../data/enums/question-type';
 import { IsubmitExam } from '../../../data/models/StudentExam/IsubmitExam';
 import { IsendAnswer } from '../../../data/models/StudentExam/isend-answer';
 import { IstartExam } from '../../../data/models/StudentExam/IstartExam';
+import { AppDatabase } from '../../../core/AppDbContext/app-database';
+import { PersistedExamSessionState } from '../../../core/AppDbContext/storage.models';
 import { Timer } from '../../../core/services/timer';
 import { Toggle } from '../../../core/services/toggle';
 import { StudentExamFacade, connectivitySignal } from '../services/student-exam-facade';
@@ -37,6 +39,7 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly facade = inject(StudentExamFacade);
+  private readonly appDb = inject(AppDatabase);
   private readonly toggleService = inject(Toggle);
   private readonly timerService = inject(Timer);
 
@@ -49,6 +52,7 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
   readonly selectedOptions = signal<Record<number, number>>({});
   readonly essayAnswers = signal<Record<number, string>>({});
   readonly markedQuestions = signal<Record<number, boolean>>({});
+  readonly syncedAnsweredIds = signal<Record<number, boolean>>({});
   readonly essayDirtyMap = signal<Record<number, boolean>>({});
   readonly antiCheatCounters = signal<AntiCheatCounters>({ serverResponses: 0, sessionId: 0 });
 
@@ -70,17 +74,7 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
   });
 
   readonly allAnsweredIds = computed(() => {
-    const mcq = this.selectedOptions();
-    const essay = this.essayAnswers();
-    const combined: Record<number, unknown> = { ...mcq };
-
-    Object.entries(essay).forEach(([id, value]) => {
-      if (value.trim()) {
-        combined[Number(id)] = value;
-      }
-    });
-
-    return combined;
+    return this.syncedAnsweredIds();
   });
 
   readonly countdown = computed(() => this.timerService.countdown());
@@ -104,7 +98,7 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
     this.setupExamInitialization();
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.toggleService.examMode(true);
 
     const examId = Number(this.route.snapshot.paramMap.get('examId') ?? 0);
@@ -115,6 +109,11 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
 
     this.facade.setSessionExamId(examId);
 
+    const restored = await this.restoreExamSessionState(examId);
+    if (restored) {
+      return;
+    }
+
     const existingExamId = this.currentExam()?.exam.examId;
     if (existingExamId !== examId) {
       this.facade.startExam(examId);
@@ -122,6 +121,7 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.persistExamSessionStateInBackground();
     this.toggleService.examMode(false);
     this.timerService.stopExam();
   }
@@ -174,24 +174,30 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
     if (!qId) return;
 
     this.markedQuestions.update((state) => ({ ...state, [qId]: !state[qId] }));
+    this.persistExamSessionStateInBackground();
   }
 
   previous(): void {
     if (this.blockNavigationWhileDirty()) return;
 
     this.facade.setCurrentQuestionIndex(Math.max(0, this.questionIndex() - 1));
+    this.persistExamSessionStateInBackground();
   }
 
   next(): void {
     if (this.blockNavigationWhileDirty()) return;
 
-    this.facade.setCurrentQuestionIndex(Math.min(this.questions().length - 1, this.questionIndex() + 1));
+    this.facade.setCurrentQuestionIndex(
+      Math.min(this.questions().length - 1, this.questionIndex() + 1),
+    );
+    this.persistExamSessionStateInBackground();
   }
 
   jumpTo(index: number): void {
     if (this.blockNavigationWhileDirty()) return;
 
     this.facade.setCurrentQuestionIndex(index);
+    this.persistExamSessionStateInBackground();
   }
 
   async submit(): Promise<void> {
@@ -211,6 +217,7 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
     try {
       await this.saveCurrentEssayIfDirty();
       await firstValueFrom(this.facade.submitExam(payload));
+      await this.appDb.clearExamSessionState(examId);
     } finally {
       this.isSubmitting.set(false);
     }
@@ -267,6 +274,7 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
 
         this.initializeAnswers(exam);
         this.startTimer(exam);
+        this.persistExamSessionStateInBackground();
       },
       { allowSignalWrites: true },
     );
@@ -277,6 +285,7 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
 
     const selected: Record<number, number> = {};
     const essays: Record<number, string> = {};
+    const syncedAnswered: Record<number, boolean> = {};
 
     for (const answer of exam.savedAnswers ?? []) {
       if (answer.selectedOptionId) {
@@ -286,10 +295,15 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
       if (answer.eassayAnswer) {
         essays[answer.questionId] = answer.eassayAnswer;
       }
+
+      if (answer.selectedOptionId || answer.eassayAnswer?.trim()) {
+        syncedAnswered[answer.questionId] = true;
+      }
     }
 
     this.selectedOptions.set(selected);
     this.essayAnswers.set(essays);
+    this.syncedAnsweredIds.set(syncedAnswered);
     this.answersInitialized = true;
   }
 
@@ -341,6 +355,8 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
 
     try {
       await firstValueFrom(this.facade.sendAnswer(payload));
+      this.updateSyncedAnsweredState(questionId);
+      await this.persistExamSessionState();
       return true;
     } catch {
       return false;
@@ -352,6 +368,7 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
       ...state,
       serverResponses: state.serverResponses + 1,
     }));
+    this.persistExamSessionStateInBackground();
   }
 
   private incrementTabSwitch(): void {
@@ -363,5 +380,141 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
       ...state,
       sessionId: state.sessionId + 1,
     }));
+    this.persistExamSessionStateInBackground();
+  }
+
+  private async restoreExamSessionState(examId: number): Promise<boolean> {
+    const cachedState = await this.appDb.getExamSessionState(examId);
+    if (!cachedState) {
+      return false;
+    }
+
+    this.facade.currentExam.set(cachedState.examSnapshot);
+
+    this.selectedOptions.set(cachedState.selectedOptions ?? {});
+    this.essayAnswers.set(cachedState.essayAnswers ?? {});
+    this.markedQuestions.set(cachedState.markedQuestions ?? {});
+    this.syncedAnsweredIds.set(cachedState.syncedAnsweredIds ?? {});
+    this.antiCheatCounters.set({
+      serverResponses: cachedState.serverResponses ?? 0,
+      sessionId: cachedState.sessionId ?? 0,
+    });
+
+    const restoredIndex = this.resolveQuestionIndex(
+      cachedState.examSnapshot,
+      cachedState.currentQuestionId,
+      cachedState.currentQuestionIndex,
+    );
+    this.facade.setCurrentQuestionIndex(restoredIndex);
+
+    this.answersInitialized = true;
+    this.timerInitialized = false;
+
+    return true;
+  }
+
+  private resolveQuestionIndex(
+    exam: IstartExam,
+    currentQuestionId: number | null,
+    fallbackIndex: number,
+  ): number {
+    const questions = exam.exam.liveExamQuestios ?? [];
+    if (!questions.length) {
+      return 0;
+    }
+
+    if (currentQuestionId) {
+      const indexFromId = questions.findIndex((q) => q.questionId === currentQuestionId);
+      if (indexFromId >= 0) {
+        return indexFromId;
+      }
+    }
+
+    return Math.min(Math.max(fallbackIndex ?? 0, 0), questions.length - 1);
+  }
+
+  private persistExamSessionStateInBackground(): void {
+    void this.persistExamSessionState();
+  }
+
+  private updateSyncedAnsweredState(questionId: number): void {
+    const hasSelectedOption = (this.selectedOptions()[questionId] ?? 0) > 0;
+    const hasEssayAnswer = Boolean((this.essayAnswers()[questionId] ?? '').trim());
+
+    this.syncedAnsweredIds.update((state) => {
+      const next = { ...state };
+
+      if (hasSelectedOption || hasEssayAnswer) {
+        next[questionId] = true;
+      } else {
+        delete next[questionId];
+      }
+
+      return next;
+    });
+  }
+
+  private getPersistableSelectedOptions(): Record<number, number> {
+    const persisted: Record<number, number> = {};
+    const synced = this.syncedAnsweredIds();
+    const selected = this.selectedOptions();
+
+    Object.keys(synced).forEach((id) => {
+      const questionId = Number(id);
+      if (!synced[questionId]) {
+        return;
+      }
+
+      const optionId = selected[questionId] ?? 0;
+      if (optionId > 0) {
+        persisted[questionId] = optionId;
+      }
+    });
+
+    return persisted;
+  }
+
+  private getPersistableEssayAnswers(): Record<number, string> {
+    const persisted: Record<number, string> = {};
+    const synced = this.syncedAnsweredIds();
+    const essays = this.essayAnswers();
+
+    Object.keys(synced).forEach((id) => {
+      const questionId = Number(id);
+      if (!synced[questionId]) {
+        return;
+      }
+
+      const answer = essays[questionId] ?? '';
+      if (answer.trim()) {
+        persisted[questionId] = answer;
+      }
+    });
+
+    return persisted;
+  }
+
+  private async persistExamSessionState(): Promise<void> {
+    const exam = this.currentExam();
+    if (!exam) {
+      return;
+    }
+
+    const counters = this.antiCheatCounters();
+    const state: PersistedExamSessionState = {
+      examId: exam.exam.examId,
+      examSnapshot: exam,
+      selectedOptions: this.getPersistableSelectedOptions(),
+      essayAnswers: this.getPersistableEssayAnswers(),
+      markedQuestions: { ...this.markedQuestions() },
+      syncedAnsweredIds: { ...this.syncedAnsweredIds() },
+      currentQuestionId: this.currentQuestion()?.questionId ?? null,
+      currentQuestionIndex: this.questionIndex(),
+      serverResponses: counters.serverResponses,
+      sessionId: counters.sessionId,
+      updatedAt: Date.now(),
+    };
+
+    await this.appDb.saveExamSessionState(state);
   }
 }

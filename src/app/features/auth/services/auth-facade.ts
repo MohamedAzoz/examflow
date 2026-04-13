@@ -5,6 +5,8 @@ import { Ilogin } from '../../../data/models/auth/ilogin';
 import { Iregister } from '../../../data/models/auth/iregister';
 import { IdentityService } from '../../../core/services/identity-service';
 import { IErrorResponse } from '../../../data/models/auth/IErrorResponse';
+import { AppMessageService } from '../../../core/services/app-message';
+import { Timer } from '../../../core/services/timer';
 
 @Injectable({
   providedIn: 'root',
@@ -13,6 +15,8 @@ export class AuthFacade {
   private readonly authService = inject(Auth);
   private readonly router = inject(Router);
   private readonly identityService = inject(IdentityService);
+  private readonly appMessage = inject(AppMessageService);
+  private readonly timer = inject(Timer);
 
   readonly isLoading = signal<boolean>(false);
   readonly errorMessage = signal<string | null>(null);
@@ -24,17 +28,24 @@ export class AuthFacade {
       next: (response) => {
         this.identityService.setAuth(response.token);
         this.isLoading.set(false);
+        this.appMessage.addSuccessMessage('You are logged in successfully.');
         this.router.navigate([this.identityService.dashboardPath()]);
       },
-      error: (error: IErrorResponse) => {
+      error: (error: IErrorResponse | unknown) => {
         this.isLoading.set(false);
-        this.errorMessage.set(error.errorMessage ?? 'Invalid credentials. Please try again.');
+        const detail = this.appMessage.showHttpError(
+          error,
+          'Login failed. Please check your credentials.',
+        );
+        this.errorMessage.set(detail);
       },
     });
   }
 
   logout() {
+    this.timer.stopExam();
     this.identityService.clearAuth();
+    this.appMessage.addInfoMessage('You have logged out.');
     this.router.navigate(['login']);
   }
 }

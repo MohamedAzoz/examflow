@@ -62,6 +62,7 @@ export class SidebarComponent {
 
   protected onLogout(): void {
     this.identityService.clearAuth();
+    this.onCloseClick();
     this.router.navigate(['/login']);
   }
 }

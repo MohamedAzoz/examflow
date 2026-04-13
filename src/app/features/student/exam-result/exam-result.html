@@ -1,4 +1,6 @@
-<section class="min-h-full m-3 rounded-4xl p-4 md:p-6 lg:p-8 bg-surface-container animate-in fade-in duration-700">
+<section
+  class="min-h-full m-3 rounded-4xl p-4 md:p-6 lg:p-8 bg-surface-container animate-in fade-in duration-700"
+>
   <!-- Page Header / Hero -->
   <header class="flex flex-col lg:flex-row justify-between items-start gap-8 mb-10">
     <div class="max-w-xl">
@@ -10,8 +12,12 @@
         <span>Back to Results</span>
       </a>
 
-      <p class="text-[11px] font-black uppercase tracking-[0.2em] text-text-secondary/60 mb-2">Performance Overview</p>
-      <h1 class="text-3xl md:text-4xl lg:text-5xl font-black text-text-primary leading-tight tracking-tighter">
+      <p class="text-[11px] font-black uppercase tracking-[0.2em] text-text-secondary/60 mb-2">
+        Performance Overview
+      </p>
+      <h1
+        class="text-3xl md:text-4xl lg:text-5xl font-black text-text-primary leading-tight tracking-tighter"
+      >
         {{ examResult()?.examTitle || 'Exam Result' }}
       </h1>
       <p class="mt-4 text-text-secondary/70 text-sm font-semibold leading-relaxed max-w-2xl">
@@ -21,13 +27,27 @@
 
     @if (examResult()) {
       <div class="flex flex-wrap gap-4 w-full lg:w-auto">
-        <div class="flex-1 lg:flex-none min-w-[160px] p-6 rounded-3xl bg-white border border-border/10 shadow-sm transition-all hover:shadow-md">
-          <span class="block text-[10px] font-black uppercase tracking-widest text-text-secondary mb-2">Correct Answers</span>
-          <strong class="text-4xl font-black text-text-primary tabular-nums tracking-tighter">{{ answeredCorrectlyCount() }}</strong>
+        <div
+          class="flex-1 lg:flex-none min-w-40 p-6 rounded-3xl bg-white border border-border/10 shadow-sm transition-all hover:shadow-md"
+        >
+          <span
+            class="block text-[10px] font-black uppercase tracking-widest text-text-secondary mb-2"
+            >Correct Answers</span
+          >
+          <strong class="text-4xl font-black text-text-primary tabular-nums tracking-tighter">{{
+            answeredCorrectlyCount()
+          }}</strong>
         </div>
-        <div class="flex-1 lg:flex-none min-w-[160px] p-6 rounded-3xl bg-white border border-border/10 shadow-sm transition-all hover:shadow-md">
-          <span class="block text-[10px] font-black uppercase tracking-widest text-text-secondary mb-2">Reviewed Items</span>
-          <strong class="text-4xl font-black text-text-primary tabular-nums tracking-tighter">{{ totalQuestionsCount() }}</strong>
+        <div
+          class="flex-1 lg:flex-none min-w-40 p-6 rounded-3xl bg-white border border-border/10 shadow-sm transition-all hover:shadow-md"
+        >
+          <span
+            class="block text-[10px] font-black uppercase tracking-widest text-text-secondary mb-2"
+            >Reviewed Items</span
+          >
+          <strong class="text-4xl font-black text-text-primary tabular-nums tracking-tighter">{{
+            totalQuestionsCount()
+          }}</strong>
         </div>
       </div>
     }
@@ -35,10 +55,14 @@
 
   <!-- Content States -->
   @if (isLoading()) {
-    <div class="flex flex-col items-center justify-center py-24 text-center gap-6 bg-card-bg/50 rounded-[2.5rem] border border-border/40">
+    <div
+      class="flex flex-col items-center justify-center py-24 text-center gap-6 bg-card-bg/50 rounded-[2.5rem] border border-border/40"
+    >
       <div class="relative w-16 h-16">
         <div class="absolute inset-0 rounded-full border-4 border-primary/10"></div>
-        <div class="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
+        <div
+          class="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin"
+        ></div>
       </div>
       <div class="space-y-2">
         <h2 class="text-2xl font-bold text-text-primary">Loading result details</h2>
@@ -46,7 +70,9 @@
       </div>
     </div>
   } @else if (errorMessage()) {
-    <div class="flex flex-col items-center justify-center py-24 text-center gap-8 bg-card-bg/50 rounded-[2.5rem] border border-border/40 max-w-2xl mx-auto">
+    <div
+      class="flex flex-col items-center justify-center py-24 text-center gap-8 bg-card-bg/50 rounded-[2.5rem] border border-border/40 max-w-2xl mx-auto"
+    >
       <div class="w-20 h-20 rounded-full bg-red-50 flex items-center justify-center">
         <i class="pi pi-exclamation-triangle text-4xl text-red-500"></i>
       </div>
@@ -77,15 +103,25 @@
       />
 
       <!-- Objective Review Section -->
-      <section class="space-y-8 bg-white border border-border/10 rounded-[2.5rem] p-8 sm:p-10 shadow-sm">
+      <section
+        class="space-y-8 bg-white border border-border/10 rounded-[2.5rem] p-8 sm:p-10 shadow-sm"
+      >
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-text-secondary/60 mb-2">Objective Questions</p>
-            <h2 class="text-2xl sm:text-3xl font-black text-text-primary uppercase flex items-center gap-3">
+            <p
+              class="text-[10px] font-black uppercase tracking-[0.2em] text-text-secondary/60 mb-2"
+            >
+              Objective Questions
+            </p>
+            <h2
+              class="text-2xl sm:text-3xl font-black text-text-primary uppercase flex items-center gap-3"
+            >
               Question Review
             </h2>
           </div>
-          <span class="text-[10px] font-black bg-surface-container px-4 py-2 rounded-full text-text-secondary uppercase tracking-widest border border-border/10">
+          <span
+            class="text-[10px] font-black bg-surface-container px-4 py-2 rounded-full text-text-secondary uppercase tracking-widest border border-border/10"
+          >
             {{ objectiveQuestions().length }} items
           </span>
         </div>
@@ -97,7 +133,9 @@
             }
           </div>
         } @else {
-          <div class="flex flex-col items-center justify-center py-20 text-center gap-4 border-2 border-dashed border-border/40 rounded-4xl bg-surface/30">
+          <div
+            class="flex flex-col items-center justify-center py-20 text-center gap-4 border-2 border-dashed border-border/40 rounded-4xl bg-surface/30"
+          >
             <i class="pi pi-list text-3xl text-text-secondary/40"></i>
             <p class="text-text-secondary font-medium">No objective question details found.</p>
           </div>
@@ -105,15 +143,25 @@
       </section>
 
       <!-- Essay Review Section -->
-      <section class="space-y-8 bg-white border border-border/10 rounded-[2.5rem] p-8 sm:p-10 shadow-sm">
+      <section
+        class="space-y-8 bg-white border border-border/10 rounded-[2.5rem] p-8 sm:p-10 shadow-sm"
+      >
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-text-secondary/60 mb-2">Essay Questions</p>
-            <h2 class="text-2xl sm:text-3xl font-black text-text-primary uppercase flex items-center gap-3">
+            <p
+              class="text-[10px] font-black uppercase tracking-[0.2em] text-text-secondary/60 mb-2"
+            >
+              Essay Questions
+            </p>
+            <h2
+              class="text-2xl sm:text-3xl font-black text-text-primary uppercase flex items-center gap-3"
+            >
               Written Answers
             </h2>
           </div>
-          <span class="text-[10px] font-black bg-surface-container px-4 py-2 rounded-full text-text-secondary uppercase tracking-widest border border-border/10">
+          <span
+            class="text-[10px] font-black bg-surface-container px-4 py-2 rounded-full text-text-secondary uppercase tracking-widest border border-border/10"
+          >
             {{ essayQuestions().length }} items
           </span>
         </div>
@@ -125,7 +173,9 @@
             }
           </div>
         } @else {
-          <div class="flex flex-col items-center justify-center py-20 text-center gap-4 border-2 border-dashed border-border/40 rounded-4xl bg-surface/30">
+          <div
+            class="flex flex-col items-center justify-center py-20 text-center gap-4 border-2 border-dashed border-border/40 rounded-4xl bg-surface/30"
+          >
             <i class="pi pi-file-edit text-3xl text-text-secondary/40"></i>
             <p class="text-text-secondary font-medium">This exam does not include essay answers.</p>
           </div>
@@ -133,13 +183,17 @@
       </section>
     </div>
   } @else {
-    <div class="flex flex-col items-center justify-center py-32 text-center gap-6 bg-card-bg rounded-[2.5rem] border border-border/40">
+    <div
+      class="flex flex-col items-center justify-center py-32 text-center gap-6 bg-card-bg rounded-[2.5rem] border border-border/40"
+    >
       <div class="w-20 h-20 rounded-full bg-surface-container flex items-center justify-center">
         <i class="pi pi-file-excel text-4xl text-text-secondary/50"></i>
       </div>
       <div class="space-y-2">
         <h2 class="text-2xl font-bold text-text-primary">No result data found</h2>
-        <p class="text-text-secondary max-w-sm mx-auto">The selected exam does not have available result details yet.</p>
+        <p class="text-text-secondary max-w-sm mx-auto">
+          The selected exam does not have available result details yet.
+        </p>
       </div>
     </div>
   }
