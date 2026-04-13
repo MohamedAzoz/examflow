@@ -3,7 +3,7 @@
   </app-exam-header>
 
   <main
-    class="grid w-full flex-1 items-start gap-3 px-3 py-4 lg:gap-5 lg:px-6 lg:py-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,280px)]"
+    class="grid w-full flex-1 items-start gap-3 px-3 py-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,320px)] lg:gap-5 lg:px-6 lg:py-5"
   >
     @if (currentQuestion(); as q) {
       <app-question-area
@@ -37,7 +37,7 @@
     }
 
     <app-question-map
-      class="h-full min-h-65 lg:min-h-85"
+      class="h-full min-h-65 lg:min-h-95"
       [questionIds]="questionIds()"
       [currentIndex]="questionIndex()"
       [answeredIds]="allAnsweredIds()"

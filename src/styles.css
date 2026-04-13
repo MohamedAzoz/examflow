@@ -105,6 +105,9 @@
   .dark .glass {
     background: rgba(30, 41, 55, 0.7);
   }
+  .btn{
+    @apply cursor-pointer transition-colors duration-300;
+  }
 }
 
 /* ====================== Responsive Toast ====================== */

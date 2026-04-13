@@ -1,9 +1,12 @@
 <article
-  class="flex h-full w-full min-h-75 flex-col rounded-xl border border-border bg-surface p-3 shadow-sm md:p-6"
+  class="flex h-full min-h-75 w-full min-w-75 flex-col rounded-2xl border border-border bg-card-bg p-3 shadow-sm md:p-5 "
 >
-  <div class="mb-2 flex items-start justify-between md:mb-4">
+  <div
+    class="mb-3 md:mb-6"
+    [class]="[textDirection(title()) == 'rtl' ? 'items-end' : 'items-start'+ ' flex']"
+  >
     <h2
-      class="mx-auto max-w-[92%] text-center text-base font-bold leading-snug text-text-dark md:text-lg lg:text-xl"
+      class=" w-full max-w-[90%] text-lg font-bold leading-snug text-text-dark md:text-xl lg:text-2xl"
       [dir]="textDirection(title())"
     >
       {{ title() }}
@@ -12,7 +15,7 @@
 
   @if (questType() === essay) {
     @if (imageUrl() !== '' && imageUrl() !== undefined) {
-      <div class="mb-4 flex items-center justify-center">
+      <div class="mb-2 flex items-center justify-center">
         <img
           class="h-auto w-full max-w-full rounded-lg border border-border object-contain md:max-w-[80%]"
           [src]="imageUrl()"
@@ -22,13 +25,13 @@
     }
 
     <div
-      class="mt-3 flex flex-1 flex-col rounded-lg border border-border bg-surface p-2.5 md:p-3.5"
+      class="mt-2.5 flex flex-1 flex-col rounded-lg border border-border bg-main-bg p-2.5 md:p-3.5"
     >
       <textarea
         name="answer"
         id="answer"
         rows="5"
-        class="min-h-44 w-full flex-1 resize-none rounded-md border border-border bg-card-bg p-2.5 text-sm text-text-dark outline-none transition focus:border-primary focus:ring-2 focus:ring-primary-light md:text-base"
+        class="min-h-44 w-full flex-1 resize-none rounded-md border border-border bg-card-bg p-1.5 text-sm text-text-dark outline-none transition focus:border-primary focus:ring-2 focus:ring-primary-light md:text-base"
         [dir]="textDirection(essayValue())"
         placeholder="Write your answer here"
         [value]="essayValue()"
@@ -55,7 +58,7 @@
       {{ isSavingEssay() ? 'Saving...' : 'Save Answer' }}
     </button>
   } @else {
-    <div class="mx-auto flex w-full max-w-[96%] flex-1 flex-col gap-3.5 md:gap-4.5">
+    <div class="mx-auto flex w-full max-w-[90%] flex-1 flex-col gap-3 md:max-w-[94%] md:gap-4.5">
       @for (option of options(); track $index) {
         <label [class]="optionClass(option.optionId)">
           <input
@@ -70,7 +73,7 @@
             <span [class]="optionRadioDotClass(option.optionId)"></span>
           </span>
           <span
-            class="flex-1 text-[0.98rem] leading-relaxed md:text-base"
+            class="flex-1 text-base leading-relaxed md:text-xl"
             [dir]="textDirection(option.optionText)"
           >
             {{ option.optionText }}
@@ -80,19 +83,19 @@
     </div>
   }
 
-  <div class="mt-7 flex flex-wrap items-center justify-between gap-3">
+  <div class="mt-3 flex flex-wrap items-center justify-between gap-3">
     <button type="button" [class]="navButtonClass" (click)="previous.emit()" [disabled]="isFirst()">
       Previous
     </button>
 
     <button
       type="button"
-      [class]="markButtonClass()"
+      [class]="markButtonClass() + ' btn'"
       (click)="toggleMark.emit()"
       title="Mark Question"
       aria-label="Mark question"
     >
-      <i class="pi pi-flag-fill text-sm"></i>
+      <i class="pi pi-flag-fill text-sm md:text-base"></i>
     </button>
 
     <button type="button" [class]="navButtonClass" (click)="next.emit()" [disabled]="isLast()">
