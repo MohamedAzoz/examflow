@@ -68,7 +68,7 @@ export class QuestionAreaComponent {
 
   markButtonClass(): string {
     const base =
-      'inline-flex h-11 lg:h-13 w-11 lg:w-13 items-center justify-center rounded-lg border transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-lightmd:h-12 md:w-12';
+      'inline-flex btn h-11 lg:h-13 w-11 lg:w-13 items-center justify-center rounded-lg border transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-lightmd:h-12 md:w-12';
 
     if (this.isMarked()) {
       return `${base} border-orange bg-orange/20 text-orange hover:text-text-secondary hover:bg-surface`;
