@@ -54,7 +54,7 @@ export const appConfig: ApplicationConfig = {
       },
     }),
     MessageService,
-    ConfirmationService,                // ← الحل هنا: أضف ConfirmationService هنا
+    ConfirmationService, // ← الحل هنا: أضف ConfirmationService هنا
     UpdateService,
     provideAnimations(),
     {
@@ -70,6 +70,7 @@ export const appConfig: ApplicationConfig = {
     // provideCloudinaryLoader('https://cloudinary.com'),
     provideAppInitializer(() => {
       inject(Sentry.TraceService);
+      inject(UpdateService);
     }),
 
     provideAppInitializer(async () => {

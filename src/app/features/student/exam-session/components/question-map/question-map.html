@@ -2,7 +2,7 @@
   class="flex w-full flex-col rounded-2xl border border-border bg-card-bg p-3 shadow-sm md:p-4"
 >
   <div class="grid flex-1 grid-cols-5 gap-2.5 md:gap-3 lg:grid-cols-4">
-    @for (qId of questionIds(); track $index) {
+    @for (qId of questionIds(); track qId) {
       <button
         type="button"
         [class]="questionButtonClass(qId, $index)"

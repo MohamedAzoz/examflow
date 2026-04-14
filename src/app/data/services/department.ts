@@ -1,6 +1,6 @@
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 import { SkipLoading } from '../../core/interceptors/loading-interceptor';
 import { IAssignCourses } from '../models/department/iassign-courses';
 import { IReqAssignCourses } from '../models/department/ireq-assign-courses';

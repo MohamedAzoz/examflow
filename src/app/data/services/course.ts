@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { ICoueseResponse } from '../models/course/icouese-response';
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 import { ICoueseRequest } from '../models/course/icouese-request';
 import { IassignDepartments } from '../models/course/IassignDepartments';
 

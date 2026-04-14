@@ -3,7 +3,79 @@ import * as Sentry from '@sentry/angular';
 import { appConfig } from './app/app.config';
 import { App } from './app/app';
 import { environment } from './environments/environment';
-import DisableDevtool from 'disable-devtool';
+
+type DisableDevtoolOptions = {
+  disableMenu?: boolean;
+  clearLog?: boolean;
+  interval?: number;
+  ondevtoolopen?: () => void;
+  ondevtoolclose?: () => void;
+  url?: string;
+  tkName?: string;
+};
+
+type DisableDevtoolFactory = (options: DisableDevtoolOptions) => void;
+
+declare global {
+  interface Window {
+    DisableDevtool?: DisableDevtoolFactory;
+  }
+}
+
+const DISABLE_DEVTOOL_SCRIPT_ID = 'ef-disable-devtool-script';
+const DISABLE_DEVTOOL_ASSET_PATH = 'assets/vendor/disable-devtool.min.js';
+
+function loadDisableDevtoolFactory(): Promise<DisableDevtoolFactory | null> {
+  if (typeof window === 'undefined' || typeof document === 'undefined') {
+    return Promise.resolve(null);
+  }
+
+  if (typeof window.DisableDevtool === 'function') {
+    return Promise.resolve(window.DisableDevtool);
+  }
+
+  const existingScript = document.getElementById(DISABLE_DEVTOOL_SCRIPT_ID);
+  if (existingScript) {
+    return Promise.resolve(
+      typeof window.DisableDevtool === 'function' ? window.DisableDevtool : null,
+    );
+  }
+
+  return new Promise((resolve) => {
+    const script = document.createElement('script');
+    script.id = DISABLE_DEVTOOL_SCRIPT_ID;
+    script.src = DISABLE_DEVTOOL_ASSET_PATH;
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      resolve(typeof window.DisableDevtool === 'function' ? window.DisableDevtool : null);
+    };
+    script.onerror = () => resolve(null);
+
+    document.head.appendChild(script);
+  });
+}
+
+async function setupDevtoolProtection(): Promise<void> {
+  if (!environment.production) {
+    return;
+  }
+
+  const disableDevtool = await loadDisableDevtoolFactory();
+  if (!disableDevtool) {
+    return;
+  }
+
+  disableDevtool({
+    disableMenu: true,
+    clearLog: false,
+    interval: 1200,
+    ondevtoolopen: () => undefined,
+    ondevtoolclose: () => undefined,
+    url: 'https://example.com/blocked',
+    tkName: '@Ef_Dev-tool2026',
+  });
+}
 
 Sentry.init({
   dsn: environment.sentryDsn,
@@ -23,20 +95,7 @@ Sentry.init({
 });
 
 if (environment.production) {
-  DisableDevtool({
-    disableMenu: true,
-    clearLog: true,
-    interval: 200,
-    ondevtoolopen: (type: any, next: () => void) => {
-      console.log('DevTools detected! Type:', type);
-      // next();
-    }, 
-    ondevtoolclose: () => {
-      console.log('DevTools closed');
-    },
-    url: 'https://example.com/blocked',
-    tkName: '@Ef_Dev-tool2026',
-  });
+  void setupDevtoolProtection();
 }
 
 bootstrapApplication(App, appConfig).catch((err) => console.error(err));

@@ -1,7 +1,7 @@
-import { Student } from './../data/services/student';
 import {
   Component,
   HostListener,
+  DestroyRef,
   inject,
   signal,
   computed,
@@ -15,6 +15,7 @@ import { ADMIN_NAV_ITEMS, STUDENT_NAV_ITEMS } from '../core/Config/sideBar.confi
 import { IdentityService } from '../core/services/identity-service';
 import { Theme } from '../core/services/theme';
 import { filter } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-main',
@@ -28,6 +29,7 @@ export class Main {
   protected readonly theme = inject(Theme);
   private readonly identityService = inject(IdentityService);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   /** Dynamically compute role from IdentityService */
   protected readonly userRole = computed(
@@ -86,7 +88,10 @@ export class Main {
   constructor() {
     this.syncActiveRouteWithUrl(this.router.url);
     this.router.events
-      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
+      .pipe(
+        filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe((event) => this.syncActiveRouteWithUrl(event.urlAfterRedirects));
   }
 

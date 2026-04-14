@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { ISemesterResponse } from '../models/semester/isemester-response';
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 import { ISemesterRequest } from '../models/semester/isemester-request';
 
 @Injectable({

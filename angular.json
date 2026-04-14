@@ -38,6 +38,11 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "disable-devtool.min.js",
+                "input": "node_modules/disable-devtool",
+                "output": "assets/vendor"
               }
             ],
             "styles": [

@@ -58,7 +58,7 @@
     </button>
   } @else {
     <div class="mx-auto flex w-full max-w-[90%] md:max-w-[94%] flex-1 flex-col gap-3 md:gap-4.5">
-      @for (option of options(); track $index) {
+      @for (option of options(); track option.optionId) {
         <label [class]="optionClass(option.optionId)">
           <input
             type="radio"

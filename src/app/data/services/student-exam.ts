@@ -1,6 +1,6 @@
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 import { IsendAnswer } from '../models/StudentExam/isend-answer';
 import { IstartExam } from '../models/StudentExam/IstartExam';
 import { IavailableExams } from '../models/StudentExam/IavailableExams';

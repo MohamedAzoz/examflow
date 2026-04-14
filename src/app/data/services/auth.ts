@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 import { Ilogin } from '../models/auth/ilogin';
 import { IResponseAuth } from '../models/auth/iresponse-auth';
 import { IVoTp } from '../models/auth/IVoTp';

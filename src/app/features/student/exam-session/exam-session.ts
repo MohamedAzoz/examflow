@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-import { environment } from '../../../../environments/environment.development';
+import { environment } from '../../../../environments/environment';
 import { QuestionType } from '../../../data/enums/question-type';
 import { IsubmitExam } from '../../../data/models/StudentExam/IsubmitExam';
 import { IsendAnswer } from '../../../data/models/StudentExam/isend-answer';
@@ -27,6 +27,12 @@ import { QuestionMapComponent } from './components/question-map/question-map';
 interface AntiCheatCounters {
   serverResponses: number;
   sessionId: number;
+}
+
+interface PerfMetric {
+  count: number;
+  totalMs: number;
+  maxMs: number;
 }
 
 @Component({
@@ -64,6 +70,15 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
   private timerInitialized = false;
   private lastShortcutTimestamp = 0;
   private lastTabSwitchTimestamp = 0;
+  private readonly persistDebounceMs = 350;
+  private persistTimeoutId: ReturnType<typeof setTimeout> | null = null;
+  private persistQueue: Promise<void> = Promise.resolve();
+  private lastPersistSignature: string | null = null;
+  private isSessionFinalized = false;
+  private readonly perfSamplingEnabled =
+    !environment.production && typeof performance !== 'undefined';
+  private readonly perfLogEverySamples = 10;
+  private readonly perfMetrics = new Map<string, PerfMetric>();
 
   readonly questions = computed(() => this.currentExam()?.exam.liveExamQuestios ?? []);
   readonly currentQuestion = computed(() => this.questions()[this.questionIndex()] ?? null);
@@ -121,7 +136,7 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.persistExamSessionStateInBackground();
+    this.flushPersistQueueInBackground();
     this.toggleService.examMode(false);
     this.timerService.stopExam();
   }
@@ -216,8 +231,13 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
     this.isSubmitting.set(true);
     try {
       await this.saveCurrentEssayIfDirty();
+      await this.flushPersistQueue();
       await firstValueFrom(this.facade.submitExam(payload));
+
+      this.isSessionFinalized = true;
+      this.clearPersistScheduler();
       await this.appDb.clearExamSessionState(examId);
+      this.lastPersistSignature = null;
     } finally {
       this.isSubmitting.set(false);
     }
@@ -267,17 +287,14 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
   }
 
   private setupExamInitialization(): void {
-    effect(
-      () => {
-        const exam = this.currentExam();
-        if (!exam) return;
+    effect(() => {
+      const exam = this.currentExam();
+      if (!exam) return;
 
-        this.initializeAnswers(exam);
-        this.startTimer(exam);
-        this.persistExamSessionStateInBackground();
-      },
-      { allowSignalWrites: true },
-    );
+      this.initializeAnswers(exam);
+      this.startTimer(exam);
+      this.persistExamSessionStateInBackground();
+    });
   }
 
   private initializeAnswers(exam: IstartExam): void {
@@ -354,9 +371,12 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
     };
 
     try {
-      await firstValueFrom(this.facade.sendAnswer(payload));
-      this.updateSyncedAnsweredState(questionId);
-      await this.persistExamSessionState();
+      await this.measureAsync('exam.send-answer-flow', async () => {
+        await firstValueFrom(this.facade.sendAnswer(payload));
+        this.updateSyncedAnsweredState(questionId);
+        this.enqueuePersistExamSessionState();
+        await this.flushPersistQueue();
+      });
       return true;
     } catch {
       return false;
@@ -409,6 +429,7 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
 
     this.answersInitialized = true;
     this.timerInitialized = false;
+    this.lastPersistSignature = this.createPersistSignature(cachedState);
 
     return true;
   }
@@ -434,7 +455,63 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
   }
 
   private persistExamSessionStateInBackground(): void {
-    void this.persistExamSessionState();
+    this.queuePersistExamSessionState();
+  }
+
+  private flushPersistQueueInBackground(): void {
+    if (this.isSessionFinalized) {
+      return;
+    }
+
+    void this.flushPersistQueue();
+  }
+
+  private queuePersistExamSessionState(): void {
+    if (this.isSessionFinalized) {
+      return;
+    }
+
+    if (this.persistTimeoutId !== null) {
+      clearTimeout(this.persistTimeoutId);
+    }
+
+    this.persistTimeoutId = setTimeout(() => {
+      this.persistTimeoutId = null;
+      this.enqueuePersistExamSessionState();
+    }, this.persistDebounceMs);
+  }
+
+  private enqueuePersistExamSessionState(): void {
+    if (this.isSessionFinalized) {
+      return;
+    }
+
+    this.persistQueue = this.persistQueue
+      .then(() => this.persistExamSessionState())
+      .catch(() => undefined);
+  }
+
+  private async flushPersistQueue(): Promise<void> {
+    if (this.isSessionFinalized) {
+      return;
+    }
+
+    if (this.persistTimeoutId !== null) {
+      clearTimeout(this.persistTimeoutId);
+      this.persistTimeoutId = null;
+      this.enqueuePersistExamSessionState();
+    }
+
+    await this.measureAsync('exam.persist-queue-flush', async () => {
+      await this.persistQueue;
+    });
+  }
+
+  private clearPersistScheduler(): void {
+    if (this.persistTimeoutId !== null) {
+      clearTimeout(this.persistTimeoutId);
+      this.persistTimeoutId = null;
+    }
   }
 
   private updateSyncedAnsweredState(questionId: number): void {
@@ -494,14 +571,14 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
     return persisted;
   }
 
-  private async persistExamSessionState(): Promise<void> {
+  private buildPersistedState(): PersistedExamSessionState | null {
     const exam = this.currentExam();
     if (!exam) {
-      return;
+      return null;
     }
 
     const counters = this.antiCheatCounters();
-    const state: PersistedExamSessionState = {
+    return {
       examId: exam.exam.examId,
       examSnapshot: exam,
       selectedOptions: this.getPersistableSelectedOptions(),
@@ -514,7 +591,83 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
       sessionId: counters.sessionId,
       updatedAt: Date.now(),
     };
+  }
 
-    await this.appDb.saveExamSessionState(state);
+  private createPersistSignature(state: PersistedExamSessionState): string {
+    return JSON.stringify({
+      examId: state.examId,
+      selectedOptions: state.selectedOptions,
+      essayAnswers: state.essayAnswers,
+      markedQuestions: state.markedQuestions,
+      syncedAnsweredIds: state.syncedAnsweredIds,
+      currentQuestionId: state.currentQuestionId,
+      currentQuestionIndex: state.currentQuestionIndex,
+      serverResponses: state.serverResponses,
+      sessionId: state.sessionId,
+    });
+  }
+
+  private async persistExamSessionState(): Promise<void> {
+    if (this.isSessionFinalized) {
+      return;
+    }
+
+    const state = this.buildPersistedState();
+    if (!state) {
+      return;
+    }
+
+    const signature = this.createPersistSignature(state);
+    if (signature === this.lastPersistSignature) {
+      return;
+    }
+
+    await this.measureAsync('exam.persist-db-write', async () => {
+      await this.appDb.saveExamSessionState(state);
+    });
+    this.lastPersistSignature = signature;
+  }
+
+  private async measureAsync<T>(metricName: string, operation: () => Promise<T>): Promise<T> {
+    if (!this.perfSamplingEnabled) {
+      return operation();
+    }
+
+    const startedAt = performance.now();
+
+    try {
+      return await operation();
+    } finally {
+      this.recordPerfSample(metricName, performance.now() - startedAt);
+    }
+  }
+
+  private recordPerfSample(metricName: string, durationMs: number): void {
+    const current = this.perfMetrics.get(metricName) ?? {
+      count: 0,
+      totalMs: 0,
+      maxMs: 0,
+    };
+
+    const nextCount = current.count + 1;
+    const nextTotalMs = current.totalMs + durationMs;
+    const nextMaxMs = Math.max(current.maxMs, durationMs);
+
+    this.perfMetrics.set(metricName, {
+      count: nextCount,
+      totalMs: nextTotalMs,
+      maxMs: nextMaxMs,
+    });
+
+    if (nextCount % this.perfLogEverySamples !== 0) {
+      return;
+    }
+
+    const avgMs = Number((nextTotalMs / nextCount).toFixed(2));
+    const maxMs = Number(nextMaxMs.toFixed(2));
+
+    console.info(
+      `[Perf][ExamSession] ${metricName}: avg=${avgMs}ms max=${maxMs}ms samples=${nextCount}`,
+    );
   }
 }

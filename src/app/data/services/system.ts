@@ -1,4 +1,4 @@
-import { environment } from './../../../environments/environment.development';
+import { environment } from './../../../environments/environment';
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { SkipLoading } from '../../core/interceptors/loading-interceptor';
