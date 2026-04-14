@@ -1,14 +1,15 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnDestroy, signal } from '@angular/core';
 import { AuthFacade } from '../../services/auth-facade';
 import { Ilogin } from '../../../../data/models/auth/ilogin';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { MessageModule } from 'primeng/message';
+import { Theme } from '../../../../core/services/theme';
 
 @Component({
   selector: 'app-login',
@@ -19,14 +20,16 @@ import { MessageModule } from 'primeng/message';
     InputTextModule,
     PasswordModule,
     IconFieldModule,
-    InputIconModule,
+    InputIconModule, 
+    NgOptimizedImage,
     MessageModule,
   ],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
-export class Login {
+export class Login implements OnDestroy {
   public authFacade = inject(AuthFacade);
+  private readonly theme = inject(Theme);
 
   showPassword = signal(false);
 
@@ -34,6 +37,14 @@ export class Login {
     identifier: new FormControl('', [Validators.required, Validators.minLength(3)]),
     password: new FormControl('', [Validators.required, Validators.minLength(6)]),
   });
+
+  constructor() {
+    this.theme.setForceLightMode(true);
+  }
+
+  ngOnDestroy(): void {
+    this.theme.setForceLightMode(false);
+  }
 
   togglePassword(): void {
     this.showPassword.update((v) => !v);

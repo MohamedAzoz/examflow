@@ -1,76 +1,81 @@
 <article
-  class="grid gap-3 sm:gap-4 p-4 sm:p-[1.2rem] rounded-2xl sm:rounded-[1.35rem] border border-[#bfc8ca]/70 bg-white/95 shadow-[0_12px_28px_rgba(22,28,33,0.06)]"
-  [style.box-shadow]="
-    question.answerStatus
-      ? 'inset 0 0 0 1px rgba(41, 158, 91, 0.18), 0 12px 28px rgba(22, 28, 33, 0.06)'
-      : 'inset 0 0 0 1px rgba(186, 26, 26, 0.14), 0 12px 28px rgba(22, 28, 33, 0.06)'
+  class="grid gap-3 rounded-2xl border p-3.5 md:p-4 bg-white/90 dark:bg-slate-900/35"
+  [style.border-color]="
+    question.answerStatus ? 'rgba(41, 158, 91, 0.34)' : 'rgba(188, 62, 62, 0.28)'
   "
 >
-  <header class="flex justify-between items-start gap-3">
+  <header class="flex items-start justify-between gap-2">
     <div class="min-w-0">
-      <p
-        class="m-0 mb-1 sm:mb-[0.35rem] text-text-secondary/80 text-xs sm:text-[0.82rem] uppercase tracking-widest sm:tracking-[0.08em] font-extrabold truncate"
-      >
+      <p class="m-0 text-[0.65rem] uppercase tracking-[0.18em] text-text-secondary font-black">
         Question {{ index }}
       </p>
-      <h3 class="m-0 text-sm sm:text-base font-bold text-text-primary truncate">
+      <h3
+        class="m-0 mt-1 text-[clamp(1rem,1.9vw,1.12rem)] leading-tight font-black text-text-primary"
+      >
         {{ question.answerStatus ? 'Correct Answer' : 'Incorrect Answer' }}
       </h3>
     </div>
     <span
-      class="px-2.5 py-1 sm:px-[0.7rem] sm:py-[0.45rem] bg-surface-container rounded-full text-xs sm:text-[0.8rem] text-primary font-extrabold whitespace-nowrap shrink-0"
+      class="shrink-0 inline-flex items-center justify-center rounded-full border border-border-teal/30 bg-border-teal/15 px-2.5 py-1 text-[0.68rem] font-black text-primary"
     >
       {{ question.degree }} pts
     </span>
   </header>
 
   <p
-    class="m-0 text-sm sm:text-[1rem] leading-relaxed sm:leading-[1.7] text-text-primary font-medium"
+    class="m-0 text-[clamp(0.96rem,1.7vw,1.05rem)] leading-[1.6] font-semibold text-text-primary wrap-break-word"
+    dir="auto"
   >
     {{ question.questionText }}
   </p>
 
   @if (imageUrl !== null && !imageError) {
-    <div class="overflow-hidden rounded-2xl border border-[#bfc8ca]/60 bg-surface-container">
+    <div
+      class="rounded-xl overflow-hidden border border-border-teal/25 bg-surface/45 dark:bg-slate-950/35"
+    >
       <img
         [src]="imageUrl"
         (error)="imageError = true"
         [alt]="'Question ' + index + ' illustration'"
-        class="block w-full max-h-60 object-cover"
+        class="block w-full max-h-56 object-cover"
       />
     </div>
   }
 
-  <div class="grid gap-2.5 sm:gap-3">
-    <!-- Student Answer -->
+  <div class="grid gap-2.5">
     <div
-      class="p-3 sm:p-[0.95rem] px-3 sm:px-4 rounded-2xl border-none"
-      [class]="question.answerStatus ? 'bg-success/10' : 'bg-danger/10'"
+      class="rounded-xl border px-3 py-2.5"
+      [class]="
+        question.answerStatus
+          ? 'border-success/80 bg-primary-hover/25 '
+          : 'border-danger/80 bg-danger/25'
+      "
     >
       <span
-        class="block mb-1 sm:mb-[0.4rem] text-xs sm:text-[0.78rem] text-text-secondary/80 uppercase tracking-widest sm:tracking-[0.08em] font-semibold"
+        class="block text-[0.64rem] uppercase tracking-[0.14em] text-text-secondary font-black mb-1"
         >Your answer</span
       >
       <p
-        class="m-0 text-sm sm:text-base text-text-primary leading-relaxed sm:leading-[1.6] font-semibold"
+        class="m-0 text-[clamp(0.9rem,1.7vw,1rem)] leading-[1.55] font-bold text-text-primary wrap-break-word"
+        dir="auto"
       >
-        {{ question.selectedOptionText || 'No option selected' }}
+        {{ studentAnswerText }}
       </p>
     </div>
 
-    <!-- Correct Answer (Only shown if incorrect) -->
-    @if (!question.answerStatus) {
-      <div class="p-3 sm:p-[0.95rem] px-3 sm:px-4 rounded-2xl bg-success/10 border-none">
-        <span
-          class="block mb-1 sm:mb-[0.4rem] text-xs sm:text-[0.78rem] text-text-secondary/80 uppercase tracking-widest sm:tracking-[0.08em] font-semibold"
-          >Correct answer</span
-        >
-        <p
-          class="m-0 text-sm sm:text-base text-text-primary leading-relaxed sm:leading-[1.6] font-semibold"
-        >
-          {{ question.correctOptionText }}
-        </p>
-      </div>
-    }
+    <!-- @if (shouldShowCorrectAnswer) { -->
+    <div class="rounded-xl border px-3 py-2.5 border-success/80 bg-primary-hover/25">
+      <span
+        class="block text-[0.64rem] uppercase tracking-[0.14em] text-text-secondary font-black mb-1"
+        >Correct answer</span
+      >
+      <p
+        class="m-0 text-[clamp(0.9rem,1.7vw,1rem)] leading-[1.55] font-bold text-text-primary wrap-break-word"
+        dir="auto"
+      >
+        {{ correctAnswerText }}
+      </p>
+    </div>
+    <!-- } -->
   </div>
 </article>

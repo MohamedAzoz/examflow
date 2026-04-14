@@ -8,20 +8,22 @@ export class Theme {
 
   private initialized = false;
   private initPromise: Promise<void> | null = null;
-
+  private readonly forceLightMode = signal<boolean>(false);
   isDark = signal<boolean>(false);
 
   constructor() {
     effect(() => {
       const html = document.documentElement;
+      const forceLight = this.forceLightMode();
+      const shouldUseDark = this.isDark() && !forceLight;
 
-      if (this.isDark()) {
+      if (shouldUseDark) {
         html.classList.add('dark');
       } else {
         html.classList.remove('dark');
       }
 
-      if (this.initialized) {
+      if (this.initialized && !forceLight) {
         const nextTheme: ThemePreference = this.isDark() ? 'dark' : 'light';
         void this.appDb.saveThemePreference(nextTheme);
       }
@@ -45,11 +47,23 @@ export class Theme {
       return;
     }
 
-    this.isDark.set(window.matchMedia('(prefers-color-scheme: dark)').matches);
+    this.isDark.set(false);
     this.initialized = true;
   }
 
   toggleTheme() {
     this.isDark.update((d) => !d);
+  }
+
+  setForceLightMode(enabled: boolean): void {
+    this.forceLightMode.set(enabled);
+  }
+
+  async resetToDefaultTheme(): Promise<void> {
+    this.initialized = false;
+    this.forceLightMode.set(false);
+    this.isDark.set(false);
+    await this.appDb.clearThemePreference();
+    this.initialized = true;
   }
 }

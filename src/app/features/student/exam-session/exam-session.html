@@ -3,11 +3,10 @@
   </app-exam-header>
 
   <main
-    class="grid w-full flex-1 items-start gap-3 px-3 py-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,320px)] lg:gap-5 lg:px-6 lg:py-5"
+    class="grid w-full items-start gap-1 px-3 py-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,300px)] lg:gap-5 lg:px-6 lg:py-5"
   >
     @if (currentQuestion(); as q) {
       <app-question-area
-        class="h-full"
         [title]="q.text"
         [imageUrl]="currentQuestionImage()"
         [questType]="q.questionType"

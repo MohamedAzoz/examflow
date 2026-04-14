@@ -82,9 +82,6 @@ export class Main {
   });
 
   protected readonly showNotifications = computed(() => this.userRole() === 'admin');
-  protected readonly themeLabel = computed(() =>
-    this.theme.isDark() ? 'Dark mode' : 'Light mode',
-  );
 
   constructor() {
     this.syncActiveRouteWithUrl(this.router.url);
@@ -104,6 +101,11 @@ export class Main {
   protected toggleTheme(): void {
     this.theme.toggleTheme();
   }
+  readonly isDark = this.theme.isDark;
+  readonly desktopThemeLabel = computed(() => (this.isDark() ? 'Light' : 'Dark'));
+  readonly themeLabel = computed(() =>
+    this.isDark() ? 'Switch to light mode' : 'Switch to dark mode',
+  );
 
   @HostListener('window:resize', ['$event'])
   protected onResize(event: UIEvent): void {

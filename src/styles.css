@@ -13,7 +13,6 @@
 
 /* ====================== Custom Theme with Light / Dark ====================== */
 @theme {
-  /* ألوان Light Mode (الافتراضي) */
   --color-primary: #13626c;
   --color-primary-hover: #2d7a7a;
   --color-primary-light: rgb(19 98 108 / 0.08);
@@ -45,30 +44,83 @@
   --color-mode-toggle-bg: #dbdcdd;
   --color-mode-toggle-hover-bg: oklch(91.22% 0.11984 94.112);
 
-  /* خطوط */
-  --font-headline: 'Manrope', system-ui, sans-serif;
-  --font-body: 'Inter', system-ui, sans-serif;
+  --font-headline: 'Inter', sans-serif;
+  --font-body: 'Inter', sans-serif;
 }
 
 /* ====================== Dark Mode Colors ====================== */
+/* .dark {
+  --color-primary: #39b7c4;
+  --color-primary-hover: #58c8d2;
+  --color-primary-light: rgb(57 183 196 / 0.22);
+  --color-success: #4fd08a;
+  --color-danger: #ff6f78;
+  --color-orange: #ffb84d;
+  --color-gray: #4f617b;
+  --color-text-gray: #aab6c8;
+  --color-text-dark: #e8eef8;
+  --color-text-primary: #f5f9ff;
+  --color-text-secondary: #bcc7d8;
+
+  --color-main-bg: #0b1220;
+
+  --color-sidebar-bg: #121c2f;
+  --color-link: #67d2dd;
+
+  --color-card-bg: #16233a;
+
+  --color-border: #2a3a54;
+  --color-border-teal: #2f8f9d;
+
+  --color-white-red: #ff9ca3;
+
+  --color-surface: #1a2a44;
+  --color-surface-container: #22344f;
+  --color-surface-container-high: #2c4060;
+
+  --color-mode-toggle-bg: #243951;
+  --color-mode-toggle-hover-bg: #335473;
+} */
+
 .dark {
-  --color-main-bg: #0f172a;
-  --color-sidebar-bg: #1e2937;
-  --color-card-bg: #1e2937;
-  --color-border: #334155;
-  --color-text-dark: #f1f5f9;
-  --color-text-primary: #e2e8f0;
-  --color-text-secondary: #94a3b8;
-  --color-text-gray: #cbd5e1;
+  /* Primary Teal - أفتح وأكثر حيوية ليتناسب مع Light Mode */
+  --color-primary: #26b6c4;           /* أفتح من السابق، أكثر وضوحاً */
+  --color-primary-hover: #4ecfd9;     /* Hover أكثر سطوعاً */
+  --color-primary-light: rgb(38 182 196 / 0.18);  /* أفتح قليلاً */
 
-  --color-link: #2d7a7a;
-  --color-white-red: #f87171;
+  --color-success: #4ade80;           /* أخضر نضر وواضح */
+  --color-danger: #f87171;            /* أحمر أكثر دفءاً ووضوحاً */
+  --color-orange: #fb923c;            /* برتقالي أكثر حيوية */
 
-  --color-surface: #1e2937;
-  --color-surface-container: #334155;
-  --color-surface-container-high: #475569;
-  --color-mode-toggle-bg: oklch(87.9% 0.169 91.605);
-  --color-mode-toggle-hover-bg: #ececec;
+  /* Gray & Text - أفتح بكثير لتحسين القراءة */
+  --color-gray: #64748b;              /* رمادي متوسط */
+  --color-text-gray: #cbd5e1;         /* رمادي فاتح للنصوص الثانوية */
+  --color-text-dark: #e2e8f0;         /* نص رئيسي واضح */
+  --color-text-primary: #f1f5f9;      /* نص أبيض فاتح جداً */
+  --color-text-secondary: #94a3b8;    /* نص ثانوي مريح */
+
+  /* Backgrounds - أفتح ومتدرج لإظهار العمق والتفاصيل */
+  --color-main-bg: #0f172a;           /* خلفية رئيسية أفتح (Deep Slate) */
+
+  --color-sidebar-bg: #1e2937;        /* Sidebar أفتح وأكثر احترافية */
+  --color-link: #67e8f9;              /* Link أفتح ومميز */
+
+  --color-card-bg: #334155;           /* Cards أفتح بكثير – يظهر التفاصيل جيداً */
+
+  /* Borders & Surfaces */
+  --color-border: #475569;            /* Border متوسط الوضوح */
+  --color-border-teal: #5eead4;       /* Border Teal أفتح وأنيق */
+
+  --color-white-red: #fda4af;         /* محسن قليلاً */
+
+  /* Surface Layers (مهمة جداً للـ Design System) */
+  --color-surface: #1e2937;                   /* سطح أساسي */
+  --color-surface-container: #334155;         /* سطح متوسط (Cards) */
+  --color-surface-container-high: #475569;    /* سطح مرتفع (Hover / Active) */
+
+  /* Mode Toggle */
+  --color-mode-toggle-bg: #334155;
+  --color-mode-toggle-hover-bg: #475569;
 }
 
 /* ====================== Base Styles ====================== */
@@ -105,7 +157,7 @@
   .dark .glass {
     background: rgba(30, 41, 55, 0.7);
   }
-  .btn{
+  .btn {
     @apply cursor-pointer transition-colors duration-300;
   }
 }

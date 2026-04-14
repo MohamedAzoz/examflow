@@ -1,86 +1,89 @@
 <section
-  class="grid grid-cols-1 md:grid-cols-[minmax(16rem,18rem)_minmax(0,1fr)] gap-6 p-6 rounded-3xl bg-linear-to-tl from-primary/5 to-white/75 border border-gray/75 shadow-sm"
+  class="grid grid-cols-1 lg:grid-cols-[minmax(12rem,16rem)_minmax(0,1fr)] gap-3.5 md:gap-5 rounded-[1.15rem] md:rounded-[1.6rem] border border-border-teal/30 bg-white/75 dark:bg-slate-900/35 p-3.5 md:p-5"
 >
-  <!-- Score Panel (Doughnut Chart) -->
   <div
-    class="grid place-items-center p-2 lg:p-4 rounded-2xl bg-linear-to-br from-primary/10 border border-gray/75 shadow-sm"
+    class="rounded-2xl border border-border-teal/25 bg-surface/50 dark:bg-slate-950/35 p-2 grid place-items-center"
   >
     <div
-      class="min-w-40 lg:min-w-60 aspect-square p-4 rounded-full grid place-items-center shadow-sm"
-      [style.background]="
-        'radial-gradient(closest-side, rgba(255, 255, 255, 0.95) 73%, transparent 74% 100%), conic-gradient(var(--color-' +
-        colorGrade() +
-        ') ' +
-        percentage() +
-        '%, rgba(191, 200, 202, 0.5) 0)'
-      "
+      class="w-full max-w-[16rem] aspect-square rounded-full grid place-items-center"
+      [style.background]="scoreRingBackground()"
     >
-      <div class="grid gap-[0.35rem] place-items-center text-center">
-        <span
-          class="text-text-secondary/80 uppercase tracking-[0.12em] text-[0.76rem] font-extrabold"
+      <div class="grid place-items-center gap-1 text-center px-2">
+        <span class="m-0 text-[0.7rem] uppercase tracking-[0.14em] text-text-secondary font-black"
           >Score</span
         >
-        <strong class="text-text-primary text-[2rem] leading-none font-bold">
-          {{ studentScore() | number: '1.0-1'
-          }}<span class="ml-[0.2rem] text-text-secondary/80 text-[1rem] font-bold"
-            >/{{ examMaxScore() }}</span
-          >
+        <strong class="text-text-primary text-[clamp(1.8rem,3.5vw,2.3rem)] leading-none font-black">
+          {{ studentScore() | number: '1.0-1' }}
+          <span class="text-[0.95rem] font-bold text-text-secondary">/{{ examMaxScore() }}</span>
         </strong>
-        <small class="font-extrabold text-[0.95rem]" [class]="'text-' + colorGrade()">
-          {{ percentage() | number: '1.0-0' }}%
-        </small>
+        <small class="text-base font-black" [style.color]="gradeTheme().ringColor"
+          >{{ percentage() | number: '1.0-0' }}%</small
+        >
       </div>
     </div>
   </div>
 
-  <!-- Summary Content -->
-  <div class="grid content-center text-left">
-    <p class="m-0 mb-2 text-primary/80 uppercase tracking-[0.12em] text-[0.78rem] font-extrabold">
+  <div class="min-w-0">
+    <p class="m-0 text-[0.68rem] uppercase tracking-[0.16em] text-primary/85 font-black">
       Exam Insight
     </p>
-    <h2 class="m-0 text-text-primary text-[clamp(1.7rem,3vw,2.4rem)] font-bold tracking-tight">
+    <h2
+      class="m-0 mt-1 text-[clamp(1.45rem,3vw,2.35rem)] leading-[1.05] tracking-[-0.02em] font-black text-text-primary wrap-break-word"
+    >
       {{ examTitle() }}
     </h2>
 
-    <div class="flex items-center gap-3 flex-wrap mt-4 mb-5">
+    <div class="flex items-center flex-wrap gap-2 mt-3 mb-4">
       <span
-        class="inline-flex items-center gap-2 px-4 py-2 rounded-full font-extrabold bg-surface-container"
-        [class]="'text-' + statusMeta().colorClass"
+        class="inline-flex items-center gap-2 px-3.5 py-2 rounded-full border text-[0.8rem] font-black"
+        [ngStyle]="statusToneStyle()"
       >
         <i class="pi" [class]="statusMeta().icon"></i>
         {{ statusMeta().label }}
       </span>
     </div>
 
-    <!-- Stats Grid -->
-    <div class="grid grid-cols-[repeat(auto-fit,minmax(11rem,1fr))] gap-[0.9rem]">
-      <article class="p-4 rounded-2xl bg-white/70 border border-primary/60">
-        <span class="block mb-2 text-text-secondary/80 text-sm font-bold">Time Taken</span>
-        <strong class="text-[1.2rem] font-extrabold text-text-primary">{{
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 md:gap-3">
+      <article
+        class="rounded-xl border border-border-teal/35 bg-white/75 dark:bg-slate-950/25 px-3.5 py-3 space-y-1"
+      >
+        <span class="block text-[0.78rem] font-bold text-text-secondary">Time Taken</span>
+        <strong class="block text-[1.08rem] leading-none font-black text-text-primary">{{
           formatTime(timeTaken())
         }}</strong>
       </article>
 
-      <article class="p-4 rounded-2xl bg-white/70 border border-primary/60">
-        <span class="block mb-2 text-text-secondary/80 text-sm font-bold">Objective Questions</span>
-        <strong class="text-[1.2rem] font-extrabold text-text-primary">{{
+      <article
+        class="rounded-xl border border-border-teal/35 bg-white/75 dark:bg-slate-950/25 px-3.5 py-3 space-y-1"
+      >
+        <span class="block text-[0.78rem] font-bold text-text-secondary">Objective Questions</span>
+        <strong class="block text-[1.08rem] leading-none font-black text-text-primary">{{
           objectiveCount()
         }}</strong>
       </article>
 
-      <article class="p-4 rounded-2xl bg-white/70 border border-primary/60">
-        <span class="block mb-2 text-text-secondary/80 text-sm font-bold">Essay Questions</span>
-        <strong class="text-[1.2rem] font-extrabold text-text-primary">{{ essayCount() }}</strong>
+      <article
+        class="rounded-xl border border-border-teal/35 bg-white/75 dark:bg-slate-950/25 px-3.5 py-3 space-y-1"
+      >
+        <span class="block text-[0.78rem] font-bold text-text-secondary">Essay Questions</span>
+        <strong class="block text-[1.08rem] leading-none font-black text-text-primary">{{
+          essayCount()
+        }}</strong>
       </article>
 
       <article
-        class="p-4 rounded-2xl border"
-        [class]="'border-' + colorGrade() + ' ' + 'text-' + colorGrade()"
+        class="rounded-xl border px-3.5 py-3 space-y-1"
+        [style.background-color]="gradeTheme().statBackground"
+        [style.border-color]="gradeTheme().statBorder"
       >
-        <span class="block mb-2 text-sm font-bold">Estimated Grade</span>
-        <strong class="text-[1.2rem] font-extrabold">{{
-          grade()
-        }}</strong>
+        <span class="block text-[0.78rem] font-bold" [style.color]="gradeTheme().ringColor"
+          >Estimated Grade</span
+        >
+        <strong
+          class="block text-[1.08rem] leading-none font-black"
+          [style.color]="gradeTheme().ringColor"
+          >{{ grade() }}</strong
+        >
       </article>
     </div>
   </div>

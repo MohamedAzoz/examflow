@@ -1,12 +1,11 @@
 <article
-  class="flex h-full min-h-75 w-full min-w-75 flex-col rounded-2xl border border-border bg-card-bg p-3 shadow-sm md:p-5 "
+  class="flex h-full min-h-75 w-full min-w-75 flex-col rounded-2xl border border-border bg-card-bg shadow-sm p-3 md:p-6"
 >
   <div
-    class="mb-3 md:mb-6"
-    [class]="[textDirection(title()) == 'rtl' ? 'items-end' : 'items-start'+ ' flex']"
+    class="flex items-start mb-3 md:mb-6"
   >
     <h2
-      class=" w-full max-w-[90%] text-lg font-bold leading-snug text-text-dark md:text-xl lg:text-2xl"
+      class="w-full max-w-[92%] mx-auto font-black leading-snug text-text-dark text-lg md:text-xl lg:text-2xl xl:text-3xl"
       [dir]="textDirection(title())"
     >
       {{ title() }}
@@ -58,7 +57,7 @@
       {{ isSavingEssay() ? 'Saving...' : 'Save Answer' }}
     </button>
   } @else {
-    <div class="mx-auto flex w-full max-w-[90%] flex-1 flex-col gap-3 md:max-w-[94%] md:gap-4.5">
+    <div class="mx-auto flex w-full max-w-[90%] md:max-w-[94%] flex-1 flex-col gap-3 md:gap-4.5">
       @for (option of options(); track $index) {
         <label [class]="optionClass(option.optionId)">
           <input
@@ -83,14 +82,14 @@
     </div>
   }
 
-  <div class="mt-3 flex flex-wrap items-center justify-between gap-3">
+  <div class="mt-3 lg:mt-6 w-full max-w-[90%] lg:max-w-[94%] mx-auto flex flex-wrap items-center justify-between gap-3">
     <button type="button" [class]="navButtonClass" (click)="previous.emit()" [disabled]="isFirst()">
       Previous
     </button>
 
     <button
       type="button"
-      [class]="markButtonClass() + ' btn'"
+      [class]="markButtonClass()"
       (click)="toggleMark.emit()"
       title="Mark Question"
       aria-label="Mark question"

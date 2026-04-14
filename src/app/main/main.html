@@ -47,7 +47,7 @@
           </div>
 
           <div class="flex items-center gap-2">
-            <button
+            <!-- <button
               type="button"
               class="group relative inline-flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-border bg-mode-toggle-bg text-text-secondary shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:text-primary hover:shadow-md hover:bg-mode-toggle-hover-bg focus-visible:outline-2 focus-visible:outline-primary/50 md:h-10 md:w-10"
               [attr.aria-label]="themeLabel()"
@@ -65,8 +65,30 @@
                 "
                 aria-hidden="true"
               ></i>
-            </button>
+            </button> -->
+<button
+      type="button"
+      class="group btn relative inline-flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-border bg-mode-toggle-bg text-text-secondary shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:bg-mode-toggle-hover-bg hover:text-primary hover:shadow-md focus-visible:outline-2 focus-visible:outline-primary/50 md:h-10 md:w-10 lg:hidden"
+      [attr.aria-label]="themeLabel()"
+      [attr.title]="themeLabel()"
+      (click)="toggleTheme()"
+    >
+      <i
+        [class]="isDark() ? 'pi pi-sun text-sm md:text-base' : 'pi pi-moon text-sm md:text-base'"
+        aria-hidden="true"
+      ></i>
+    </button>
 
+    <button
+      type="button"
+      class="hidden btn items-center gap-2 rounded-full border border-border bg-mode-toggle-bg px-3 py-2 text-sm font-semibold text-text-dark shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:bg-mode-toggle-hover-bg hover:text-primary hover:shadow-md focus-visible:outline-2 focus-visible:outline-primary/50 lg:inline-flex"
+      [attr.aria-label]="themeLabel()"
+      [attr.title]="themeLabel()"
+      (click)="toggleTheme()"
+    >
+      <i [class]="isDark() ? 'pi pi-sun text-sm' : 'pi pi-moon text-sm'" aria-hidden="true"></i>
+      <span>{{ desktopThemeLabel() }}</span>
+    </button>
             @if (showNotifications()) {
               <button
                 type="button"

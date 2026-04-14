@@ -3,6 +3,7 @@ import { JWT } from './jwt';
 import { IJWT } from '../../data/models/auth/ijwt';
 import { AppDatabase } from '../AppDbContext/app-database';
 import { PersistedAuthState } from '../AppDbContext/storage.models';
+import { Theme } from './theme';
 
 @Injectable({
   providedIn: 'root',
@@ -10,6 +11,7 @@ import { PersistedAuthState } from '../AppDbContext/storage.models';
 export class IdentityService {
   private readonly appDb = inject(AppDatabase);
   private readonly jwt = inject(JWT);
+  private readonly theme = inject(Theme);
 
   private initPromise: Promise<void> | null = null;
 
@@ -122,6 +124,7 @@ export class IdentityService {
    */
   clearAuth(): void {
     void this.appDb.clearAuthState();
+    void this.theme.resetToDefaultTheme();
 
     this._token.set(null);
     this._role.set(null);

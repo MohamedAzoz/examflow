@@ -1,37 +1,57 @@
 <article
-  class="group h-full bg-card-bg rounded-[2.5rem] p-8 flex flex-col transition-all duration-300 border border-border/40 hover:shadow-xl hover:shadow-primary/5"
+  class="h-full grid gap-3 rounded-2xl border border-border-teal/25 bg-white/90 dark:bg-slate-900/35 p-3.5 md:p-4"
 >
-  <header class="flex justify-between items-start gap-4 mb-8">
-    <div class="space-y-1">
-      <p class="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Essay {{ index }}</p>
-      <h3 class="text-xl font-black text-text-primary uppercase tracking-tight leading-none">
+  <header class="flex items-start justify-between gap-2">
+    <div class="min-w-0">
+      <p class="m-0 text-[0.66rem] uppercase tracking-[0.18em] text-primary/85 font-black">
+        Essay {{ index }}
+      </p>
+      <h3
+        class="m-0 mt-1 text-[clamp(1.02rem,2vw,1.24rem)] leading-tight uppercase font-black text-text-primary"
+      >
         Written Response
       </h3>
     </div>
-    <span class="px-4 py-1.5 bg-primary/5 border border-primary/20 rounded-full text-xs font-black text-primary whitespace-nowrap">
-      {{ question.degree }} pts
-    </span>
+    <span
+      class="shrink-0 inline-flex items-center justify-center rounded-full border border-border-teal/30 bg-border-teal/15 px-2.5 py-1 text-[0.68rem] font-black text-primary"
+      >{{ question.degree }} pts</span
+    >
   </header>
 
-  <p class="text-xl font-bold text-text-primary leading-snug mb-8 line-clamp-6">
+  <p
+    class="m-0 text-[clamp(0.97rem,1.8vw,1.07rem)] leading-[1.58] font-bold text-text-primary wrap-break-word"
+    dir="auto"
+  >
     {{ question.questionText }}
   </p>
 
-  @if (imageUrl; as image) {
-    <div class="mb-8 rounded-3xl overflow-hidden border border-border/20 aspect-video bg-surface shadow-sm">
-      <img [src]="image" [alt]="'Essay question ' + index + ' illustration'" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+  @if (imageUrl !== null && !imageError) {
+    <div
+      class="rounded-xl overflow-hidden border border-border-teal/25 bg-surface/45 dark:bg-slate-950/35 aspect-video"
+    >
+      <img
+        [src]="imageUrl"
+        (error)="imageError = true"
+        [alt]="'Essay question ' + index + ' illustration'"
+        class="w-full h-full object-cover block"
+      />
     </div>
   }
 
-  <div class="mt-auto space-y-4">
-    <div class="p-6 rounded-4xl bg-surface/50 border border-border/30 group-hover:bg-white group-hover:shadow-lg group-hover:shadow-primary/5 transition-all duration-300">
-      <span class="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.15em] mb-3 text-text-secondary/60">
-        <i class="pi pi-pencil text-[10px]"></i>
-        Your written answer
-      </span>
-      <p class="text-text-primary leading-relaxed whitespace-pre-wrap font-medium">
-        {{ question.essayAnswer || 'No written answer was submitted.' }}
-      </p>
-    </div>
+  <div
+    class="mt-auto rounded-xl border border-border-teal/25 bg-white/70 dark:bg-slate-950/25 px-3 py-2.5"
+  >
+    <span
+      class="inline-flex items-center gap-1.5 text-[0.64rem] uppercase tracking-[0.14em] text-text-secondary font-black mb-1.5"
+    >
+      <i class="pi pi-pencil text-[10px]" aria-hidden="true"></i>
+      Your written answer
+    </span>
+    <p
+      class="m-0 text-[clamp(0.9rem,1.6vw,0.98rem)] leading-[1.62] font-semibold text-text-primary wrap-break-word"
+      dir="auto"
+    >
+      {{ essayAnswerText }}
+    </p>
   </div>
 </article>

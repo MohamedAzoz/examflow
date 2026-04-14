@@ -1,48 +1,78 @@
 <div class="min-h-screen flex items-center justify-center bg-[#f4f7f6] p-4 lg:p-0">
-  <div class="main-card bg-sidebar-bg shadow-lg rounded-xl overflow-hidden max-w-[1150px] w-full lg:w-[80vw] lg:h-[90vh] flex flex-col md:flex-row border border-gray-200">
-    
+  <div
+    class="main-card bg-sidebar-bg shadow-lg rounded-xl overflow-hidden max-w-287.5 w-full lg:w-[80vw] lg:h-[90vh] flex flex-col md:flex-row border border-gray-200"
+  >
     <!-- Left Illustration (Visible only on desktop) -->
-    <div class="hidden md:block md:w-5/12 h-full">
-      <img src="Login.png" class="w-full h-full object-cover rounded-tr-[2.5rem] rounded-br-[2.5rem]" alt="Login Illustration">
+    <!-- <div class="hidden md:block md:w-5/12 h-full">
+      <img
+        ngSrc="Login.svg"
+        width="832"
+        height="1248"
+        priority
+        class="w-full h-full object-cover rounded-tr-[2.5rem] rounded-br-[2.5rem]"
+        alt="Login Illustration"
+      />
+    </div> -->
+    <div class="hidden lg:block lg:w-5/12 h-full relative">
+      <img
+        ngSrc="Login.svg"
+        fill
+        priority
+        class="object-cover rounded-tr-4xl rounded-br-4xl"
+        alt="Login Illustration"
+      />
     </div>
-
     <!-- Right Login Form -->
     <div class="w-full md:w-7/12 p-6 md:p-10 lg:p-20 flex flex-col justify-center">
-      
       <!-- Logo Section -->
       <div class="flex items-center justify-center mb-8 md:mb-10 -translate-x-2">
-        <img src="Logo.svg" class="w-10 h-auto mr-4 -translate-y-2" alt="Logo">
-        <h2 class="text-xl font-medium tracking-widest text-[#111827] -translate-y-2">EXAMFLOW</h2>
+        <img
+          ngSrc="Logo.svg"
+          width="40"
+          height="40"
+          priority
+          class="w-10 h-auto mr-4 -translate-y-2"
+          alt="Logo"
+        />
+        <h2 class="text-xl font-semibold tracking-widest text-text-dark -translate-y-2">EXAMFLOW</h2>
       </div>
 
       <!-- Welcome Section -->
       <div class="text-center mb-10">
-        <h1 class="text-2xl font-medium text-[#111827] mb-2 font-headline">Welcome back!</h1>
-        <p class="text-sm font-medium text-[#706D79]">Please login to continue</p>
+        <h1 class="text-2xl font-medium text-text-dark mb-2 font-headline">Welcome back!</h1>
+        <p class="text-sm font-medium text-text-secondary">Please login to continue</p>
       </div>
 
       <!-- Alert Section -->
       @if (authFacade.errorMessage()) {
-        <div class="bg-red-50 border border-red-200 text-red-600 px-4 py-2 rounded-lg mb-6 flex items-center gap-2 text-sm">
+        <div
+          class="bg-red-50 border border-red-200 text-red-600 px-4 py-2 rounded-lg mb-6 flex items-center gap-2 text-sm"
+        >
           <i class="bi bi-exclamation-triangle-fill"></i>
           {{ authFacade.errorMessage() }}
         </div>
       }
 
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-5">
-        
         <!-- Username Field -->
         <div class="flex flex-col gap-1.5">
           <p-iconfield>
-              <p-inputicon class="pi pi-user text-gray-500" />
-              <input type="text" 
-                     pInputText 
-                     formControlName="identifier" 
-                     placeholder="Username or ID" 
-                     class="w-full bg-sidebar-bg! border-border! focus:border-primary! rounded-xl py-3! text-sm" 
-                     [class.ng-invalid]="loginForm.get('identifier')?.touched && loginForm.get('identifier')?.invalid" />
+            <p-inputicon class="pi pi-user text-gray-500" />
+            <input
+              type="text"
+              pInputText
+              formControlName="identifier"
+              placeholder="Username or ID"
+              class="w-full bg-sidebar-bg! border-border! focus:border-primary! rounded-xl py-3! text-sm"
+              [class.ng-invalid]="
+                loginForm.get('identifier')?.touched && loginForm.get('identifier')?.invalid
+              "
+            />
           </p-iconfield>
-          @if (loginForm.get('identifier')?.touched && loginForm.get('identifier')?.errors?.['required']) {
+          @if (
+            loginForm.get('identifier')?.touched &&
+            loginForm.get('identifier')?.errors?.['required']
+          ) {
             <small class="text-red-500 text-xs font-medium ps-1">Required field</small>
           }
         </div>
@@ -50,38 +80,50 @@
         <!-- Password Field -->
         <div class="flex flex-col gap-1.5">
           <p-iconfield>
-              <p-inputicon class="pi pi-lock text-gray-500" />
-              <input [type]="showPassword() ? 'text' : 'password'" 
-                     pInputText 
-                     formControlName="password" 
-                     placeholder="Password" 
-                     class="w-full bg-sidebar-bg! border-border! focus:border-primary! rounded-xl py-3! text-sm" 
-                     [class.ng-invalid]="loginForm.get('password')?.touched && loginForm.get('password')?.invalid" />
-              <p-inputicon [class]="showPassword() ? 'pi pi-eye-slash' : 'pi pi-eye'" 
-                           class="cursor-pointer text-gray-500 hover:text-gray-700 transition-colors" 
-                           (click)="togglePassword()" />
+            <p-inputicon class="pi pi-lock text-gray-500" />
+            <input
+              [type]="showPassword() ? 'text' : 'password'"
+              pInputText
+              formControlName="password"
+              placeholder="Password"
+              class="w-full bg-sidebar-bg! border-border! focus:border-primary! rounded-xl py-3! text-sm"
+              [class.ng-invalid]="
+                loginForm.get('password')?.touched && loginForm.get('password')?.invalid
+              "
+            />
+            <p-inputicon
+              [class]="showPassword() ? 'pi pi-eye-slash' : 'pi pi-eye'"
+              class="cursor-pointer text-gray-500 hover:text-gray-700 transition-colors"
+              (click)="togglePassword()"
+            />
           </p-iconfield>
-          @if (loginForm.get('password')?.touched && loginForm.get('password')?.errors?.['required']) {
+          @if (
+            loginForm.get('password')?.touched && loginForm.get('password')?.errors?.['required']
+          ) {
             <small class="text-red-500 text-[11px] font-medium ps-1">Password is required</small>
           }
         </div>
 
         <!-- Forgot Password Link -->
         <div class="text-left">
-          <a href="#" class="text-[#3d8b9e] text-sm hover:underline font-medium">forgot password?</a>
+          <a href="#" class="text-[#3d8b9e] text-sm hover:underline font-medium"
+            >forgot password?</a
+          >
         </div>
 
         <!-- Login Button -->
-        <button type="submit" 
-                pButton 
-                [disabled]="loginForm.invalid || authFacade.isLoading()" 
-                [loading]="authFacade.isLoading()"
-                class="w-full rounded-xl py-3 bg-primary! hover:bg-primary-hover! border-none! shadow-none! transition-all duration-300">
-           <span class="w-full font-medium">{{ authFacade.isLoading() ? 'Logging in...' : 'Login' }}</span>
+        <button
+          type="submit"
+          pButton
+          [disabled]="loginForm.invalid || authFacade.isLoading()"
+          [loading]="authFacade.isLoading()"
+          class="w-full rounded-xl py-3 bg-primary! hover:bg-primary-hover! border-none! shadow-none! transition-all duration-300"
+        >
+          <span class="w-full font-medium">{{
+            authFacade.isLoading() ? 'Logging in...' : 'Login'
+          }}</span>
         </button>
-
       </form>
-
     </div>
   </div>
 </div>

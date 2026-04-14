@@ -5,7 +5,7 @@
     @for (qId of questionIds(); track $index) {
       <button
         type="button"
-        [class]="questionButtonClass(qId, $index) + ' btn'"
+        [class]="questionButtonClass(qId, $index)"
         (click)="jumpTo.emit($index)"
         [attr.aria-label]="'Question ' + ($index + 1)"
       >

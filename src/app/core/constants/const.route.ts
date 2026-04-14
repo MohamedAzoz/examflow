@@ -25,7 +25,7 @@ export const ROUTESSTUDENT = {
   DASHBOARD: { path: 'stdashboard', title: 'Student Dashboard' },
   COURSES: { path: 'courses', title: 'Courses' },
   EXAM: { path: 'exam/:examId', title: 'Exam Section' },
-  PAST_RESULTS: { path: 'past-results', title: 'Past Results' },
+  PAST_RESULTS: { path: 'past-results', title: 'My Results' },
   EXAM_RESULT: { path: 'past-results/:examId', title: 'Exam Result' },
   SETTINGS: { path: 'settings', title: 'Settings' },
 };

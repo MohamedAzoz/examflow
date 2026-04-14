@@ -2,11 +2,8 @@
   class="sticky top-0 z-40 flex flex-wrap items-center justify-between gap-3 border-b border-border bg-sidebar-bg p-3 shadow-sm md:p-4 lg:grid lg:grid-cols-[1fr_auto_1fr] lg:items-center"
 >
   <div
-    [class]="
-      connected()
-        ? 'flex items-center gap-2 text-sm font-medium text-success sm:text-base md:text-2xl'
-        : 'flex items-center gap-2 text-sm font-medium text-danger sm:text-base md:text-2xl'
-    "
+    class="flex items-center gap-1 lg:gap-2 text-sm font-medium sm:text-base md:text-2xl"
+    [class]="connected() ? ' text-success' : 'text-danger'"
   >
     <i [class]="connected() ? 'status-icon pi pi-wifi' : 'status-icon pi pi-ban'"></i>
     <span>{{ connected() ? 'Connected' : 'Disconnected' }}</span>
@@ -27,7 +24,7 @@
 
     <button
       type="button"
-      class="group relative inline-flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-border bg-mode-toggle-bg text-text-secondary shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:bg-mode-toggle-hover-bg hover:text-primary hover:shadow-md focus-visible:outline-2 focus-visible:outline-primary/50 md:h-10 md:w-10 lg:hidden"
+      class="group btn relative inline-flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-border bg-mode-toggle-bg text-text-secondary shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:bg-mode-toggle-hover-bg hover:text-primary hover:shadow-md focus-visible:outline-2 focus-visible:outline-primary/50 md:h-10 md:w-10 lg:hidden"
       [attr.aria-label]="themeLabel()"
       [attr.title]="themeLabel()"
       (click)="toggleTheme()"
@@ -40,7 +37,7 @@
 
     <button
       type="button"
-      class="hidden items-center gap-2 rounded-full border border-border bg-mode-toggle-bg px-3 py-2 text-sm font-semibold text-text-dark shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:bg-mode-toggle-hover-bg hover:text-primary hover:shadow-md focus-visible:outline-2 focus-visible:outline-primary/50 lg:inline-flex"
+      class="hidden btn items-center gap-2 rounded-full border border-border bg-mode-toggle-bg px-3 py-2 text-sm font-semibold text-text-dark shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:bg-mode-toggle-hover-bg hover:text-primary hover:shadow-md focus-visible:outline-2 focus-visible:outline-primary/50 lg:inline-flex"
       [attr.aria-label]="themeLabel()"
       [attr.title]="themeLabel()"
       (click)="toggleTheme()"

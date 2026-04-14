@@ -1,97 +1,91 @@
 <section
-  class="min-h-full m-3 rounded-4xl p-4 md:p-6 lg:p-8 bg-surface-container animate-in fade-in duration-700"
+  class="min-h-full m-2 md:m-3 rounded-[1.35rem] md:rounded-4xl p-3 md:p-5 border border-border-teal/30 animate-in fade-in duration-700 bg-[radial-gradient(120%_100%_at_0%_0%,rgba(19,98,108,0.16)_0%,transparent_58%),radial-gradient(85%_70%_at_100%_0%,rgba(45,122,122,0.10)_0%,transparent_66%),linear-gradient(160deg,rgba(255,255,255,0.82),rgba(246,250,255,0.86))] dark:bg-[radial-gradient(120%_100%_at_0%_0%,rgba(19,98,108,0.30)_0%,transparent_58%),radial-gradient(85%_70%_at_100%_0%,rgba(45,122,122,0.20)_0%,transparent_66%),linear-gradient(170deg,rgba(30,41,55,0.92),rgba(15,23,42,0.90))]"
 >
-  <!-- Page Header / Hero -->
-  <header class="flex flex-col lg:flex-row justify-between items-start gap-8 mb-10">
-    <div class="max-w-xl">
+  <header class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_19rem] gap-4 lg:gap-6 mb-5">
+    <div class="min-w-0">
       <a
-        class="inline-flex items-center gap-2 mb-6 text-primary font-bold hover:gap-3 transition-all group"
+        class="inline-flex items-center gap-2 mb-3 text-primary font-extrabold hover:gap-3 transition-all"
         routerLink="/main/student/past-results"
       >
         <i class="pi pi-arrow-left text-sm"></i>
         <span>Back to Results</span>
       </a>
 
-      <p class="text-[11px] font-black uppercase tracking-[0.2em] text-text-secondary/60 mb-2">
+      <p class="m-0 text-[0.66rem] md:text-[0.7rem] uppercase tracking-[0.2em] text-text-secondary/75 font-black">
         Performance Overview
       </p>
       <h1
-        class="text-3xl md:text-4xl lg:text-5xl font-black text-text-primary leading-tight tracking-tighter"
+        class="m-0 mt-2 text-[clamp(2rem,5.5vw,3.8rem)] leading-[0.95] font-black text-text-primary tracking-[-0.03em] wrap-break-word"
       >
         {{ examResult()?.examTitle || 'Exam Result' }}
       </h1>
-      <p class="mt-4 text-text-secondary/70 text-sm font-semibold leading-relaxed max-w-2xl">
+      <p
+        class="m-0 mt-3 max-w-[52ch] text-[clamp(1rem,1.8vw,1.15rem)] leading-[1.65] font-bold text-text-secondary"
+      >
         Review your score, completion details, and question-by-question feedback in one place.
       </p>
     </div>
 
     @if (examResult()) {
-      <div class="flex flex-wrap gap-4 w-full lg:w-auto">
-        <div
-          class="flex-1 lg:flex-none min-w-40 p-6 rounded-3xl bg-white border border-border/10 shadow-sm transition-all hover:shadow-md"
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3">
+        <article
+          class="rounded-3xl border border-border-teal/35 bg-white/80 dark:bg-slate-900/40 px-4 py-3 shadow-sm"
         >
           <span
-            class="block text-[10px] font-black uppercase tracking-widest text-text-secondary mb-2"
+            class="block text-[0.66rem] uppercase tracking-[0.18em] text-text-secondary/85 font-black mb-2"
             >Correct Answers</span
           >
-          <strong class="text-4xl font-black text-text-primary tabular-nums tracking-tighter">{{
+          <strong class="block text-[clamp(2rem,5vw,2.7rem)] font-black leading-none text-text-primary">{{
             answeredCorrectlyCount()
           }}</strong>
-        </div>
-        <div
-          class="flex-1 lg:flex-none min-w-40 p-6 rounded-3xl bg-white border border-border/10 shadow-sm transition-all hover:shadow-md"
+        </article>
+        <article
+          class="rounded-3xl border border-border-teal/35 bg-white/80 dark:bg-slate-900/40 px-4 py-3 shadow-sm"
         >
           <span
-            class="block text-[10px] font-black uppercase tracking-widest text-text-secondary mb-2"
+            class="block text-[0.66rem] uppercase tracking-[0.18em] text-text-secondary/85 font-black mb-2"
             >Reviewed Items</span
           >
-          <strong class="text-4xl font-black text-text-primary tabular-nums tracking-tighter">{{
+          <strong class="block text-[clamp(2rem,5vw,2.7rem)] font-black leading-none text-text-primary">{{
             totalQuestionsCount()
           }}</strong>
-        </div>
+        </article>
       </div>
     }
   </header>
 
-  <!-- Content States -->
   @if (isLoading()) {
     <div
-      class="flex flex-col items-center justify-center py-24 text-center gap-6 bg-card-bg/50 rounded-[2.5rem] border border-border/40"
+      class="min-h-64 rounded-[1.4rem] border border-border-teal/30 bg-white/75 dark:bg-slate-900/45 px-4 py-8 grid place-items-center text-center gap-4"
     >
-      <div class="relative w-16 h-16">
-        <div class="absolute inset-0 rounded-full border-4 border-primary/10"></div>
-        <div
-          class="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin"
-        ></div>
-      </div>
-      <div class="space-y-2">
-        <h2 class="text-2xl font-bold text-text-primary">Loading result details</h2>
-        <p class="text-text-secondary">Fetching the latest graded data for this exam...</p>
+      <div class="h-12 w-12 rounded-full border-4 border-primary/20 border-t-primary animate-spin"></div>
+      <div class="space-y-1.5">
+        <h2 class="m-0 text-[1.4rem] font-bold text-text-primary">Loading result details</h2>
+        <p class="m-0 text-text-secondary font-medium">Fetching the latest graded data for this exam...</p>
       </div>
     </div>
   } @else if (errorMessage()) {
     <div
-      class="flex flex-col items-center justify-center py-24 text-center gap-8 bg-card-bg/50 rounded-[2.5rem] border border-border/40 max-w-2xl mx-auto"
+      class="min-h-64 rounded-[1.4rem] border border-danger/35 bg-white/75 dark:bg-slate-900/45 px-4 py-8 grid place-items-center text-center gap-4"
     >
-      <div class="w-20 h-20 rounded-full bg-red-50 flex items-center justify-center">
-        <i class="pi pi-exclamation-triangle text-4xl text-red-500"></i>
+      <div class="h-16 w-16 rounded-full bg-danger/15 text-danger grid place-items-center text-2xl">
+        <i class="pi pi-exclamation-triangle"></i>
       </div>
-      <div class="space-y-3 px-6">
-        <h2 class="text-2xl font-bold text-text-primary">Unable to load result details</h2>
-        <p class="text-text-secondary leading-relaxed font-medium">{{ errorMessage() }}</p>
+      <div class="space-y-1.5">
+        <h2 class="m-0 text-[1.4rem] font-bold text-text-primary">Unable to load result details</h2>
+        <p class="m-0 text-text-secondary font-medium max-w-[42ch]">{{ errorMessage() }}</p>
       </div>
       <button
         type="button"
         pButton
         label="Try Again"
         icon="pi pi-refresh"
-        class="rounded-2xl! p-button-lg shadow-lg shadow-primary/20"
+        class="rounded-2xl! p-button-lg p-button-outlined"
         (click)="reload()"
       ></button>
     </div>
   } @else if (examResult(); as result) {
-    <div class="space-y-12">
-      <!-- Summary Card -->
+    <div class="grid gap-4 md:gap-5">
       <app-result-summary-card
         [examTitle]="result.examTitle"
         [studentScore]="result.studentScore"
@@ -102,96 +96,98 @@
         [essayCount]="essayQuestions().length"
       />
 
-      <!-- Objective Review Section -->
       <section
-        class="space-y-8 bg-white border border-border/10 rounded-[2.5rem] p-8 sm:p-10 shadow-sm"
+        class="rounded-[1.2rem] md:rounded-[1.6rem] border border-border-teal/25 bg-white/70 dark:bg-slate-900/35 p-3.5 md:p-5"
       >
-        <div class="flex items-center justify-between">
+        <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
           <div>
             <p
-              class="text-[10px] font-black uppercase tracking-[0.2em] text-text-secondary/60 mb-2"
+              class="m-0 text-[0.66rem] uppercase tracking-[0.2em] text-text-secondary/75 font-black"
             >
               Objective Questions
             </p>
             <h2
-              class="text-2xl sm:text-3xl font-black text-text-primary uppercase flex items-center gap-3"
+              class="m-0 mt-1 text-[clamp(1.35rem,3vw,2rem)] uppercase tracking-[-0.02em] font-black text-text-primary"
             >
               Question Review
             </h2>
           </div>
           <span
-            class="text-[10px] font-black bg-surface-container px-4 py-2 rounded-full text-text-secondary uppercase tracking-widest border border-border/10"
+            class="inline-flex items-center justify-center rounded-full border border-border-teal/30 bg-border-teal/15 px-3 py-1 text-[0.64rem] uppercase tracking-[0.14em] font-black text-text-secondary"
           >
             {{ objectiveQuestions().length }} items
           </span>
-        </div>
+        </header>
 
         @if (objectiveQuestions().length > 0) {
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-3.5 md:gap-4">
             @for (question of objectiveQuestions(); track $index) {
               <app-question-review-card [question]="question" [index]="$index + 1" />
             }
           </div>
         } @else {
           <div
-            class="flex flex-col items-center justify-center py-20 text-center gap-4 border-2 border-dashed border-border/40 rounded-4xl bg-surface/30"
+            class="min-h-40 rounded-3xl border border-dashed border-border-teal/45 bg-surface/30 grid place-items-center text-center p-4"
           >
-            <i class="pi pi-list text-3xl text-text-secondary/40"></i>
-            <p class="text-text-secondary font-medium">No objective question details found.</p>
+            <div class="space-y-2">
+              <i class="pi pi-list text-2xl text-text-secondary/70" aria-hidden="true"></i>
+              <p class="m-0 text-text-secondary font-semibold">No objective question details found.</p>
+            </div>
           </div>
         }
       </section>
 
-      <!-- Essay Review Section -->
       <section
-        class="space-y-8 bg-white border border-border/10 rounded-[2.5rem] p-8 sm:p-10 shadow-sm"
+        class="rounded-[1.2rem] md:rounded-[1.6rem] border border-border-teal/25 bg-white/70 dark:bg-slate-900/35 p-3.5 md:p-5"
       >
-        <div class="flex items-center justify-between">
+        <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
           <div>
             <p
-              class="text-[10px] font-black uppercase tracking-[0.2em] text-text-secondary/60 mb-2"
+              class="m-0 text-[0.66rem] uppercase tracking-[0.2em] text-text-secondary/75 font-black"
             >
               Essay Questions
             </p>
             <h2
-              class="text-2xl sm:text-3xl font-black text-text-primary uppercase flex items-center gap-3"
+              class="m-0 mt-1 text-[clamp(1.35rem,3vw,2rem)] uppercase tracking-[-0.02em] font-black text-text-primary"
             >
               Written Answers
             </h2>
           </div>
           <span
-            class="text-[10px] font-black bg-surface-container px-4 py-2 rounded-full text-text-secondary uppercase tracking-widest border border-border/10"
+            class="inline-flex items-center justify-center rounded-full border border-border-teal/30 bg-border-teal/15 px-3 py-1 text-[0.64rem] uppercase tracking-[0.14em] font-black text-text-secondary"
           >
             {{ essayQuestions().length }} items
           </span>
-        </div>
+        </header>
 
         @if (essayQuestions().length > 0) {
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-3.5 md:gap-4">
             @for (question of essayQuestions(); track $index) {
               <app-essay-review-card [question]="question" [index]="$index + 1" />
             }
           </div>
         } @else {
           <div
-            class="flex flex-col items-center justify-center py-20 text-center gap-4 border-2 border-dashed border-border/40 rounded-4xl bg-surface/30"
+            class="min-h-40 rounded-3xl border border-dashed border-border-teal/45 bg-surface/30 grid place-items-center text-center p-4"
           >
-            <i class="pi pi-file-edit text-3xl text-text-secondary/40"></i>
-            <p class="text-text-secondary font-medium">This exam does not include essay answers.</p>
+            <div class="space-y-2">
+              <i class="pi pi-file-edit text-2xl text-text-secondary/70" aria-hidden="true"></i>
+              <p class="m-0 text-text-secondary font-semibold">This exam does not include essay answers.</p>
+            </div>
           </div>
         }
       </section>
     </div>
   } @else {
     <div
-      class="flex flex-col items-center justify-center py-32 text-center gap-6 bg-card-bg rounded-[2.5rem] border border-border/40"
+      class="min-h-64 rounded-[1.4rem] border border-border-teal/30 bg-white/75 dark:bg-slate-900/45 px-4 py-8 grid place-items-center text-center gap-4"
     >
-      <div class="w-20 h-20 rounded-full bg-surface-container flex items-center justify-center">
-        <i class="pi pi-file-excel text-4xl text-text-secondary/50"></i>
+      <div class="h-16 w-16 rounded-full bg-surface-container text-text-secondary grid place-items-center text-2xl">
+        <i class="pi pi-file-excel"></i>
       </div>
-      <div class="space-y-2">
-        <h2 class="text-2xl font-bold text-text-primary">No result data found</h2>
-        <p class="text-text-secondary max-w-sm mx-auto">
+      <div class="space-y-1.5">
+        <h2 class="m-0 text-[1.4rem] font-bold text-text-primary">No result data found</h2>
+        <p class="m-0 text-text-secondary font-medium">
           The selected exam does not have available result details yet.
         </p>
       </div>

@@ -23,38 +23,38 @@ export class QuestionMapComponent {
     const isMarked = !!this.markedIds()[questionId];
     const isAnswered = !!this.answeredIds()[questionId];
     const base =
-      'relative flex aspect-square w-full items-center justify-center rounded-lg border transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light';
+      'relative btn flex aspect-square border-2 w-full items-center justify-center rounded-lg transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light';
+
+    if (isActive) {
+      return `${base} border-text-dark bg-border-teal text-text-dark shadow-sm`;
+    }
 
     if (isMarked) {
       return `${base} border-transparent bg-orange text-text-dark`;
-    }
-
-    if (isActive) {
-      return `${base} border-primary bg-border-teal text-text-dark shadow-sm`;
     }
 
     if (isAnswered) {
       return `${base} border-primary bg-primary text-white`;
     }
 
-    return `${base} border-transparent bg-gray text-text-gray hover:brightness-95`;
+    return `${base} border-transparent bg-gray/70 text-text-gray hover:brightness-95`;
   }
 
   questionNumberClass(index: number): string {
     if (this.currentIndex() === index) {
-      return 'flex h-[68%] w-[68%] items-center justify-center rounded-[22%] border-2 border-text-secondary text-base font-semibold leading-none md:text-xl';
+      return 'flex h-[84%] w-[84%] items-center justify-center rounded-[22%] shadow-lg border-2 border-text-dark text-base font-semibold leading-none md:text-xl';
     }
 
     return 'text-base font-semibold leading-none md:text-xl';
   }
 
   submitButtonClass(): string {
-    const base = 'mt-5 w-full rounded-lg px-4 py-3 text-xl font-semibold text-white md:mt-6';
+    const base = 'mt-5 w-full rounded-lg px-4 py-3 text-base lg:text-xl font-semibold text-white md:mt-6';
 
     if (this.isDisabled()) {
-      return `${base} cursor-not-allowed bg-white-red opacity-60`;
+      return `${base} cursor-not-allowed bg-danger opacity-60`;
     }
 
-    return `${base} btn cursor-pointer bg-danger hover:brightness-95`;
+    return `${base} btn bg-danger hover:brightness-95`;
   }
 }

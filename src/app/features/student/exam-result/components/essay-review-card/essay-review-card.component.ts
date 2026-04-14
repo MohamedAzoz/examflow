@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { environment } from '../../../../../../environments/environment.development';
 import { IExamEssaysQuestion } from '../../../../../data/models/StudentExam/IResultExam';
@@ -10,7 +10,7 @@ import { IExamEssaysQuestion } from '../../../../../data/models/StudentExam/IRes
   styleUrl: './essay-review-card.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EssayReviewCardComponent {
+export class EssayReviewCardComponent implements OnChanges {
   @Input({ required: true }) question!: IExamEssaysQuestion;
   @Input({ required: true }) index!: number;
 
@@ -26,5 +26,14 @@ export class EssayReviewCardComponent {
     return this.question.imagePath.startsWith('http')
       ? this.question.imagePath
       : `${this.mediaBaseUrl}${this.question.imagePath}`;
+  }
+
+  protected get essayAnswerText(): string {
+    const value = this.question.essayAnswer?.trim();
+    return value ? value : 'No written answer was submitted.';
+  }
+
+  ngOnChanges(_: SimpleChanges): void {
+    this.imageError = false;
   }
 }

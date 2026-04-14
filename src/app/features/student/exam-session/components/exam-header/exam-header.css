@@ -3,18 +3,20 @@
 } */
 
 .status-icon {
-  font-size: 1.35rem;
+  font-size: 1.8rem;
   line-height: 1;
 }
 
 @media (min-width: 640px) {
   .status-icon {
-    font-size: 1.6rem;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
   }
 }
 
 @media (max-width: 420px) {
   .status-icon {
     font-size: 1.2rem;
+    margin-bottom: 0.25rem;
   }
 }

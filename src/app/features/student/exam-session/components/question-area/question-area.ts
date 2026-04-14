@@ -32,7 +32,7 @@ export class QuestionAreaComponent {
   readonly essay = QuestionType.Essay;
 
   readonly navButtonClass =
-    'btn rounded-lg border border-[var(--color-text-secondary)] bg-card-bg px-4 py-2 text-lg font-medium text-text-dark transition hover:bg-surface disabled:cursor-not-allowed disabled:opacity-50 sm:min-w-[110px] md:px-6 md:py-2.5 md:text-2xl';
+    'btn flex h-11 lg:h-13 items-center justify-center rounded-lg border border-text-secondary bg-card-bg px-1.5 py-1.5 md:px-4 md:py-2.5 text-text-dark transition text-sm md:text-xl hover:bg-surface disabled:cursor-not-allowed disabled:opacity-50 sm:min-w-[110px]';
 
   textDirection(text?: string): 'rtl' | 'ltr' {
     if (!text) return 'ltr';
@@ -43,39 +43,37 @@ export class QuestionAreaComponent {
   optionClass(optionId: number): string {
     const isSelected = this.selectedOptionId() === optionId;
     const base =
-      'flex cursor-pointer items-center gap-3 rounded-lg border px-4 py-3.5 text-base font-medium transition-all duration-150 md:px-5 md:py-4 md:text-xl';
+      'flex btn items-center gap-3 rounded-lg border transition-all duration-150 px-4 py-2 text-base md:px-5 md:py-4 md:text-xl font-medium lg:font-semibold shadow-sm';
 
     if (isSelected) {
-      return `${base} border-[var(--color-primary)] bg-[var(--color-border-teal)] text-[var(--color-text-dark)]`;
+      return `${base} border-primary bg-border-teal text-text-dark`;
     }
 
-    return `${base} border-[var(--color-border)] bg-[var(--color-main-bg)] text-[var(--color-text-dark)] hover:bg-[var(--color-surface)]`;
+    return `${base} border-text-dark/30 bg-main-bg/20 text-text-dark hover:bg-surface`;
   }
 
   optionRadioClass(optionId: number): string {
     const isSelected = this.selectedOptionId() === optionId;
 
     if (isSelected) {
-      return 'flex h-6 w-6 items-center justify-center rounded-full border border-[var(--color-primary)]';
+      return 'flex h-6 w-6 items-center justify-center rounded-full border border-primary';
     }
 
-    return 'flex h-6 w-6 items-center justify-center rounded-full border border-[var(--color-text-secondary)]';
+    return 'flex h-6 w-6 items-center justify-center rounded-full border border-text-secondary';
   }
 
   optionRadioDotClass(optionId: number): string {
-    return this.selectedOptionId() === optionId
-      ? 'h-3 w-3 rounded-full bg-[var(--color-primary)]'
-      : 'hidden';
+    return this.selectedOptionId() === optionId ? 'h-3 w-3 rounded-full bg-primary' : 'hidden';
   }
 
   markButtonClass(): string {
     const base =
-      'inline-flex h-10 w-10 items-center justify-center rounded-lg border transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-light)] md:h-12 md:w-12';
+      'inline-flex h-11 lg:h-13 w-11 lg:w-13 items-center justify-center rounded-lg border transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-lightmd:h-12 md:w-12';
 
     if (this.isMarked()) {
-      return `${base} border-[var(--color-primary)] bg-[var(--color-primary-light)] text-[var(--color-primary)]`;
+      return `${base} border-orange bg-orange/20 text-orange hover:text-text-secondary hover:bg-surface`;
     }
 
-    return `${base} border-[var(--color-border)] bg-[var(--color-card-bg)] text-[var(--color-text-secondary)] hover:bg-[var(--color-surface)]`;
+    return `${base} border-border bg-card-bg text-text-secondary hover:text-orange hover:bg-orange/40`;
   }
 }

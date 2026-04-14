@@ -5,6 +5,7 @@ import {
   ErrorHandler,
   provideAppInitializer,
   inject,
+  isDevMode,
 } from '@angular/core';
 import { providePrimeNG } from 'primeng/config';
 import { NoPreloading, provideRouter, Router, withPreloading } from '@angular/router';
@@ -15,11 +16,14 @@ import { authInterceptor } from './core/interceptors/auth-interceptor';
 import { loadingInterceptor } from './core/interceptors/loading-interceptor';
 import { definePreset } from '@primeuix/themes';
 import Aura from '@primeuix/themes/aura';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { IdentityService } from './core/services/identity-service';
 import { Theme } from './core/services/theme';
 import { StorageMigrationService } from './core/AppDbContext/storage-migration.service';
+import { provideCloudinaryLoader } from '@angular/common';
+import { provideServiceWorker } from '@angular/service-worker';
+import { UpdateService } from './core/services/update-service';
 // const MyCustomPreset = definePreset(Aura, {
 //   semantic: {
 //     primary: {
@@ -32,9 +36,10 @@ import { StorageMigrationService } from './core/AppDbContext/storage-migration.s
 //     },
 //   },
 // });
+
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideZonelessChangeDetection(), // استمر في استخدامه، فهو رائع للأداء
+    provideZonelessChangeDetection(),
     provideBrowserGlobalErrorListeners(),
     providePrimeNG({
       theme: {
@@ -49,6 +54,8 @@ export const appConfig: ApplicationConfig = {
       },
     }),
     MessageService,
+    ConfirmationService,                // ← الحل هنا: أضف ConfirmationService هنا
+    UpdateService,
     provideAnimations(),
     {
       provide: ErrorHandler,
@@ -60,7 +67,7 @@ export const appConfig: ApplicationConfig = {
       provide: Sentry.TraceService,
       deps: [Router],
     },
-
+    // provideCloudinaryLoader('https://cloudinary.com'),
     provideAppInitializer(() => {
       inject(Sentry.TraceService);
     }),
@@ -76,5 +83,9 @@ export const appConfig: ApplicationConfig = {
 
     provideRouter(routes, withPreloading(NoPreloading)),
     provideHttpClient(withFetch(), withInterceptors([authInterceptor, loadingInterceptor])),
+    provideServiceWorker('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      registrationStrategy: 'registerWhenStable:30000',
+    }),
   ],
 };
