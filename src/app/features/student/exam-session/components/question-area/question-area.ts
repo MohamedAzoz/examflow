@@ -46,7 +46,7 @@ export class QuestionAreaComponent {
       'flex btn items-center gap-3 rounded-lg border transition-all duration-150 px-4 py-2 text-base md:px-5 md:py-4 md:text-xl font-medium lg:font-semibold shadow-sm';
 
     if (isSelected) {
-      return `${base} border-primary bg-border-teal text-text-dark`;
+    return `${base} border-primary bg-border-teal dark:bg-border-teal/50 text-text-dark`;
     }
 
     return `${base} border-text-dark/30 bg-main-bg/20 text-text-dark hover:bg-surface`;
