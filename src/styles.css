@@ -49,39 +49,6 @@
 }
 
 /* ====================== Dark Mode Colors ====================== */
-/* .dark {
-  --color-primary: #39b7c4;
-  --color-primary-hover: #58c8d2;
-  --color-primary-light: rgb(57 183 196 / 0.22);
-  --color-success: #4fd08a;
-  --color-danger: #ff6f78;
-  --color-orange: #ffb84d;
-  --color-gray: #4f617b;
-  --color-text-gray: #aab6c8;
-  --color-text-dark: #e8eef8;
-  --color-text-primary: #f5f9ff;
-  --color-text-secondary: #bcc7d8;
-
-  --color-main-bg: #0b1220;
-
-  --color-sidebar-bg: #121c2f;
-  --color-link: #67d2dd;
-
-  --color-card-bg: #16233a;
-
-  --color-border: #2a3a54;
-  --color-border-teal: #2f8f9d;
-
-  --color-white-red: #ff9ca3;
-
-  --color-surface: #1a2a44;
-  --color-surface-container: #22344f;
-  --color-surface-container-high: #2c4060;
-
-  --color-mode-toggle-bg: #243951;
-  --color-mode-toggle-hover-bg: #335473;
-} */
-
 .dark {
   /* Primary Teal - أفتح وأكثر حيوية ليتناسب مع Light Mode */
   --color-primary: #26b6c4;           /* أفتح من السابق، أكثر وضوحاً */

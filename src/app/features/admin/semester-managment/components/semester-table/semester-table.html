@@ -1,74 +1,91 @@
-<div class="table-card">
-  <!-- Table Responsive Wrap -->
-  <div class="table-responsive">
-    <table class="data-table" aria-label="Semesters table">
-      <thead>
-        <tr>
-          <th class="head-text">SEMESTER NAME</th>
-          <th class="head-text">DURATION</th>
-          <th class="head-text">STATUS</th>
-          <th class="actions-col">ACTIONS</th>
+@if (semesterFacade.allSemestersResource.isLoading()) {
+  <div class="h-0.5 w-full animate-pulse bg-primary/70"></div>
+}
+
+<section class="overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="min-w-full border-collapse" aria-label="Semesters table">
+      <thead class="bg-sidebar-bg">
+        <tr class="border-b border-border">
+          <th class="px-4 py-3 text-left text-xs font-semibold tracking-wide text-text-secondary">
+            SEMESTER NAME
+          </th>
+          <th class="px-4 py-3 text-left text-xs font-semibold tracking-wide text-text-secondary">
+            DURATION
+          </th>
+          <th class="px-4 py-3 text-left text-xs font-semibold tracking-wide text-text-secondary">
+            STATUS
+          </th>
+          <th class="px-4 py-3 text-right text-xs font-semibold tracking-wide text-text-secondary">
+            ACTIONS
+          </th>
         </tr>
       </thead>
+
       <tbody>
-        @for (semester of paginatedSemesters(); track semester.id) {
-          <tr class="data-row">
-            <td>
-              <div class="name-cell">
-                <div class="avatar semester-icon">
-                   @switch (semester.name.split(' ')[0]) {
-                     @case ('Spring') { <i class="bi bi-leaf"></i> }
-                     @case ('Fall') { <i class="bi bi-flower3"></i> }
-                     @case ('Summer') { <i class="bi bi-brightness-high"></i> }
-                     @default { <i class="bi bi-calendar-event"></i> }
-                   }
-                </div>
-                <span class="cell-name">{{ semester.name }}</span>
+        @for (semester of paginatedSemesters(); track trackBySemesterId($index, semester)) {
+          <tr class="border-b border-border text-sm transition-colors hover:bg-surface">
+            <td class="px-4 py-3">
+              <div class="flex items-center gap-3">
+                <span
+                  class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-primary"
+                >
+                  <i class="pi pi-calendar text-xs"></i>
+                </span>
+                <span class="font-semibold text-text-dark">{{ semester.name }}</span>
               </div>
             </td>
-            <td>
-              <span class="duration-text">
-                {{ semester.startDate | date: 'MMM d, yyyy' }} - {{ semester.endDate | date: 'MMM d, yyyy' }}
-              </span>
+
+            <td class="px-4 py-3 text-sm text-text-secondary">
+              {{ semester.startDate | date: 'MMM d, yyyy' }} -
+              {{ semester.endDate | date: 'MMM d, yyyy' }}
             </td>
-            <td>
-              <span class="badge" [ngClass]="semester.status === 'Active' ? 'badge-active' : 'badge-inactive'">
-                {{ semester.status }}
-              </span>
+
+            <td class="px-4 py-3">
+              <span [class]="getStatusClass(semester.status)">{{ semester.status }}</span>
             </td>
-            <td class="actions-col">
-              <div class="row-actions">
+
+            <td class="px-4 py-3">
+              <div class="flex items-center justify-end gap-1">
                 <button
                   type="button"
-                  class="action-btn edit-btn"
+                  pButton
+                  icon="pi pi-pencil"
+                  class="p-button-text p-button-sm rounded-lg text-text-secondary! hover:bg-primary-light! hover:text-primary!"
                   (click)="editSemester(semester)"
-                  title="Edit">
-                  <i class="bi bi-pencil"></i>
-                </button>
+                  aria-label="Edit semester"
+                ></button>
+
                 <button
                   type="button"
-                  class="action-btn status-btn"
-                  [class.active-mode]="semester.status === 'Active'"
+                  pButton
+                  icon="pi pi-power-off"
+                  class="p-button-text p-button-sm rounded-lg text-text-secondary! hover:bg-amber-100! hover:text-amber-600!"
                   (click)="toggleActivation(semester)"
-                  [title]="semester.status === 'Active' ? 'Deactivate' : 'Activate'">
-                  <i class="bi bi-lightning-charge"></i>
-                </button>
+                  [attr.aria-label]="
+                    semester.status === 'Active' ? 'Deactivate semester' : 'Activate semester'
+                  "
+                ></button>
+
                 <button
                   type="button"
-                  class="action-btn delete-btn"
+                  pButton
+                  icon="pi pi-trash"
+                  class="p-button-text p-button-sm rounded-lg text-text-secondary! hover:bg-red-50! hover:text-red-500!"
                   (click)="deleteSemester(semester)"
-                  title="Delete">
-                  <i class="bi bi-trash3"></i>
-                </button>
+                  aria-label="Delete semester"
+                ></button>
               </div>
             </td>
           </tr>
         } @empty {
           @if (!semesterFacade.allSemestersResource.isLoading()) {
             <tr>
-              <td colspan="4" class="empty-state">
-                <i class="bi bi-calendar-x"></i>
-                <p>No semesters found</p>
+              <td colspan="4" class="px-6 py-14 text-center text-text-secondary">
+                <div class="flex flex-col items-center gap-2">
+                  <i class="pi pi-inbox text-3xl opacity-60"></i>
+                  <p class="text-sm font-medium">No semesters found</p>
+                </div>
               </td>
             </tr>
           }
@@ -77,29 +94,34 @@
     </table>
   </div>
 
-  <!-- Table Footer -->
   @if (totalCount() > 0) {
-    <div class="table-footer">
-      <p class="result-info">
-        Showing <strong>{{ showingFrom() }}</strong>-<strong>{{ showingTo() }}</strong> of
-        <strong>{{ totalCount() }}</strong> semesters
+    <div class="flex flex-wrap items-center justify-between gap-3 border-t border-border px-4 py-3">
+      <p class="text-xs text-text-secondary md:text-sm">
+        Showing <strong>{{ showingFrom() }}</strong
+        >-<strong>{{ showingTo() }}</strong> of <strong>{{ totalCount() }}</strong> semesters
       </p>
-      <div class="pagination-btns">
+
+      <div class="flex items-center gap-2">
         <button
           type="button"
-          class="page-btn"
+          pButton
+          icon="pi pi-chevron-left"
+          class="p-button-sm p-button-outlined h-8 w-8 border-border! text-text-secondary!"
           [disabled]="currentPage() === 1"
-          (click)="prevPage()">
-          <i class="bi bi-chevron-left"></i>
-        </button>
+          (click)="prevPage()"
+          aria-label="Previous page"
+        ></button>
+
         <button
           type="button"
-          class="page-btn"
+          pButton
+          icon="pi pi-chevron-right"
+          class="p-button-sm p-button-outlined h-8 w-8 border-border! text-text-secondary!"
           [disabled]="currentPage() >= totalPages()"
-          (click)="nextPage()">
-          <i class="bi bi-chevron-right"></i>
-        </button>
+          (click)="nextPage()"
+          aria-label="Next page"
+        ></button>
       </div>
     </div>
   }
-</div>
+</section>

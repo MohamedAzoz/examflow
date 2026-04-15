@@ -1,19 +1,22 @@
-<div class="toolbar">
-  <div class="search-wrap">
-    <i class="bi bi-search search-icon"></i>
+<div class="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
+  <p-iconfield class="w-full max-w-sm">
+    <p-inputicon class="pi pi-search text-sm text-text-secondary" />
     <input
       type="text"
-      class="search-input"
+      pInputText
+      class="w-full rounded-xl border-border! bg-sidebar-bg! text-sm"
       placeholder="Search semesters..."
       (input)="onSearch($event)"
       autocomplete="off"
     />
-  </div>
+  </p-iconfield>
 
-  <div class="toolbar-actions">
-    <button type="button" class="btn-action btn-add" (click)="onAdd()">
-      <i class="bi bi-plus-lg"></i>
-      <span>Add New Semester</span>
-    </button>
-  </div>
+  <button
+    type="button"
+    pButton
+    icon="pi pi-plus"
+    label="Add New Semester"
+    class="ms-auto p-button-sm rounded-xl border-primary! bg-primary! text-white! hover:bg-primary-hover!"
+    (click)="onAdd()"
+  ></button>
 </div>

@@ -1,80 +1,122 @@
-<div class="board-grid">
-  <section class="list-card">
-    <div class="list-header">
-      <h3 class="list-title"><i class="bi bi-list-ul"></i> <span>Available Courses</span></h3>
-      <div class="search-wrap">
-        <i class="bi bi-search"></i>
+<div class="grid items-stretch gap-3 lg:grid-cols-[1fr_72px_1fr]">
+  <section
+    class="flex min-h-90 flex-col overflow-hidden rounded-2xl border border-border bg-card-bg lg:min-h-125"
+  >
+    <div class="border-b border-border bg-sidebar-bg">
+      <h3 class="flex items-center gap-2 px-4 pt-4 text-sm font-bold text-text-primary">
+        <i class="pi pi-list text-sm text-primary"></i>
+        <span>Available Courses</span>
+      </h3>
+
+      <div class="relative p-3">
+        <i
+          class="pi pi-search pointer-events-none absolute left-6 top-1/2 -translate-y-1/2 text-xs text-text-secondary"
+        ></i>
         <input
           type="text"
-          class="search-input"
+          pInputText
+          class="h-9 w-full rounded-lg border-border bg-gray/10 pl-9 text-sm"
           placeholder="Filter by code or title..."
           [value]="availableSearch()"
           (input)="onAvailableSearch($any($event.target).value)"
         />
       </div>
     </div>
-    <ul class="course-list">
+
+    <ul class="m-0 flex-1 list-none overflow-auto p-2">
       @for (course of availableCourses(); track course.id) {
-        <li class="course-item">
-          <span class="code-chip">{{ course.code }}</span>
-          <span class="course-name">{{ course.name }}</span>
+        <li class="flex items-center gap-2 rounded-lg px-2 py-2 bg-gray/60 text-sm hover:bg-surface">
+          <span
+            class="inline-flex rounded-md bg-card-bg/60 px-2 py-0.5 text-xs font-semibold text-text-dark"
+            >{{ course.code }}</span
+          >
+          <span class="flex-1 font-medium text-text-dark">{{ course.name }}</span>
           <button
             type="button"
-            class="item-action"
+            pButton
+            icon="pi pi-chevron-right"
+            class="p-button-text btn p-button-sm h-7 w-7 rounded-md text-text-secondary hover:bg-primary-light hover:text-primary"
             [disabled]="disabled()"
             (click)="assignOne.emit(course.id)"
-          >
-            <i class="bi bi-chevron-right"></i>
-          </button>
+          ></button>
         </li>
       }
+
       @if (availableCourses().length === 0) {
-        <li class="empty">No available courses</li>
+        <li class="px-4 py-8 text-center text-sm text-text-secondary">No available courses</li>
       }
     </ul>
   </section>
 
-  <div class="middle-actions">
-    <button type="button" class="swap-btn" [disabled]="disabled()" (click)="assignAll.emit()">
-      <i class="bi bi-chevron-right"></i>
-    </button>
-    <button type="button" class="swap-btn" [disabled]="disabled()" (click)="unassignAll.emit()">
-      <i class="bi bi-chevron-left"></i>
-    </button>
+  <div class="flex flex-row justify-center gap-2 lg:flex-col *:dark:text-white">
+    <button
+      type="button"
+      pButton
+      icon="pi pi-angle-right"
+      class="p-button-outlined btn h-10 w-full rounded-lg bg-card-bg border-border text-text-secondary lg:w-16"
+      [disabled]="disabled()"
+      (click)="assignAll.emit()"
+      aria-label="Assign all courses"
+    ></button>
+
+    <button
+      type="button"
+      pButton
+      icon="pi pi-angle-left"
+      class="p-button-outlined btn h-10 w-full rounded-lg bg-card-bg border-border text-text-secondary lg:w-16"
+      [disabled]="disabled()"
+      (click)="unassignAll.emit()"
+      aria-label="Unassign all courses"
+    ></button>
   </div>
 
-  <section class="list-card">
-    <div class="list-header">
+  <section
+    class="flex min-h-90 flex-col overflow-hidden rounded-2xl border border-border bg-card-bg lg:min-h-125"
+  >
+    <div class="border-b border-border bg-sidebar-bg">
+      <h3 class="flex items-center gap-2 px-4 pt-4 text-sm font-bold text-text-primary">
+        <i class="pi pi-check-square text-sm text-primary"></i>
+        <span>Assigned Courses</span>
+      </h3>
 
-      <h3 class="list-title"><i class="bi bi-check2-square"></i> Assigned Courses</h3>
-      <div class="search-wrap">
-        <i class="bi bi-search"></i>
+      <div class="relative p-3">
+        <i
+          class="pi pi-search pointer-events-none absolute left-6 top-1/2 -translate-y-1/2 text-xs text-text-secondary"
+        ></i>
         <input
           type="text"
-          class="search-input"
+          pInputText
+          class="h-9 w-full rounded-lg border-border bg-gray/10 pl-9 text-sm"
           placeholder="Search assigned..."
           [value]="assignedSearch()"
           (input)="onAssignedSearch($any($event.target).value)"
         />
       </div>
     </div>
-    <ul class="course-list">
+
+    <ul class="m-0 flex-1 list-none overflow-auto p-2">
       @for (course of assignedCourses(); track course.id) {
-        <li class="course-item assigned">
-          <span class="code-chip assigned">{{ course.code }}</span>
-          <span class="course-name">{{ course.name }}</span>
+        <li
+          class="m-1 flex items-center gap-2 rounded-lg border border-primary/50 bg-primary/10 px-2 py-2 text-sm"
+        >
+          <span
+            class="inline-flex rounded-md bg-primary px-2 py-0.5 text-xs font-semibold text-text-dark"
+            >{{ course.code }}</span
+          >
+          <span class="flex-1 font-medium text-primary">{{ course.name }}</span>
           <button
             type="button"
-            class="item-action remove"
+            pButton
+            icon="pi pi-times"
+            class="p-button-text btn p-button-sm h-7 w-7 rounded-md text-text-secondary hover:bg-red-50 hover:text-red-500"
             [disabled]="disabled()"
             (click)="unassignOne.emit(course.id)"
-          >
-            <i class="bi bi-x-lg"></i>
-          </button>
+          ></button>
         </li>
       }
+
       @if (assignedCourses().length === 0) {
-        <li class="empty">No courses assigned yet</li>
+        <li class="px-4 py-8 text-center text-sm text-text-secondary">No courses assigned yet</li>
       }
     </ul>
   </section>

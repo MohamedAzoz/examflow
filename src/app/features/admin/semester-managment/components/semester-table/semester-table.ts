@@ -1,13 +1,13 @@
 import { Component, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
-import { DatePipe, NgClass } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { SemesterFacade } from '../../../services/semester-facade';
 import { ISemesterResponse } from '../../../../../data/models/semester/isemester-response';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-semester-table',
-  imports: [DatePipe, NgClass],
+  imports: [DatePipe, ButtonModule],
   templateUrl: './semester-table.html',
-  styleUrls: ['../../../shard-style.css', './semester-table.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SemesterTable {
@@ -35,6 +35,17 @@ export class SemesterTable {
   protected readonly showingTo = computed(() =>
     Math.min(this.currentPage() * this.pageSize, this.totalCount()),
   );
+
+  protected trackBySemesterId(_: number, semester: ISemesterResponse): number {
+    return semester.id;
+  }
+
+  protected getStatusClass(status: string): string {
+    const base = 'inline-flex rounded-full px-2 py-0.5 text-xs font-semibold';
+    return status === 'Active'
+      ? `${base} bg-emerald-100 text-emerald-700`
+      : `${base} bg-slate-100 text-slate-600`;
+  }
 
   protected prevPage(): void {
     if (this.currentPage() > 1) {

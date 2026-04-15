@@ -1,19 +1,14 @@
-<div class="sm-container">
-  <!-- Banner Section -->
-  <section class="banner-section">
-    <app-semester-banner [activeSemester]="activeSemester()" 
-        [isLoading]="isLoading()" />
+<section class="space-y-4 w-[96%] mx-auto mb-3 mt-3 md:mt-5 lg:mt-8">
+  <section>
+    <app-semester-banner [activeSemester]="activeSemester()" [isLoading]="isLoading()" />
   </section>
 
-  <!-- Content Section -->
-  <main class="content-section">
+  <main class="overflow-hidden rounded-2xl border border-border bg-card-bg shadow-sm">
     <app-semester-filter (add)="onAddSemester()" (search)="onSearch($event)" />
     <app-semester-table />
   </main>
 
-  <!-- Modal -->
   @if (showModal()) {
     <app-semester-modal (closed)="onModalClosed()" />
   }
-</div>
- 
+</section>

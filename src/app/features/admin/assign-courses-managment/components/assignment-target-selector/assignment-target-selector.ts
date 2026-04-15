@@ -5,8 +5,8 @@ import { AssignMode } from '../assign-mode-tabs/assign-mode-tabs';
 
 @Component({
   selector: 'app-assignment-target-selector',
+  standalone: true,
   templateUrl: './assignment-target-selector.html',
-  styleUrl: './assignment-target-selector.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AssignmentTargetSelectorComponent {
@@ -16,7 +16,7 @@ export class AssignmentTargetSelectorComponent {
   readonly selectedProfessorId = input<string | null>(null);
   readonly selectedDepartmentId = input<number | null>(null);
   readonly disabled = input(false);
- 
+
   readonly professorChanged = output<string>();
   readonly departmentChanged = output<number>();
 

@@ -7,7 +7,10 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { CourseOption, CourseTransferBoardComponent } from './components/course-transfer-board/course-transfer-board';
+import {
+  CourseOption,
+  CourseTransferBoardComponent,
+} from './components/course-transfer-board/course-transfer-board';
 import {
   AssignMode,
   AssignModeTabsComponent,
@@ -25,7 +28,6 @@ import { ProfessorFacade } from '../services/professor-facade';
     CourseTransferBoardComponent,
   ],
   templateUrl: './assign-courses-managment.html',
-  styleUrl: './assign-courses-managment.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AssignCoursesManagment {
@@ -48,7 +50,9 @@ export class AssignCoursesManagment {
   protected readonly feedbackType = signal<'success' | 'error'>('success');
 
   protected readonly professors = computed(() => this.professorFacade.allProfessors.value() || []);
-  protected readonly departments = computed(() => this.departmentFacade.allDepartments.value() || []);
+  protected readonly departments = computed(
+    () => this.departmentFacade.allDepartments.value() || [],
+  );
   protected readonly allCourses = computed(() => this.courseFacade.allCourses.value() || []);
 
   protected readonly isBusy = computed(
@@ -82,7 +86,9 @@ export class AssignCoursesManagment {
   protected readonly assignedCourses = computed(() => {
     const query = this.assignedSearch().trim().toLowerCase();
     const courseMap = new Map(this.allCourses().map((course) => [course.id, course]));
-    const fallbackMap = new Map(this.assignedFallbackCourses().map((course) => [course.id, course]));
+    const fallbackMap = new Map(
+      this.assignedFallbackCourses().map((course) => [course.id, course]),
+    );
 
     return this.assignedCourseIds()
       .map((courseId) => {

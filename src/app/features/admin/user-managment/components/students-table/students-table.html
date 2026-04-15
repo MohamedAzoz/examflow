@@ -1,112 +1,152 @@
-<div class="table-card">
-  <!-- Toolbar -->
-  <div class="toolbar">
-    <div class="search-wrap">
-      <i class="bi bi-search search-icon"></i>
+<section class="overflow-hidden rounded-2xl border border-border bg-card-bg shadow-sm">
+  <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
+    <p-iconfield class="w-full max-w-sm">
+      <p-inputicon class="pi pi-search text-sm text-text-secondary" />
       <input
         type="text"
-        class="search-input"
+        pInputText
+        class="w-full rounded-xl border-border! bg-sidebar-bg text-sm"
         placeholder="Search users..."
         [value]="searchQuery()"
         (input)="onSearch($any($event.target).value)"
         autocomplete="off"
       />
-    </div>
+    </p-iconfield>
 
-    <div class="toolbar-actions">
-      <button type="button" class="btn-action btn-filter" (click)="toggleFilter()">
-        <i class="bi bi-filter"></i>
-        <span>Filter</span>
-      </button>
-      <button type="button" class="btn-action btn-excel" (click)="onUploadExcel()">
-        <img src="Vector.svg" alt="" />
-        <span>Upload Excel</span>
-      </button>
-      <button type="button" class="btn-action btn-add" (click)="showAddModal.set(true)">
-        <i class="bi bi-plus-lg"></i>
-        <span>Add Student</span>
-      </button>
+    <div class="ms-auto flex items-center gap-2">
+      <button
+        type="button"
+        pButton
+        icon="pi pi-filter"
+        label="Filter"
+        class="p-button-sm p-button-outlined rounded-xl border-border! text-text-dark!"
+        (click)="toggleFilter()"
+      ></button>
+
+      <button
+        type="button"
+        pButton
+        icon="pi pi-file-excel"
+        label="Upload Excel"
+        class="p-button-sm p-button-outlined rounded-xl border-primary! text-primary! hover:bg-primary-light!"
+        (click)="onUploadExcel()"
+      ></button>
+
+      <button
+        type="button"
+        pButton
+        icon="pi pi-plus"
+        label="Add Student"
+        class="p-button-sm rounded-xl border-primary! bg-primary! text-white! hover:bg-primary-hover!"
+        (click)="showAddModal.set(true)"
+      ></button>
     </div>
   </div>
 
-  <!-- Loading -->
   @if (loading()) {
-    <div class="loading-bar"></div>
+    <div class="h-0.5 w-full animate-pulse bg-primary/70"></div>
   }
 
-  <!-- Table -->
   @if (students().length > 0) {
-    <div class="table-responsive">
-      <table class="data-table" aria-label="Students table">
-        <thead>
-          <tr>
-            <th class="head-text">Full Name</th>
-            <th class="head-text">National ID</th>
-            <th class="head-text">Univ. Code</th>
-            <th class="head-text">Academic Level</th>
-            <th class="head-text">Dept</th>
-            <th class="head-text">Email</th>
-            <th class="actions-col"></th>
+    <div class="overflow-x-auto">
+      <table class="min-w-full border-collapse" aria-label="Students table">
+        <thead class="bg-sidebar-bg">
+          <tr class="border-b border-border">
+            <th class="px-4 py-3 text-left text-xs font-semibold tracking-wide text-text-secondary">
+              Full Name
+            </th>
+            <th class="px-4 py-3 text-left text-xs font-semibold tracking-wide text-text-secondary">
+              National ID
+            </th>
+            <th class="px-4 py-3 text-left text-xs font-semibold tracking-wide text-text-secondary">
+              Univ. Code
+            </th>
+            <th class="px-4 py-3 text-left text-xs font-semibold tracking-wide text-text-secondary">
+              Academic Level
+            </th>
+            <th class="px-4 py-3 text-left text-xs font-semibold tracking-wide text-text-secondary">
+              Dept
+            </th>
+            <th class="px-4 py-3 text-left text-xs font-semibold tracking-wide text-text-secondary">
+              Email
+            </th>
+            <th
+              class="px-4 py-3 text-right text-xs font-semibold tracking-wide text-text-secondary"
+            >
+              Actions
+            </th>
           </tr>
         </thead>
-        <tbody>
-          @for (student of students(); track $index) {
-            <tr class="data-row">
-              <td>
-                <div class="name-cell">
-                  <div class="avatar" [style.background]="student.avatarColor">
-                    <span class="avatar-initials" [style.color]="student.avatarText">{{
-                      student.initials
-                    }}</span>
-                  </div>
-                  <span class="cell-name" title="{{ student.fullName }}">{{
-                    student.fullName | cut: 15
-                  }}</span>
-                </div>
-              </td>
-              <td class="mono-text" title="{{ student.nationalId }}">
-                {{ student.nationalId | cut: 7 }}
-              </td>
-              <td>
-                <span class="univ-code" title="{{ student.univCode }}">{{
-                  student.univCode | cut: 3
-                }}</span>
-              </td>
-              <td>
-                <span class="badge" [ngClass]="getLevelClass(student.level)">
-                  Level {{ student.level }}
-                </span>
-              </td>
-              <td class="dept-text" title="{{ student.dept }}">{{ student.dept | cut: 10 }}</td>
-              <td class="email-text" title="{{ student.email }}">{{ student.email | cut: 20 }}</td>
-              <td class="actions-col">
-                <div class="row-actions">
-                  <button
-                    type="button"
-                    class="action-btn edit-btn"
-                    (click)="editStudent(student)"
-                    title="Edit"
-                  >
-                    <i class="bi bi-pencil"></i>
-                  </button>
-                  <button
-                    type="button"
-                    class="action-btn delete-btn"
-                    (click)="deleteStudent(student)"
-                    title="Delete"
-                  >
-                    <i class="bi bi-trash3"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          }
 
-          @if (students().length === 0 && !loading()) {
-            <tr>
-              <td colspan="7" class="empty-state">
-                <i class="bi bi-inbox"></i>
-                <p>No students found</p>
+        <tbody>
+          @for (student of students(); track trackByStudentId($index, student)) {
+            <tr class="border-b border-border text-sm transition-colors hover:bg-surface">
+              <td class="px-4 py-3">
+                <div class="flex min-w-44 items-center gap-3">
+                  <span
+                    class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold"
+                    [style.background]="student.avatarColor"
+                    [style.color]="student.avatarText"
+                  >
+                    {{ student.initials }}
+                  </span>
+                  <span
+                    class="max-w-44 truncate font-semibold text-text-dark"
+                    title="{{ student.fullName }}"
+                  >
+                    {{ student.fullName }}
+                  </span>
+                </div>
+              </td>
+
+              <td
+                class="px-4 py-3 font-mono text-xs text-text-secondary"
+                title="{{ student.nationalId }}"
+              >
+                {{ student.nationalId }}
+              </td>
+
+              <td
+                class="px-4 py-3 font-mono text-xs text-text-secondary"
+                title="{{ student.univCode }}"
+              >
+                {{ student.univCode }}
+              </td>
+
+              <td class="px-4 py-3">
+                <span [class]="getLevelClass(student.level)">Level {{ student.level }}</span>
+              </td>
+
+              <td class="px-4 py-3 text-sm text-text-secondary" title="{{ student.dept }}">
+                {{ student.dept }}
+              </td>
+
+              <td
+                class="max-w-56 px-4 py-3 text-sm text-text-secondary"
+                title="{{ student.email }}"
+              >
+                <span class="block truncate">{{ student.email }}</span>
+              </td>
+
+              <td class="px-4 py-3">
+                <div class="flex items-center justify-end gap-1">
+                  <button
+                    type="button"
+                    pButton
+                    icon="pi pi-pencil"
+                    class="p-button-text p-button-sm rounded-lg text-text-secondary! hover:bg-primary-light! hover:text-primary!"
+                    (click)="editStudent(student)"
+                    aria-label="Edit student"
+                  ></button>
+                  <button
+                    type="button"
+                    pButton
+                    icon="pi pi-trash"
+                    class="p-button-text p-button-sm rounded-lg text-text-secondary! hover:bg-red-50! hover:text-red-500!"
+                    (click)="deleteStudent(student)"
+                    aria-label="Delete student"
+                  ></button>
+                </div>
               </td>
             </tr>
           }
@@ -114,35 +154,42 @@
       </table>
     </div>
 
-    <!-- Pagination -->
-    <div class="table-footer">
-      <p class="result-info">
+    <div class="flex flex-wrap items-center justify-between gap-3 border-t border-border px-4 py-3">
+      <p class="text-xs text-text-secondary md:text-sm">
         Showing <strong>{{ showingFrom() }}</strong> to <strong>{{ showingTo() }}</strong> of
         <strong>{{ totalCount() }}</strong> results
       </p>
-      <div class="pagination-btns">
+
+      <div class="flex items-center gap-2">
         <button
           type="button"
-          class="page-btn"
+          pButton
+          icon="pi pi-chevron-left"
+          class="p-button-sm p-button-outlined h-8 w-8 border-border! text-text-secondary!"
           [disabled]="currentPage() === 1"
           (click)="prevPage()"
           aria-label="Previous page"
-        >
-          <i class="bi bi-chevron-left"></i>
-        </button>
+        ></button>
         <button
           type="button"
-          class="page-btn"
+          pButton
+          icon="pi pi-chevron-right"
+          class="p-button-sm p-button-outlined h-8 w-8 border-border! text-text-secondary!"
           [disabled]="currentPage() >= totalPages()"
           (click)="nextPage()"
           aria-label="Next page"
-        >
-          <i class="bi bi-chevron-right"></i>
-        </button>
+        ></button>
       </div>
     </div>
+  } @else if (!loading()) {
+    <div
+      class="flex flex-col items-center justify-center gap-2 px-6 py-14 text-center text-text-secondary"
+    >
+      <i class="pi pi-inbox text-3xl opacity-60"></i>
+      <p class="text-sm font-medium">No students found</p>
+    </div>
   }
-</div>
+</section>
 
 <!-- Filter Modal -->
 @if (showFilter()) {

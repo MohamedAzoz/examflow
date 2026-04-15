@@ -1,16 +1,29 @@
-<div class="tabs-shell" role="tablist" aria-label="Assignment mode">
+<div
+  class="inline-flex w-full max-w-xl gap-1 rounded-xl border border-border bg-sidebar-bg p-2"
+  role="tablist"
+  aria-label="Assignment mode"
+>
   <button
     type="button"
-    class="tab-btn"
-    [class.active]="mode() === 'professor'"
+    class="h-10 flex-1 btn rounded-lg px-3 text-sm font-semibold transition"
+    [class.bg-card-bg]="mode() === 'professor'"
+    [class.text-primary]="mode() === 'professor'"
+    [class.shadow-sm]="mode() === 'professor'"
+    [class.text-text-secondary]="mode() !== 'professor'"
+    [class.hover:text-text-primary]="mode() !== 'professor'"
     (click)="setMode('professor')"
   >
     Assign to Professor
   </button>
+
   <button
     type="button"
-    class="tab-btn"
-    [class.active]="mode() === 'department'"
+    class="h-10 flex-1 btn rounded-lg px-3 text-sm font-semibold transition"
+    [class.bg-card-bg]="mode() === 'department'"
+    [class.text-primary]="mode() === 'department'"
+    [class.shadow-sm]="mode() === 'department'"
+    [class.text-text-secondary]="mode() !== 'department'"
+    [class.hover:text-text-primary]="mode() !== 'department'"
     (click)="setMode('department')"
   >
     Assign to Department

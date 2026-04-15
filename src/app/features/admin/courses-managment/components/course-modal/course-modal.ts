@@ -1,11 +1,4 @@
-import {
-  Component,
-  OnInit,
-  inject,
-  Output,
-  EventEmitter,
-  ChangeDetectionStrategy,
-} from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy, output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CourseFacade } from '../../../services/course-facade';
 import { ICoueseRequest } from '../../../../../data/models/course/icouese-request';
@@ -15,14 +8,13 @@ import { ICoueseResponse } from '../../../../../data/models/course/icouese-respo
   selector: 'app-course-modal',
   imports: [ReactiveFormsModule],
   templateUrl: './course-modal.html',
-  styleUrls: ['../../../shard-model.css', './course-modal.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CourseModal implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly courseFacade = inject(CourseFacade);
 
-  @Output() closed = new EventEmitter<void>();
+  readonly closed = output<void>();
 
   protected courseForm!: FormGroup;
   protected isEditMode = false;

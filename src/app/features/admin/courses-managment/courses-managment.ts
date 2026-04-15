@@ -1,4 +1,4 @@
-import { Component, inject, signal, effect } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, effect } from '@angular/core';
 import { CourseFacade } from '../services/course-facade';
 import { CourseFilter } from './components/course-filter/course-filter';
 import { CourseTable } from './components/course-table/course-table';
@@ -6,10 +6,9 @@ import { CourseModal } from './components/course-modal/course-modal';
 
 @Component({
   selector: 'app-courses-managment',
-  standalone: true,
   imports: [CourseFilter, CourseTable, CourseModal],
   templateUrl: './courses-managment.html',
-  styleUrl: './courses-managment.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CoursesManagment {
   public readonly courseFacade = inject(CourseFacade);

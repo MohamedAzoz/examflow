@@ -1,4 +1,6 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
 
 export interface CourseOption {
   id: number;
@@ -8,8 +10,8 @@ export interface CourseOption {
 
 @Component({
   selector: 'app-course-transfer-board',
+  imports: [ButtonModule, InputTextModule],
   templateUrl: './course-transfer-board.html',
-  styleUrl: './course-transfer-board.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CourseTransferBoardComponent {

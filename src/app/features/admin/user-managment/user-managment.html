@@ -1,20 +1,24 @@
-<div class="um-container">
-
-  <!-- Tabs -->
-  <div class="tab-bar">
-    @for (tab of tabs; track tab) {
-      <button
-        type="button"
-        class="tab-btn"
-        [class.active]="activeTab() === tab"
-        (click)="setTab(tab)">
-        {{ tab }}
-      </button>
-    }
+<section class="w-[96%] mx-auto mt-2.5 space-y-4">
+  <div class="border-b border-text-gray/10">
+    <nav class="flex items-center gap-1" aria-label="User tabs">
+      @for (tab of tabs; track tab) {
+        <button
+          type="button"
+          class="-mb-px btn border-b-2 px-4 py-2 text-sm font-medium transition-colors"
+          [class.border-primary]="activeTab() === tab"
+          [class.text-primary]="activeTab() === tab"
+          [class.border-transparent]="activeTab() !== tab"
+          [class.text-text-secondary]="activeTab() !== tab"
+          [class.hover:text-text-dark]="activeTab() !== tab"
+          (click)="setTab(tab)"
+        >
+          {{ tab }}
+        </button>
+      }
+    </nav>
   </div>
 
-  <!-- Tab Content -->
-  <div class="tab-content">
+  <div>
     @switch (activeTab()) {
       @case ('Students') {
         <app-students-table />
@@ -27,5 +31,4 @@
       }
     }
   </div>
-
-</div>
+</section>

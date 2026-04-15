@@ -1,69 +1,96 @@
-<div class="table-card">
-  <!-- Loading Bar -->
-  @if (courseFacade.loading()) {
-    <div class="loading-bar"></div>
-  }
+@if (courseFacade.allCourses.isLoading()) {
+  <div class="h-0.5 w-full animate-pulse bg-primary/70"></div>
+}
 
-  <!-- Table Content -->
-  <div class="table-responsive">
-    <table class="data-table" aria-label="Courses table">
-      <thead>
-        <tr>
-          <th class="head-text">COURSE NAME</th>
-          <th class="head-text">CODE</th>
-          <th class="head-text">ACADEMIC LEVEL</th>
-          <th class="actions-col">ACTIONS</th>
+<section class="overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="min-w-full border-collapse" aria-label="Courses table">
+      <thead class="bg-sidebar-bg">
+        <tr class="border-b border-border">
+          <th class="px-4 py-3 text-left text-xs font-semibold tracking-wide text-text-secondary">
+            COURSE NAME
+          </th>
+          <th class="px-4 py-3 text-left text-xs font-semibold tracking-wide text-text-secondary">
+            CODE
+          </th>
+          <th class="px-4 py-3 text-left text-xs font-semibold tracking-wide text-text-secondary">
+            ACADEMIC LEVEL
+          </th>
+          <th class="px-4 py-3 text-right text-xs font-semibold tracking-wide text-text-secondary">
+            ACTIONS
+          </th>
         </tr>
       </thead>
+
       <tbody>
-        @for (course of paginatedCourses(); track course.id) {
-          <tr class="data-row">
-            <td>
-              <div class="name-cell">
-                <div class="avatar" [style.background]="getAvatarColor($index)">
-                  <span class="avatar-initials" [style.color]="getAvatarText($index)">
-                    {{ getInitials(course.name) }}
+        @for (course of paginatedCourses(); track trackByCourseId($index, course)) {
+          <tr class="border-b border-border text-sm transition-colors hover:bg-surface">
+            <td class="px-4 py-3">
+              <div class="flex items-center gap-3">
+                <span
+                  class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold"
+                  [style.background]="getAvatarColor($index)"
+                  [style.color]="getAvatarText($index)"
+                >
+                  {{ getInitials(course.name) }}
+                </span>
+
+                <div class="min-w-0">
+                  <span
+                    class="block truncate font-semibold text-text-dark"
+                    title="{{ course.name }}"
+                  >
+                    {{ course.name }}
                   </span>
-                </div>
-                <div class="course-info">
-                  <span class="cell-name" title="{{ course.name }}">{{ course.name | cut: 25 }}</span>
-                  <p class="school-text">Academic Department</p>
+                  <p class="text-xs text-text-secondary">Academic Department</p>
                 </div>
               </div>
             </td>
-            <td>
-              <span class="univ-code">{{ course.code }}</span>
+
+            <td class="px-4 py-3">
+              <span
+                class="inline-flex rounded-md bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-700"
+              >
+                {{ course.code }}
+              </span>
             </td>
-            <td>
-              <span class="badge" [ngClass]="getLevelClass(course.academicLevel)">
+
+            <td class="px-4 py-3">
+              <span [class]="getLevelClass(course.academicLevel)">
                 Level {{ course.academicLevel }}
               </span>
             </td>
-            <td class="actions-col">
-              <div class="row-actions">
+
+            <td class="px-4 py-3">
+              <div class="flex items-center justify-end gap-1">
                 <button
                   type="button"
-                  class="action-btn edit-btn"
+                  pButton
+                  icon="pi pi-pencil"
+                  class="p-button-text p-button-sm rounded-lg text-text-secondary! hover:bg-primary-light! hover:text-primary!"
                   (click)="editCourse(course)"
-                  title="Edit">
-                  <i class="bi bi-pencil"></i>
-                </button>
+                  aria-label="Edit course"
+                ></button>
+
                 <button
                   type="button"
-                  class="action-btn delete-btn"
+                  pButton
+                  icon="pi pi-trash"
+                  class="p-button-text p-button-sm rounded-lg text-text-secondary! hover:bg-red-50! hover:text-red-500!"
                   (click)="deleteCourse(course)"
-                  title="Delete">
-                  <i class="bi bi-trash3"></i>
-                </button>
+                  aria-label="Delete course"
+                ></button>
               </div>
             </td>
           </tr>
         } @empty {
-          @if (!courseFacade.loading()) {
+          @if (!courseFacade.allCourses.isLoading()) {
             <tr>
-              <td colspan="4" class="empty-state">
-                <i class="bi bi-journal-x"></i>
-                <p>No courses found</p>
+              <td colspan="4" class="px-6 py-14 text-center text-text-secondary">
+                <div class="flex flex-col items-center gap-2">
+                  <i class="pi pi-inbox text-3xl opacity-60"></i>
+                  <p class="text-sm font-medium">No courses found</p>
+                </div>
               </td>
             </tr>
           }
@@ -72,31 +99,34 @@
     </table>
   </div>
 
-  <!-- Table Footer -->
   @if (totalCount() > 0) {
-    <div class="table-footer">
-      <p class="result-info">
+    <div class="flex flex-wrap items-center justify-between gap-3 border-t border-border px-4 py-3">
+      <p class="text-xs text-text-secondary md:text-sm">
         Showing <strong>{{ showingFrom() }}</strong> to <strong>{{ showingTo() }}</strong> of
         <strong>{{ totalCount() }}</strong> courses
       </p>
-      <div class="pagination-btns">
+
+      <div class="flex items-center gap-2">
         <button
           type="button"
-          class="page-btn"
+          pButton
+          icon="pi pi-chevron-left"
+          class="p-button-sm p-button-outlined h-8 w-8 border-border! text-text-secondary!"
           [disabled]="currentPage() === 1"
           (click)="prevPage()"
-          aria-label="Previous page">
-          <i class="bi bi-chevron-left"></i>
-        </button>
+          aria-label="Previous page"
+        ></button>
+
         <button
           type="button"
-          class="page-btn"
+          pButton
+          icon="pi pi-chevron-right"
+          class="p-button-sm p-button-outlined h-8 w-8 border-border! text-text-secondary!"
           [disabled]="currentPage() >= totalPages()"
           (click)="nextPage()"
-          aria-label="Next page">
-          <i class="bi bi-chevron-right"></i>
-        </button>
+          aria-label="Next page"
+        ></button>
       </div>
     </div>
   }
-</div>
+</section>

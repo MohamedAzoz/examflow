@@ -14,7 +14,6 @@ import { Admin, IAdmin } from '../../../../../data/services/admin';
   selector: 'app-add-admin-modal',
   imports: [FormsModule],
   templateUrl: './add-admin-modal.html',
-  styleUrls: ['../../../shard-model.css', './add-admin-modal.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddAdminModalComponent {

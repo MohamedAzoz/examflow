@@ -1,13 +1,16 @@
-<section class="target-card">
-  <h3 class="target-label">
+<section class="rounded-2xl border border-border bg-card-bg p-4 sm:p-5">
+  <h3 class="mb-2 text-xs font-bold uppercase tracking-[0.12em] text-text-secondary">
     {{ mode() === 'professor' ? 'Target Professor' : 'Target Department' }}
   </h3>
 
   @if (mode() === 'professor') {
-    <div class="select-wrap">
-      <i class="bi bi-person search-icon" aria-hidden="true"></i>
+    <div class="relative max-w-xl">
+      <i
+        class="pi pi-user pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-text-secondary"
+        aria-hidden="true"
+      ></i>
       <select
-        class="target-select"
+        class="h-11 w-full appearance-none rounded-lg border border-border bg-gray/10 px-10 pr-10 text-sm text-text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
         [disabled]="disabled()"
         [value]="selectedProfessorId() || ''"
         (change)="onProfessorChange($any($event.target).value)"
@@ -19,13 +22,19 @@
           </option>
         }
       </select>
-      <i class="bi bi-chevron-down down-icon" aria-hidden="true"></i>
+      <i
+        class="pi pi-chevron-down pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-text-secondary"
+        aria-hidden="true"
+      ></i>
     </div>
   } @else {
-    <div class="select-wrap">
-      <i class="bi bi-buildings search-icon" aria-hidden="true"></i>
+    <div class="relative max-w-xl">
+      <i
+        class="pi pi-building pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-text-secondary"
+        aria-hidden="true"
+      ></i>
       <select
-        class="target-select"
+        class="h-11 w-full appearance-none rounded-lg border border-border bg-sidebar-bg px-10 pr-10 text-sm text-text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
         [disabled]="disabled()"
         [value]="selectedDepartmentId() || ''"
         (change)="onDepartmentChange($any($event.target).value)"
@@ -35,7 +44,10 @@
           <option [value]="department.id">{{ department.name }} - {{ department.code }}</option>
         }
       </select>
-      <i class="bi bi-chevron-down down-icon" aria-hidden="true"></i>
+      <i
+        class="pi pi-chevron-down pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-text-secondary"
+        aria-hidden="true"
+      ></i>
     </div>
   }
 </section>

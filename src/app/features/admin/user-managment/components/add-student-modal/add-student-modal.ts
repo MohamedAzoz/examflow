@@ -6,7 +6,6 @@ import {
   DestroyRef,
   signal,
   Input,
-  OnInit,
   effect,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -20,7 +19,6 @@ import { DepartmentFacade } from '../../../services/department-facade';
   selector: 'app-add-student-modal',
   imports: [FormsModule],
   templateUrl: './add-student-modal.html',
-  styleUrls: ['../../../shard-model.css', './add-student-modal.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddStudentModal {

@@ -5,9 +5,9 @@
       type="text"
       pInputText
       class="w-full rounded-xl border-border! bg-sidebar-bg! text-sm"
-      placeholder="Search by course name or code (e.g., CS201)..."
-      (input)="onSearch($event)"
+      placeholder="Search departments..."
       autocomplete="off"
+      (input)="onSearch($event)"
     />
   </p-iconfield>
 
@@ -15,7 +15,7 @@
     type="button"
     pButton
     icon="pi pi-plus"
-    label="Add New Course"
+    label="Add Department"
     class="ms-auto p-button-sm rounded-xl border-primary! bg-primary! text-white! hover:bg-primary-hover!"
     (click)="onAdd()"
   ></button>

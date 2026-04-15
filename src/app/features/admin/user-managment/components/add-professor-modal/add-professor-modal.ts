@@ -25,7 +25,6 @@ export interface IProfessorRequest {
   selector: 'app-add-professor-modal',
   imports: [FormsModule],
   templateUrl: './add-professor-modal.html',
-  styleUrls: ['../../../shard-model.css', './add-professor-modal.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddProfessorModalComponent {

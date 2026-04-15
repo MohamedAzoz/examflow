@@ -8,7 +8,6 @@ import {
   DestroyRef,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { NgClass } from '@angular/common';
 import { IStudentSearch, IStudentResponse, Student } from '../../../../../data/services/student';
 import {
   getInitials,
@@ -17,8 +16,11 @@ import {
 } from '../../../../../shared/utils/avatar.util';
 import { FilterConfig, FilterModal, FilterResult } from '../filter-modal/filter-modal';
 import { DepartmentFacade } from '../../../services/department-facade';
-import { CutPipe } from '../../../../../shared/pipes/cut-pipe';
 import { AddStudentModal } from '../add-student-modal/add-student-modal';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 
 interface StudentRow {
   id: string;
@@ -35,9 +37,15 @@ interface StudentRow {
 
 @Component({
   selector: 'app-students-table',
-  imports: [NgClass, FilterModal, AddStudentModal, CutPipe],
+  imports: [
+    FilterModal,
+    AddStudentModal,
+    ButtonModule,
+    InputTextModule,
+    IconFieldModule,
+    InputIconModule,
+  ],
   templateUrl: './students-table.html',
-  styleUrls: ['../../../shard-style.css', './students-table.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StudentsTable implements OnInit {
@@ -51,7 +59,6 @@ export class StudentsTable implements OnInit {
   protected readonly currentPage = signal(1);
   protected readonly totalCount = signal(0);
   protected readonly pageSize = 5;
-  protected readonly index = signal(0);
   protected readonly loading = signal(false);
   protected readonly showAddModal = signal(false);
   protected readonly showFilter = signal(false);
@@ -178,8 +185,25 @@ export class StudentsTable implements OnInit {
     console.log('Delete student:', student.id);
   }
 
+  protected trackByStudentId(_: number, student: StudentRow): string {
+    return student.id;
+  }
+
   protected getLevelClass(level: number): string {
-    return `badge-level-${level}`;
+    const base = 'inline-flex rounded-full px-2 py-0.5 text-xs font-semibold';
+
+    switch (level) {
+      case 1:
+        return `${base} bg-violet-100 text-violet-700`;
+      case 2:
+        return `${base} bg-emerald-100 text-emerald-700`;
+      case 3:
+        return `${base} bg-sky-100 text-sky-700`;
+      case 4:
+        return `${base} bg-pink-100 text-pink-700`;
+      default:
+        return `${base} bg-slate-100 text-slate-700`;
+    }
   }
 
   private loadStudents(pageIndex: number = 1): void {
@@ -199,17 +223,15 @@ export class StudentsTable implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (res: IStudentResponse) => {
-          // Adapt response — adjust based on actual API shape
           const items = res.data;
           const total: number = res.totalSize;
           this.students.set(
-            items.map((s) => {
-              this.index.set(this.index() + 1);
+            items.map((s, index) => {
               return {
                 id: s.id,
                 initials: getInitials(s.fullName),
-                avatarColor: getAvatarColor(this.index()),
-                avatarText: getAvatarText(this.index()),
+                avatarColor: getAvatarColor(index),
+                avatarText: getAvatarText(index),
                 fullName: s.fullName,
                 nationalId: s.nationalId,
                 univCode: s.universityCode,

@@ -1,48 +1,61 @@
-<section class="assign-page">
-  
-  <app-assign-mode-tabs [mode]="mode()" (modeChanged)="onModeChanged($event)" />
+<section class="space-y-4 flex flex-col gap-1.5 w-[96%] mx-auto mb-3 mt-3 md:mt-5 lg:mt-8">
+  <!-- <main class="space-y-4 overflow-hidden rounded-2xl border border-border bg-card-bg p-4 shadow-sm"> -->
+    <app-assign-mode-tabs [mode]="mode()" (modeChanged)="onModeChanged($event)" />
 
-  <app-assignment-target-selector
-    [mode]="mode()"
-    [professors]="professors()"
-    [departments]="departments()"
-    [selectedProfessorId]="selectedProfessorId()"
-    [selectedDepartmentId]="selectedDepartmentId()"
-    [disabled]="isBusy()"
-    (professorChanged)="onProfessorChanged($event)"
-    (departmentChanged)="onDepartmentChanged($event)"
-  /> 
+    <app-assignment-target-selector
+      [mode]="mode()"
+      [professors]="professors()"
+      [departments]="departments()"
+      [selectedProfessorId]="selectedProfessorId()"
+      [selectedDepartmentId]="selectedDepartmentId()"
+      [disabled]="isBusy()"
+      (professorChanged)="onProfessorChanged($event)"
+      (departmentChanged)="onDepartmentChanged($event)"
+    />
 
-  <app-course-transfer-board
-    [availableCourses]="availableCourses()"
-    [assignedCourses]="assignedCourses()"
-    [availableSearch]="availableSearch()"
-    [assignedSearch]="assignedSearch()"
-    [disabled]="!hasTargetSelected() || isBusy()"
-    (availableSearchChanged)="availableSearch.set($event)"
-    (assignedSearchChanged)="assignedSearch.set($event)"
-    (assignOne)="onAssignCourse($event)"
-    (unassignOne)="onUnassignCourse($event)"
-    (assignAll)="onAssignAll()"
-    (unassignAll)="onUnassignAll()"
-  />
+    <app-course-transfer-board
+      [availableCourses]="availableCourses()"
+      [assignedCourses]="assignedCourses()"
+      [availableSearch]="availableSearch()"
+      [assignedSearch]="assignedSearch()"
+      [disabled]="!hasTargetSelected() || isBusy()"
+      (availableSearchChanged)="availableSearch.set($event)"
+      (assignedSearchChanged)="assignedSearch.set($event)"
+      (assignOne)="onAssignCourse($event)"
+      (unassignOne)="onUnassignCourse($event)"
+      (assignAll)="onAssignAll()"
+      (unassignAll)="onUnassignAll()"
+    />
+  <!-- </main> -->
 
   <!-- @if (feedbackMessage()) {
     <p class="feedback" [class.error]="feedbackType() === 'error'">{{ feedbackMessage() }}</p>
   } -->
 
-  <div class="footer-actions">
-    <button type="button" class="btn-cancel" [disabled]="isBusy()" (click)="onCancel()">Cancel</button>
+  <div class="flex flex-col justify-end gap-2 border-t border-gray pt-4 sm:flex-row">
     <button
       type="button"
-      class="btn-save"
+      class="rounded-lg border btn border-border bg-card-bg px-4 py-2 text-sm font-semibold text-text-secondary transition hover:border-gray-300 hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-50"
+      [disabled]="isBusy()"
+      (click)="onCancel()"
+    >
+      Cancel
+    </button>
+
+    <button
+      type="button"
+      class="rounded-lg btn bg-primary px-5 py-2 text-sm font-semibold text-card-bg transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
       [disabled]="!hasTargetSelected() || isBusy()"
       (click)="saveAssignments()"
     >
       {{
         mode() === 'professor'
-          ? (submitting() ? 'Saving...' : 'Save Professor Assignments')
-          : (submitting() ? 'Saving...' : 'Save Department Assignments')
+          ? submitting()
+            ? 'Saving...'
+            : 'Save Professor Assignments'
+          : submitting()
+            ? 'Saving...'
+            : 'Save Department Assignments'
       }}
     </button>
   </div>

@@ -42,6 +42,7 @@ export class DepartmentFacade {
   });
 
   public departments = signal<IDepartmentById[]>([]);
+  public readonly selectedDepartment = signal<IDepartmentById | null>(null);
   public departmentById = signal<IDepartmentById | null>(null);
   public assignedCourses = signal<IAssignCourses['assignedCourses']>([]);
   public loading = signal<boolean>(false);

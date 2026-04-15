@@ -1,65 +1,113 @@
-<div class="modal-backdrop" (click)="onClose()">
-  <div class="modal-box" (click)="$event.stopPropagation()">
-    <!-- Header -->
-    <div class="modal-header">
-      <h2 class="modal-title">{{ isEditMode ? 'Edit Semester' : 'Add New Semester' }}</h2>
-      <button type="button" class="modal-close-btn" (click)="onClose()">
-        <i class="bi bi-x-lg"></i>
+<div
+  class="fixed inset-0 z-1000 flex items-end justify-center bg-black/40 p-0 sm:items-center sm:p-4"
+  (click)="onClose()"
+>
+  <div
+    class="w-full max-h-[95vh] overflow-y-auto rounded-t-2xl bg-white shadow-2xl sm:max-h-[90vh] sm:max-w-2xl sm:rounded-2xl"
+    (click)="$event.stopPropagation()"
+    role="dialog"
+    aria-modal="true"
+  >
+    <div class="flex items-center justify-between border-b border-border px-4 py-4 sm:px-6">
+      <h2 class="text-lg font-bold text-text-primary">
+        {{ isEditMode ? 'Edit Semester' : 'Add New Semester' }}
+      </h2>
+      <button
+        type="button"
+        class="inline-flex h-8 w-8 items-center justify-center rounded-md text-text-secondary transition hover:bg-primary-light hover:text-primary"
+        (click)="onClose()"
+        aria-label="Close modal"
+      >
+        <i class="pi pi-times"></i>
       </button>
     </div>
 
-    <!-- Body -->
     <form [formGroup]="semesterForm" (ngSubmit)="onSubmit()">
-      <div class="modal-body">
-        <p class="modal-subtitle">Configure academic period details.</p>
+      <div class="space-y-4 px-4 py-5 sm:px-6">
+        <p class="text-xs text-text-secondary">Configure academic period details.</p>
 
-        <!-- Semester Name -->
-        <div class="form-field">
-          <label for="name" class="field-label">Name</label>
+        <div>
+          <label for="name" class="mb-1 block text-xs font-semibold text-text-primary">Name</label>
           <input
             id="name"
             type="text"
             formControlName="name"
-            class="field-input"
+            class="w-full rounded-lg border bg-white px-3 py-2 text-sm text-text-primary outline-none transition placeholder:text-text-secondary focus:border-primary focus:ring-2 focus:ring-primary/15"
+            [class.border-border]="
+              !(semesterForm.get('name')?.invalid && semesterForm.get('name')?.touched)
+            "
+            [class.border-red-400]="
+              semesterForm.get('name')?.invalid && semesterForm.get('name')?.touched
+            "
             placeholder="e.g., Winter 2025"
           />
         </div>
 
-        <!-- Dates -->
-        <div class="form-row two-col">
-          <div class="form-field">
-            <label for="startDate" class="field-label">Start Date</label>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label for="startDate" class="mb-1 block text-xs font-semibold text-text-primary"
+              >Start Date</label
+            >
             <input
               id="startDate"
               type="date"
               formControlName="startDate"
-              class="field-input"
+              class="w-full rounded-lg border bg-white px-3 py-2 text-sm text-text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
+              [class.border-border]="
+                !(semesterForm.get('startDate')?.invalid && semesterForm.get('startDate')?.touched)
+              "
+              [class.border-red-400]="
+                semesterForm.get('startDate')?.invalid && semesterForm.get('startDate')?.touched
+              "
             />
           </div>
-          <div class="form-field">
-            <label for="endDate" class="field-label">End Date</label>
+
+          <div>
+            <label for="endDate" class="mb-1 block text-xs font-semibold text-text-primary"
+              >End Date</label
+            >
             <input
               id="endDate"
               type="date"
               formControlName="endDate"
-              class="field-input"
+              class="w-full rounded-lg border bg-white px-3 py-2 text-sm text-text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
+              [class.border-border]="
+                !(semesterForm.get('endDate')?.invalid && semesterForm.get('endDate')?.touched)
+              "
+              [class.border-red-400]="
+                semesterForm.get('endDate')?.invalid && semesterForm.get('endDate')?.touched
+              "
             />
           </div>
         </div>
 
-        <!-- Validation Warning -->
         @if (semesterForm.hasError('invalidRange')) {
-          <div class="info-alert">
-            <i class="bi bi-exclamation-circle"></i>
-            <span>End Date must be after Start Date. Please ensure the selected time range covers a full academic term.</span>
+          <div
+            class="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-800"
+          >
+            <i class="pi pi-exclamation-circle mt-0.5"></i>
+            <span
+              >End Date must be after Start Date. Please ensure the selected time range covers a
+              full academic term.</span
+            >
           </div>
         }
       </div>
 
-      <!-- Footer -->
-      <div class="modal-footer">
-        <button type="button" class="btn-cancel" (click)="onClose()">Cancel</button>
-        <button type="submit" class="btn-create" [disabled]="semesterForm.invalid">
+      <div class="flex items-center justify-end gap-2 border-t border-border px-4 py-4 sm:px-6">
+        <button
+          type="button"
+          class="rounded-lg border border-border bg-white px-4 py-2 text-sm font-semibold text-text-secondary transition hover:border-gray-300 hover:text-text-primary"
+          (click)="onClose()"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="submit"
+          class="rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
+          [disabled]="semesterForm.invalid"
+        >
           {{ isEditMode ? 'Save Changes' : 'Create Semester' }}
         </button>
       </div>

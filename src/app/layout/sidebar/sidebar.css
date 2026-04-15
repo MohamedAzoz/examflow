@@ -2,30 +2,6 @@
   display: block;
   flex: 0 0 auto;
 }
-/* .sidebar {
- overflow-y: auto;
-  overflow-x: hidden;
-  transition: transform var(--speed) var(--ease);
-  will-change: transform;
-  transform: translateX(0);
-}
-.sidebar.is-toggled {
-  transform: translateX(-100%);
-}
-
-.sidebar.force-hidden {
-  display: none !important;
-}
-
-.sidebar::-webkit-scrollbar {
-  width: 4px;
-}
-
-.sidebar::-webkit-scrollbar-thumb {
-  background: var(--border-color);
-  border-radius: 4px;
-} */
-/* Ensure active item styles are high priority */
 .sidebar .active-item {
   background-color: #13626c !important;
   color: white !important;
@@ -39,7 +15,6 @@
   font-size: 1.6rem;
   font-weight: bold;
 }
-
 @media (max-width: 768px) {
   .icon {
     font-size: 2rem;

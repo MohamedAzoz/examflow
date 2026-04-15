@@ -1,5 +1,4 @@
 import { Component, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
-import { NgClass } from '@angular/common';
 import { CourseFacade } from '../../../services/course-facade';
 import { ICoueseResponse } from '../../../../../data/models/course/icouese-response';
 import {
@@ -7,13 +6,12 @@ import {
   getAvatarColor,
   getAvatarText,
 } from '../../../../../shared/utils/avatar.util';
-import { CutPipe } from '../../../../../shared/pipes/cut-pipe';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-course-table',
-  imports: [NgClass, CutPipe],
+  imports: [ButtonModule],
   templateUrl: './course-table.html',
-  styleUrls: ['../../../shard-style.css', './course-table.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CourseTable {
@@ -45,6 +43,10 @@ export class CourseTable {
   protected readonly showingTo = computed(() =>
     Math.min(this.currentPage() * this.pageSize, this.totalCount()),
   );
+
+  protected trackByCourseId(_: number, course: ICoueseResponse): number {
+    return course.id;
+  }
 
   protected prevPage(): void {
     if (this.currentPage() > 1) {
@@ -81,6 +83,19 @@ export class CourseTable {
   }
 
   protected getLevelClass(level: number): string {
-    return `badge-level-${level}`;
+    const base = 'inline-flex rounded-full px-2 py-0.5 text-xs font-semibold';
+
+    switch (level) {
+      case 1:
+        return `${base} bg-indigo-100 text-indigo-700`;
+      case 2:
+        return `${base} bg-orange-100 text-orange-700`;
+      case 3:
+        return `${base} bg-purple-100 text-purple-700`;
+      case 4:
+        return `${base} bg-teal-100 text-teal-700`;
+      default:
+        return `${base} bg-slate-100 text-slate-700`;
+    }
   }
 }

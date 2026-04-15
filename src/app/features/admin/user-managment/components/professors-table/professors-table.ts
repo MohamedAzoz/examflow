@@ -17,8 +17,11 @@ import {
   getJobColor,
   getJobText,
 } from '../../../../../shared/utils/avatar.util';
-import { CutPipe } from '../../../../../shared/pipes/cut-pipe';
 import { AddProfessorModalComponent } from '../add-professor-modal/add-professor-modal';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 /*
  "id": "32aed284-65e2-43ca-d542-08de77577cb6",
       "nationalId": "12345678910112",
@@ -45,9 +48,15 @@ interface ProfessorRow {
 
 @Component({
   selector: 'app-professors-table',
-  imports: [FilterModal, AddProfessorModalComponent, CutPipe],
+  imports: [
+    FilterModal,
+    AddProfessorModalComponent,
+    ButtonModule,
+    InputTextModule,
+    IconFieldModule,
+    InputIconModule,
+  ],
   templateUrl: './professors-table.html',
-  styleUrls: ['../../../shard-style.css', './professors-table.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfessorsTable implements OnInit {
@@ -59,7 +68,6 @@ export class ProfessorsTable implements OnInit {
   protected readonly currentPage = signal(1);
   protected readonly totalCount = signal(0);
   protected readonly pageSize = 5;
-  protected readonly index = signal(0);
   protected readonly loading = signal(false);
   protected readonly showAddModal = signal(false);
   protected readonly showFilter = signal(false);
@@ -168,6 +176,10 @@ export class ProfessorsTable implements OnInit {
     console.log('Delete professor:', prof.id);
   }
 
+  protected trackByProfessorId(_: number, professor: ProfessorRow): string {
+    return professor.id;
+  }
+
   private loadProfessors(): void {
     this.loading.set(true);
 
@@ -180,25 +192,20 @@ export class ProfessorsTable implements OnInit {
           const total: number = res.totalSize;
 
           this.professors.set(
-            items.map(
-              (p: any) => (
-                this.index.set(this.index() + 1),
-                {
-                  id: p.id,
-                  initials: getInitials(p.fullName),
-                  avatarColor: getAvatarColor(this.index()),
-                  avatarText: getAvatarText(this.index()),
-                  fullName: p.fullName,
-                  nationalId: p.nationalId ?? '',
-                  email: p.email ?? '',
-                  phone: p.phoneNumber ?? '',
-                  academicRank: p.academicRank ?? '',
-                  academicRankColor: getJobColor(this.index()),
-                  academicRankText: getJobText(this.index()),
-                  universityCode: p.universityCode ?? '',
-                }
-              ),
-            ),
+            items.map((p: any, index: number) => ({
+              id: p.id,
+              initials: getInitials(p.fullName),
+              avatarColor: getAvatarColor(index),
+              avatarText: getAvatarText(index),
+              fullName: p.fullName,
+              nationalId: p.nationalId ?? '',
+              email: p.email ?? '',
+              phone: p.phoneNumber ?? '',
+              academicRank: p.academicRank ?? '',
+              academicRankColor: getJobColor(index),
+              academicRankText: getJobText(index),
+              universityCode: p.universityCode ?? '',
+            })),
           );
           this.totalCount.set(total);
           this.loading.set(false);

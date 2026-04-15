@@ -18,7 +18,10 @@ import {
   getJobText,
 } from '../../../../../shared/utils/avatar.util';
 import { AddAdminModalComponent } from '../add-admin-modal/add-admin-modal';
-import { CutPipe } from '../../../../../shared/pipes/cut-pipe';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 
 interface AdminRow {
   id: string;
@@ -37,9 +40,15 @@ interface AdminRow {
 
 @Component({
   selector: 'app-admins-table',
-  imports: [FilterModal, AddAdminModalComponent, CutPipe],
+  imports: [
+    FilterModal,
+    AddAdminModalComponent,
+    ButtonModule,
+    InputTextModule,
+    IconFieldModule,
+    InputIconModule,
+  ],
   templateUrl: './admins-table.html',
-  styleUrls: ['../../../shard-style.css', './admins-table.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminsTableComponent implements OnInit {
@@ -51,7 +60,6 @@ export class AdminsTableComponent implements OnInit {
   protected readonly currentPage = signal(1);
   protected readonly totalCount = signal(0);
   protected readonly pageSize = 5;
-  protected readonly index = signal(0);
   protected readonly loading = signal(false);
   protected readonly showAddModal = signal(false);
   protected readonly showFilter = signal(false);
@@ -160,6 +168,10 @@ export class AdminsTableComponent implements OnInit {
     console.log('Delete admin:', admin.id);
   }
 
+  protected trackByAdminId(_: number, admin: AdminRow): string {
+    return admin.id;
+  }
+
   private loadAdmins(): void {
     this.loading.set(true);
 
@@ -179,25 +191,20 @@ export class AdminsTableComponent implements OnInit {
           const total: number = res.totalSize;
 
           this.admins.set(
-            items.map(
-              (a: any) => (
-                this.index.set(this.index() + 1),
-                {
-                  id: a.id,
-                  initials: getInitials(a.fullName),
-                  avatarColor: getAvatarColor(this.index()),
-                  avatarText: getAvatarText(this.index()),
-                  fullName: a.fullName,
-                  nationalId: a.nationalId ?? '',
-                  univCode: a.universityCode ?? '',
-                  jobTitle: a.jobTitle ?? '',
-                  jobColor: getJobColor(this.index()),
-                  jobText: getJobText(this.index()),
-                  email: a.email ?? '',
-                  phone: a.phoneNumber ?? '',
-                }
-              ),
-            ),
+            items.map((a: any, index: number) => ({
+              id: a.id,
+              initials: getInitials(a.fullName),
+              avatarColor: getAvatarColor(index),
+              avatarText: getAvatarText(index),
+              fullName: a.fullName,
+              nationalId: a.nationalId ?? '',
+              univCode: a.universityCode ?? '',
+              jobTitle: a.jobTitle ?? '',
+              jobColor: getJobColor(index),
+              jobText: getJobText(index),
+              email: a.email ?? '',
+              phone: a.phoneNumber ?? '',
+            })),
           );
           this.totalCount.set(total);
           this.loading.set(false);

@@ -1,12 +1,4 @@
-import {
-  Component,
-  OnInit,
-  inject,
-  Output,
-  EventEmitter,
-  ChangeDetectionStrategy,
-  output,
-} from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy, output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SemesterFacade } from '../../../services/semester-facade';
 import { ISemesterRequest } from '../../../../../data/models/semester/isemester-request';
@@ -16,7 +8,6 @@ import { ISemesterResponse } from '../../../../../data/models/semester/isemester
   selector: 'app-semester-modal',
   imports: [ReactiveFormsModule],
   templateUrl: './semester-modal.html',
-  styleUrls: ['../../../shard-model.css', './semester-modal.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SemesterModal implements OnInit {

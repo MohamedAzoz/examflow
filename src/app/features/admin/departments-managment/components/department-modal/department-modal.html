@@ -1,0 +1,117 @@
+<div
+  class="fixed inset-0 z-1000 flex items-end justify-center bg-black/40 p-0 sm:items-center sm:p-4"
+  (click)="onClose()"
+>
+  <div
+    class="w-full max-h-[95vh] overflow-y-auto rounded-t-2xl bg-white shadow-2xl sm:max-h-[90vh] sm:max-w-2xl sm:rounded-2xl"
+    (click)="$event.stopPropagation()"
+    role="dialog"
+    aria-modal="true"
+  >
+    <div class="flex items-center justify-between border-b border-border px-4 py-4 sm:px-6">
+      <h2 class="text-lg font-bold text-text-primary">
+        {{ isEditing() ? 'Edit Department' : 'New Department' }}
+      </h2>
+      <button
+        type="button"
+        class="inline-flex h-8 w-8 items-center justify-center rounded-md text-text-secondary transition hover:bg-primary-light hover:text-primary"
+        (click)="onClose()"
+        aria-label="Close modal"
+      >
+        <i class="pi pi-times"></i>
+      </button>
+    </div>
+
+    <form
+      class="space-y-4 px-4 py-5 sm:px-6"
+      [formGroup]="departmentForm"
+      (ngSubmit)="saveDepartment()"
+      novalidate
+    >
+      @if (modalError()) {
+        <div
+          class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+          role="alert"
+        >
+          <p class="font-semibold">Error</p>
+          <p>{{ modalError() }}</p>
+        </div>
+      }
+
+      <div>
+        <label for="department-name" class="mb-1 block text-xs font-semibold text-text-primary">
+          Department Name
+        </label>
+        <input
+          id="department-name"
+          type="text"
+          formControlName="name"
+          class="w-full rounded-lg border bg-white px-3 py-2 text-sm text-text-primary outline-none transition placeholder:text-text-secondary focus:border-primary focus:ring-2 focus:ring-primary/15"
+          [class.border-border]="
+            !(departmentForm.controls.name.invalid && departmentForm.controls.name.touched)
+          "
+          [class.border-red-400]="
+            departmentForm.controls.name.invalid && departmentForm.controls.name.touched
+          "
+          placeholder="e.g. Computer Science"
+          autocomplete="off"
+        />
+        @if (hasControlError('name', 'required')) {
+          <small class="mt-1 block text-xs text-red-500">Department name is required.</small>
+        }
+      </div>
+
+      <div>
+        <label for="department-code" class="mb-1 block text-xs font-semibold text-text-primary">
+          Department Code
+        </label>
+        <input
+          id="department-code"
+          type="text"
+          formControlName="code"
+          class="w-full rounded-lg border bg-white px-3 py-2 text-sm text-text-primary outline-none transition placeholder:text-text-secondary focus:border-primary focus:ring-2 focus:ring-primary/15"
+          [class.border-border]="
+            !(departmentForm.controls.code.invalid && departmentForm.controls.code.touched)
+          "
+          [class.border-red-400]="
+            departmentForm.controls.code.invalid && departmentForm.controls.code.touched
+          "
+          placeholder="CS"
+          autocomplete="off"
+        />
+        @if (hasControlError('code', 'required')) {
+          <small class="mt-1 block text-xs text-red-500">Department code is required.</small>
+        }
+        @if (hasControlError('code', 'pattern')) {
+          <small class="mt-1 block text-xs text-red-500"
+            >Only letters and numbers are allowed.</small
+          >
+        }
+        @if (hasControlError('code', 'duplicate')) {
+          <small class="mt-1 block text-xs text-red-500"
+            >This department code is already in use.</small
+          >
+        }
+      </div>
+    </form>
+
+    <div class="flex items-center justify-end gap-2 border-t border-border px-4 py-4 sm:px-6">
+      <button
+        type="button"
+        class="rounded-lg border border-border bg-white px-4 py-2 text-sm font-semibold text-text-secondary transition hover:border-gray-300 hover:text-text-primary"
+        (click)="onClose()"
+      >
+        Cancel
+      </button>
+
+      <button
+        type="button"
+        class="rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
+        [disabled]="departmentForm.invalid || submitting()"
+        (click)="saveDepartment()"
+      >
+        {{ submitting() ? 'Saving...' : 'Save Department' }}
+      </button>
+    </div>
+  </div>
+</div>

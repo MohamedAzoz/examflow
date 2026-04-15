@@ -6,9 +6,9 @@ import { AdminsTableComponent } from './components/admins-table/admins-table';
 
 @Component({
   selector: 'app-user-management',
+  standalone: true,
   imports: [StudentsTable, ProfessorsTable, AdminsTableComponent],
   templateUrl: './user-managment.html',
-  styleUrl: './user-managment.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserManagementComponent {

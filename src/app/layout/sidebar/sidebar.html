@@ -83,8 +83,8 @@
           <a
             [routerLink]="[url(item.route)]"
             (click)="onNavClick(item.route)"
-            class="group flex items-center gap-3 w-full px-3 rounded-lg no-underline transition-all duration-200 text-text-secondary font-semibold text-sm lg:text-base hover:bg-primary-light hover:text-primary"
-            [ngClass]="isStudent() ? 'py-3.5' : 'py-2.5'"
+            class="group flex items-center gap-3 w-full px-3 rounded-lg no-underline transition-all duration-200 text-text-secondary font-semibold hover:bg-primary-light hover:text-primary"
+            [ngClass]="isStudent() ? 'py-3.5 text-sm lg:text-base' : 'py-2 text-xs lg:text-sm'"
             routerLinkActive="bg-link text-white active-item shadow-md"
             [attr.aria-current]="activeRoute() === item.route ? 'page' : null"
           >

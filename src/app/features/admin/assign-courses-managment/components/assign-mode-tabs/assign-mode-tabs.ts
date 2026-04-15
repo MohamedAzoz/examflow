@@ -4,8 +4,8 @@ export type AssignMode = 'professor' | 'department';
 
 @Component({
   selector: 'app-assign-mode-tabs',
+  standalone: true,
   templateUrl: './assign-mode-tabs.html',
-  styleUrl: './assign-mode-tabs.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AssignModeTabsComponent {

@@ -1,10 +1,13 @@
 import { Component, ChangeDetectionStrategy, output } from '@angular/core';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 
 @Component({
   selector: 'app-semester-filter',
-  imports: [],
+  imports: [ButtonModule, InputTextModule, IconFieldModule, InputIconModule],
   templateUrl: './semester-filter.html',
-  styleUrls: ['../../../shard-style.css', './semester-filter.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SemesterFilter {

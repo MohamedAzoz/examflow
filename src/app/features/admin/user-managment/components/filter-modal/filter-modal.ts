@@ -1,15 +1,5 @@
-import {
-  Component,
-  input,
-  output,
-  signal,
-  ChangeDetectionStrategy,
-  inject,
-  effect,
-} from '@angular/core';
-import { NgClass } from '@angular/common';
+import { Component, input, output, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { DepartmentFacade } from '../../../services/department-facade';
 
 export interface SortOption {
   label: string;
@@ -38,13 +28,11 @@ export interface FilterResult {
 
 @Component({
   selector: 'app-filter-modal',
-  imports: [NgClass, FormsModule],
+  imports: [FormsModule],
   templateUrl: './filter-modal.html',
-  styleUrl: './filter-modal.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FilterModal {
-  // public readonly departmentService = inject(DepartmentFacade);
   readonly config = input.required<FilterConfig>();
 
   readonly closed = output<void>();

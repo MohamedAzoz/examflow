@@ -1,137 +1,199 @@
-<div class="table-card">
-  <!-- Toolbar -->
-  <div class="toolbar">
-    <div class="search-wrap">
-      <i class="bi bi-search search-icon"></i>
+<section class="overflow-hidden rounded-2xl border border-border bg-card-bg shadow-sm">
+  <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
+    <p-iconfield class="w-full max-w-sm">
+      <p-inputicon class="pi pi-search text-sm text-text-secondary" />
       <input
         type="text"
-        class="search-input"
+        pInputText
+        class="w-full rounded-xl border-border! bg-sidebar-bg! text-sm"
         placeholder="Search admins..."
         [value]="searchQuery()"
         (input)="onSearch($any($event.target).value)"
         autocomplete="off"
       />
-    </div>
+    </p-iconfield>
 
-    <div class="toolbar-actions">
-      <button type="button" class="btn-action btn-filter" (click)="toggleFilter()">
-        <i class="bi bi-filter"></i>
-        <span>Filter</span>
-      </button>
-      <button type="button" class="btn-action btn-excel" (click)="onUploadExcel()">
-        <img src="Vector.svg" alt="" />
-        <span>Upload Excel</span>
-      </button>
-      <button type="button" class="btn-action btn-add" (click)="showAddModal.set(true)">
-        <i class="bi bi-plus-lg"></i>
-        <span>Add Admin</span>
-      </button>
+    <div class="ms-auto flex items-center gap-2">
+      <button
+        type="button"
+        pButton
+        icon="pi pi-filter"
+        label="Filter"
+        class="p-button-sm p-button-outlined rounded-xl border-border! text-text-dark!"
+        (click)="toggleFilter()"
+      ></button>
+
+      <button
+        type="button"
+        pButton
+        icon="pi pi-file-excel"
+        label="Upload Excel"
+        class="p-button-sm p-button-outlined rounded-xl border-primary! text-primary! hover:bg-primary-light!"
+        (click)="onUploadExcel()"
+      ></button>
+
+      <button
+        type="button"
+        pButton
+        icon="pi pi-plus"
+        label="Add Admin"
+        class="p-button-sm rounded-xl border-primary! bg-primary! text-white! hover:bg-primary-hover!"
+        (click)="showAddModal.set(true)"
+      ></button>
     </div>
   </div>
 
   @if (loading()) {
-    <div class="loading-bar"></div>
+    <div class="h-0.5 w-full animate-pulse bg-primary/70"></div>
   }
 
-  <div class="table-responsive">
-    <table class="data-table" aria-label="Admins table">
-      <thead>
-        <tr>
-          <th class="head-text">Full Name</th>
-          <th class="head-text">National ID</th>
-          <th class="head-text">Univ. Code</th>
-          <th class="head-text">Job Title</th>
-          <th class="head-text">Email</th>
-          <th class="head-text">Phone</th>
-          <th class="actions-col"></th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (admin of admins(); track admin.id) {
-          <tr class="data-row">
-            <td>
-              <div class="name-cell">
-                <div class="avatar" [style.background]="admin.avatarColor">
-                  <span class="avatar-initials" [style.color]="admin.avatarText">{{
-                    admin.initials
-                  }}</span>
+  @if (admins().length > 0) {
+    <div class="overflow-x-auto">
+      <table class="min-w-full border-collapse" aria-label="Admins table">
+        <thead class="bg-sidebar-bg">
+          <tr class="border-b border-border">
+            <th class="px-4 py-3 text-left text-xs font-semibold tracking-wide text-text-secondary">
+              Full Name
+            </th>
+            <th class="px-4 py-3 text-left text-xs font-semibold tracking-wide text-text-secondary">
+              National ID
+            </th>
+            <th class="px-4 py-3 text-left text-xs font-semibold tracking-wide text-text-secondary">
+              Univ. Code
+            </th>
+            <th class="px-4 py-3 text-left text-xs font-semibold tracking-wide text-text-secondary">
+              Job Title
+            </th>
+            <th class="px-4 py-3 text-left text-xs font-semibold tracking-wide text-text-secondary">
+              Email
+            </th>
+            <th class="px-4 py-3 text-left text-xs font-semibold tracking-wide text-text-secondary">
+              Phone
+            </th>
+            <th
+              class="px-4 py-3 text-right text-xs font-semibold tracking-wide text-text-secondary"
+            >
+              Actions
+            </th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (admin of admins(); track trackByAdminId($index, admin)) {
+            <tr class="border-b border-border text-sm transition-colors hover:bg-surface">
+              <td class="px-4 py-3">
+                <div class="flex min-w-44 items-center gap-3">
+                  <span
+                    class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold"
+                    [style.background]="admin.avatarColor"
+                    [style.color]="admin.avatarText"
+                  >
+                    {{ admin.initials }}
+                  </span>
+                  <span
+                    class="max-w-44 truncate font-semibold text-text-dark"
+                    title="{{ admin.fullName }}"
+                  >
+                    {{ admin.fullName }}
+                  </span>
                 </div>
-                <span class="cell-name" title="{{ admin.fullName }}">{{
-                  admin.fullName | cut: 15
-                }}</span>
-              </div>
-            </td>
-            <td class="mono-text" title="{{ admin.nationalId }}">
-              {{ admin.nationalId | cut: 7 }}
-            </td>
-            <td class="mono-text" title="{{ admin.univCode }}">{{ admin.univCode | cut: 3 }}</td>
-            <td>
-              <span
-                class="badge"
-                [style.background]="admin.jobColor"
-                [style.color]="admin.jobText"
-                title="{{ admin.jobTitle }}"
+              </td>
+
+              <td
+                class="px-4 py-3 font-mono text-xs text-text-secondary"
+                title="{{ admin.nationalId }}"
               >
-                {{ admin.jobTitle | cut: 7 }}
-              </span>
-            </td>
-            <td class="email-text" title="{{ admin.email }}">{{ admin.email | cut: 20 }}</td>
-            <td class="mono-text" title="{{ admin.phone }}">{{ admin.phone | cut: 8 }}</td>
-            <td class="actions-col">
-              <div class="row-actions">
-                <button
-                  type="button"
-                  class="action-btn edit-btn"
-                  (click)="editAdmin(admin)"
-                  title="Edit"
-                >
-                  <i class="bi bi-pencil"></i>
-                </button>
-                <button
-                  type="button"
-                  class="action-btn delete-btn"
-                  (click)="deleteAdmin(admin)"
-                  title="Delete"
-                >
-                  <i class="bi bi-trash3"></i>
-                </button>
-              </div>
-            </td>
-          </tr>
-        }
+                {{ admin.nationalId }}
+              </td>
 
-        @if (admins().length === 0 && !loading()) {
-          <tr>
-            <td colspan="7" class="empty-state">
-              <i class="bi bi-inbox"></i>
-              <p>No admins found</p>
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
-  </div>
+              <td
+                class="px-4 py-3 font-mono text-xs text-text-secondary"
+                title="{{ admin.univCode }}"
+              >
+                {{ admin.univCode }}
+              </td>
 
-  <div class="table-footer">
-    <p class="result-info">
-      Showing <strong>{{ showingFrom() }}</strong> to <strong>{{ showingTo() }}</strong> of
-      <strong>{{ totalCount() }}</strong> results
-    </p>
-    <div class="pagination-btns">
-      <button type="button" class="page-btn" [disabled]="currentPage() === 1" (click)="prevPage()">
-        <i class="bi bi-chevron-left"></i>
-      </button>
-      <button
-        type="button"
-        class="page-btn"
-        [disabled]="currentPage() >= totalPages()"
-        (click)="nextPage()"
-      >
-        <i class="bi bi-chevron-right"></i>
-      </button>
+              <td class="px-4 py-3">
+                <span
+                  class="inline-flex rounded-full px-2 py-0.5 text-xs font-semibold"
+                  [style.background]="admin.jobColor"
+                  [style.color]="admin.jobText"
+                  title="{{ admin.jobTitle }}"
+                >
+                  {{ admin.jobTitle }}
+                </span>
+              </td>
+
+              <td class="max-w-56 px-4 py-3 text-sm text-text-secondary" title="{{ admin.email }}">
+                <span class="block truncate">{{ admin.email }}</span>
+              </td>
+
+              <td class="px-4 py-3 text-sm text-text-secondary" title="{{ admin.phone }}">
+                {{ admin.phone }}
+              </td>
+
+              <td class="px-4 py-3">
+                <div class="flex items-center justify-end gap-1">
+                  <button
+                    type="button"
+                    pButton
+                    icon="pi pi-pencil"
+                    class="p-button-text p-button-sm rounded-lg text-text-secondary! hover:bg-primary-light! hover:text-primary!"
+                    (click)="editAdmin(admin)"
+                    aria-label="Edit admin"
+                  ></button>
+                  <button
+                    type="button"
+                    pButton
+                    icon="pi pi-trash"
+                    class="p-button-text p-button-sm rounded-lg text-text-secondary! hover:bg-red-50! hover:text-red-500!"
+                    (click)="deleteAdmin(admin)"
+                    aria-label="Delete admin"
+                  ></button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
     </div>
-  </div>
-</div>
+
+    <div class="flex flex-wrap items-center justify-between gap-3 border-t border-border px-4 py-3">
+      <p class="text-xs text-text-secondary md:text-sm">
+        Showing <strong>{{ showingFrom() }}</strong> to <strong>{{ showingTo() }}</strong> of
+        <strong>{{ totalCount() }}</strong> results
+      </p>
+
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          pButton
+          icon="pi pi-chevron-left"
+          class="p-button-sm p-button-outlined h-8 w-8 border-border! text-text-secondary!"
+          [disabled]="currentPage() === 1"
+          (click)="prevPage()"
+          aria-label="Previous page"
+        ></button>
+        <button
+          type="button"
+          pButton
+          icon="pi pi-chevron-right"
+          class="p-button-sm p-button-outlined h-8 w-8 border-border! text-text-secondary!"
+          [disabled]="currentPage() >= totalPages()"
+          (click)="nextPage()"
+          aria-label="Next page"
+        ></button>
+      </div>
+    </div>
+  } @else if (!loading()) {
+    <div
+      class="flex flex-col items-center justify-center gap-2 px-6 py-14 text-center text-text-secondary"
+    >
+      <i class="pi pi-inbox text-3xl opacity-60"></i>
+      <p class="text-sm font-medium">No admins found</p>
+    </div>
+  }
+</section>
 
 @if (showFilter()) {
   <app-filter-modal

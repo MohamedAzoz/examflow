@@ -16,7 +16,6 @@ import { SemesterModal } from './components/semester-modal/semester-modal';
   selector: 'app-semester-managment',
   imports: [SemesterBanner, SemesterFilter, SemesterTable, SemesterModal],
   templateUrl: './semester-managment.html',
-  styleUrl: './semester-managment.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SemesterManagment {
