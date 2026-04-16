@@ -10,7 +10,7 @@
         aria-hidden="true"
       ></i>
       <select
-        class="h-11 w-full appearance-none rounded-lg border border-border bg-gray/10 px-10 pr-10 text-sm text-text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
+        class="h-11 w-full appearance-none rounded-lg border border-border bg-sidebar-bg px-10 pr-10 text-sm text-text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
         [disabled]="disabled()"
         [value]="selectedProfessorId() || ''"
         (change)="onProfessorChange($any($event.target).value)"

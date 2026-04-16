@@ -1,7 +1,12 @@
 import { inject, Injectable } from '@angular/core';
 import Dexie, { Table } from 'dexie';
 import { EncryptionService } from '../services/encryption-service';
-import { PersistedAuthState, PersistedExamSessionState, ThemePreference } from './storage.models';
+import {
+  PersistedAuthState,
+  PersistedExamSessionState,
+  PersistedPasswordResetFlowState,
+  ThemePreference,
+} from './storage.models';
 
 interface EncryptedEntry {
   id: string;
@@ -14,6 +19,7 @@ interface EncryptedEntry {
 })
 export class AppDatabase extends Dexie {
   private readonly AUTH_STATE_KEY = 'auth:state';
+  private readonly PASSWORD_RESET_FLOW_KEY = 'auth:password-reset-flow';
   private readonly THEME_KEY = 'setting:theme';
   private readonly LEGACY_MIGRATION_KEY = 'setting:migration:local-storage:v1';
   private readonly EXAM_SESSION_PREFIX = 'exam-session:';
@@ -53,6 +59,24 @@ export class AppDatabase extends Dexie {
 
   async clearAuthState(): Promise<void> {
     await this.authStore.delete(this.AUTH_STATE_KEY);
+  }
+
+  async savePasswordResetFlowState(state: PersistedPasswordResetFlowState): Promise<void> {
+    await this.writeEncrypted(this.settingsStore, this.PASSWORD_RESET_FLOW_KEY, {
+      ...state,
+      updatedAt: Date.now(),
+    });
+  }
+
+  async getPasswordResetFlowState(): Promise<PersistedPasswordResetFlowState | null> {
+    return this.readEncrypted<PersistedPasswordResetFlowState>(
+      this.settingsStore,
+      this.PASSWORD_RESET_FLOW_KEY,
+    );
+  }
+
+  async clearPasswordResetFlowState(): Promise<void> {
+    await this.settingsStore.delete(this.PASSWORD_RESET_FLOW_KEY);
   }
 
   async saveThemePreference(theme: ThemePreference): Promise<void> {

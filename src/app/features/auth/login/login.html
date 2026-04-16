@@ -34,7 +34,9 @@
           class="w-10 h-auto mr-4 -translate-y-2"
           alt="Logo"
         />
-        <h2 class="text-xl font-semibold tracking-widest text-text-dark -translate-y-2">EXAMFLOW</h2>
+        <h2 class="text-xl font-semibold tracking-widest text-text-dark -translate-y-2">
+          EXAMFLOW
+        </h2>
       </div>
 
       <!-- Welcome Section -->
@@ -106,7 +108,9 @@
 
         <!-- Forgot Password Link -->
         <div class="text-left">
-          <a href="#" class="text-[#3d8b9e] text-sm hover:underline font-medium"
+          <a
+            [routerLink]="['/', routes.FORGET_PASSWORD.path]"
+            class="text-[#3d8b9e] text-sm hover:underline font-medium"
             >forgot password?</a
           >
         </div>

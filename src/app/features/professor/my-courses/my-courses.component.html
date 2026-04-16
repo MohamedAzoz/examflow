@@ -1,0 +1,69 @@
+<section class="max-w-350 mx-auto p-4 md:p-8 lg:p-12 min-h-full flex flex-col gap-8">
+  <header class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+    <div class="space-y-2">
+      <h1 class="text-3xl md:text-4xl font-black text-text-primary tracking-tight">My Courses</h1>
+      <p class="text-text-secondary text-base md:text-lg">
+        Manage your assigned courses and prepare question banks with confidence.
+      </p>
+    </div>
+
+    <div class="inline-flex items-center gap-2 rounded-full bg-primary-light px-4 py-2">
+      <span class="h-2.5 w-2.5 rounded-full bg-primary"></span>
+      <span class="text-xs md:text-sm font-bold uppercase tracking-[0.12em] text-primary"
+        >Assigned Courses</span
+      >
+    </div>
+  </header>
+
+  @if (isLoading()) {
+    <div class="flex flex-col items-center justify-center py-24 gap-4 text-center">
+      <i class="pi pi-spin pi-spinner text-4xl text-primary" aria-hidden="true"></i>
+      <p class="text-sm font-semibold uppercase tracking-widest text-text-secondary">
+        Loading doctor courses...
+      </p>
+    </div>
+  }
+
+  @if (errorMessage()) {
+    <div
+      class="mx-auto w-full max-w-xl rounded-3xl border border-red-200 bg-red-50/70 px-6 py-7 text-center"
+    >
+      <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-100">
+        <i class="pi pi-exclamation-circle text-2xl text-red-600" aria-hidden="true"></i>
+      </div>
+      <p class="mb-5 text-sm md:text-base text-red-700">{{ errorMessage() }}</p>
+      <button
+        type="button"
+        pButton
+        label="Retry"
+        icon="pi pi-refresh"
+        class="rounded-xl! p-button-sm"
+        (click)="retryLoad()"
+      ></button>
+    </div>
+  }
+
+  @if (!isLoading() && !errorMessage() && assignedCourses().length > 0) {
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      @for (course of assignedCourses(); track course.courseId) {
+        <app-course-card [course]="course" class="h-full"></app-course-card>
+      }
+    </div>
+  }
+
+  @if (!isLoading() && !errorMessage() && assignedCourses().length === 0) {
+    <div
+      class="flex flex-col items-center justify-center py-24 text-center gap-5 bg-surface/60 rounded-3xl border border-dashed border-border/70"
+    >
+      <div class="h-20 w-20 rounded-full bg-surface-container flex items-center justify-center">
+        <i class="pi pi-book text-3xl text-text-secondary/55" aria-hidden="true"></i>
+      </div>
+      <div class="space-y-1.5">
+        <h2 class="text-lg font-bold text-text-primary">No courses assigned yet</h2>
+        <p class="text-sm text-text-secondary">
+          Your course list will appear here once assignments are published.
+        </p>
+      </div>
+    </div>
+  }
+</section>

@@ -4,6 +4,7 @@ import { IJWT } from '../../data/models/auth/ijwt';
 import { AppDatabase } from '../AppDbContext/app-database';
 import { PersistedAuthState } from '../AppDbContext/storage.models';
 import { Theme } from './theme';
+import { ROLES } from '../constants/ROLES';
 
 @Injectable({
   providedIn: 'root',
@@ -47,8 +48,9 @@ export class IdentityService {
 
   readonly dashboardPath = computed(() => {
     const role = this.userRole();
-    if (role === 'Admin') return '/main/admin';
-    if (role === 'Student') return '/main/student';
+    if (role === ROLES.Admin) return '/main/admin';
+    if (role === ROLES.Professor) return '/main/professor';
+    if (role === ROLES.Student) return '/main/student';
     return '/login';
   });
 

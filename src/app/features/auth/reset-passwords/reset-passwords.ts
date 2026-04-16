@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ComingSoon } from "../../../../shared/components/coming-soon/coming-soon";
+import { ComingSoon } from "../../../shared/components/coming-soon/coming-soon";
 
 @Component({
   selector: 'app-reset-passwords',

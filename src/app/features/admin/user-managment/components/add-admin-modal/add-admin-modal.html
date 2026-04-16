@@ -3,7 +3,7 @@
   (click)="closed.emit()"
 >
   <div
-    class="w-full max-h-[95vh] overflow-y-auto rounded-t-2xl bg-white shadow-2xl sm:max-h-[90vh] sm:max-w-2xl sm:rounded-2xl"
+    class="w-full max-h-[95vh] overflow-y-auto rounded-t-2xl bg-card-bg shadow-2xl sm:max-h-[90vh] sm:max-w-2xl sm:rounded-2xl"
     (click)="$event.stopPropagation()"
     role="dialog"
     aria-modal="true"
@@ -29,7 +29,7 @@
           <input
             id="adm-nid"
             type="text"
-            class="w-full rounded-lg border border-border bg-white px-3 py-2 text-sm text-text-primary outline-none transition placeholder:text-text-secondary focus:border-primary focus:ring-2 focus:ring-primary/15"
+            class="w-full rounded-lg border border-border bg-card-bg/50 px-3 py-2 text-sm text-text-primary outline-none transition placeholder:text-text-secondary focus:border-primary focus:ring-2 focus:ring-primary/15"
             [(ngModel)]="form.nationalId"
             name="nationalId"
             placeholder="Enter National ID"
@@ -44,7 +44,7 @@
           <input
             id="adm-univcode"
             type="text"
-            class="w-full rounded-lg border border-border bg-white px-3 py-2 text-sm text-text-primary outline-none transition placeholder:text-text-secondary focus:border-primary focus:ring-2 focus:ring-primary/15"
+            class="w-full rounded-lg border border-border bg-card-bg/50 px-3 py-2 text-sm text-text-primary outline-none transition placeholder:text-text-secondary focus:border-primary focus:ring-2 focus:ring-primary/15"
             [(ngModel)]="form.universityCode"
             name="universityCode"
             placeholder="e.g. U2023..."
@@ -61,7 +61,7 @@
         <input
           id="adm-fullname"
           type="text"
-          class="w-full rounded-lg border border-border bg-white px-3 py-2 text-sm text-text-primary outline-none transition placeholder:text-text-secondary focus:border-primary focus:ring-2 focus:ring-primary/15"
+          class="w-full rounded-lg border border-border bg-card-bg/50 px-3 py-2 text-sm text-text-primary outline-none transition placeholder:text-text-secondary focus:border-primary focus:ring-2 focus:ring-primary/15"
           [(ngModel)]="form.fullName"
           name="fullName"
           placeholder="First Last"
@@ -77,7 +77,7 @@
         <input
           id="adm-job"
           type="text"
-          class="w-full rounded-lg border border-border bg-white px-3 py-2 text-sm text-text-primary outline-none transition placeholder:text-text-secondary focus:border-primary focus:ring-2 focus:ring-primary/15"
+          class="w-full rounded-lg border border-border bg-card-bg/50 px-3 py-2 text-sm text-text-primary outline-none transition placeholder:text-text-secondary focus:border-primary focus:ring-2 focus:ring-primary/15"
           [(ngModel)]="form.jobTitle"
           name="jobTitle"
           required
@@ -94,7 +94,7 @@
           <input
             id="adm-email"
             type="email"
-            class="w-full rounded-lg border border-border bg-white px-3 py-2 text-sm text-text-primary outline-none transition placeholder:text-text-secondary focus:border-primary focus:ring-2 focus:ring-primary/15"
+            class="w-full rounded-lg border border-border bg-card-bg/50 px-3 py-2 text-sm text-text-primary outline-none transition placeholder:text-text-secondary focus:border-primary focus:ring-2 focus:ring-primary/15"
             [(ngModel)]="form.email"
             name="email"
             placeholder="admin@univ.edu"
@@ -109,7 +109,7 @@
           <input
             id="adm-phone"
             type="tel"
-            class="w-full rounded-lg border border-border bg-white px-3 py-2 text-sm text-text-primary outline-none transition placeholder:text-text-secondary focus:border-primary focus:ring-2 focus:ring-primary/15"
+            class="w-full rounded-lg border border-border bg-card-bg/50 px-3 py-2 text-sm text-text-primary outline-none transition placeholder:text-text-secondary focus:border-primary focus:ring-2 focus:ring-primary/15"
             [(ngModel)]="form.phoneNumber"
             name="phoneNumber"
             placeholder="+20 xxx xxx xxxx"
@@ -122,7 +122,7 @@
     <div class="flex items-center justify-end gap-2 border-t border-border px-4 py-4 sm:px-6">
       <button
         type="button"
-        class="rounded-lg border border-border bg-white px-4 py-2 text-sm font-semibold text-text-secondary transition hover:border-gray-300 hover:text-text-primary"
+        class="rounded-lg border border-border bg-card-bg/50 px-4 py-2 text-sm font-semibold text-text-secondary transition hover:border-gray-300 hover:text-text-primary"
         (click)="closed.emit()"
       >
         Cancel

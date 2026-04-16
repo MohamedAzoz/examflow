@@ -6,6 +6,7 @@ import { IupdateExam } from '../models/ProfessorExam/IupdateExam';
 import { IexamDetails } from '../models/ProfessorExam/IexamDetails';
 import { ExamSortingOptions } from '../enums/ExamSortingOptions';
 import { ProfessorExamStatus } from '../enums/ProfessorExamStatus';
+import { Iexamdetails } from '../models/ProfessorExam/Iexamdetails.1';
 
 @Injectable({
   providedIn: 'root',
@@ -53,26 +54,16 @@ PageIndex
 Pagesize
 */
 
-  getExamDetails(
-    courseId: number,
-    academicLevel: number,
-    departmentId: number,
-    sorting: ExamSortingOptions,
-    examStatus: ProfessorExamStatus,
-    semesterId: number,
-    searchTitle: string,
-    pageIndex: number,
-    pageSize: number,
-  ) {
-    var url = `${environment.apiUrl}/ProfessorExam/details?courseId=${courseId}
-    &academicLevel=${academicLevel}
-    &departmentId=${departmentId}
-    &sorting=${sorting}
-    &examStatus=${examStatus}
-    &semesterId=${semesterId}
-    &searchTitle=${searchTitle}
-    &pageIndex=${pageIndex}
-    &pageSize=${pageSize}`;
+  getExamDetails(details: Iexamdetails) {
+    var url = `${environment.apiUrl}/ProfessorExam/details?courseId=${details.courseId}
+    &academicLevel=${details.academicLevel}
+    &departmentId=${details.departmentId}
+    &sorting=${details.sorting}
+    &examStatus=${details.examStatus}
+    &semesterId=${details.semesterId}
+    &searchTitle=${details.searchTitle}
+    &pageIndex=${details.pageIndex}
+    &pageSize=${details.pageSize}`;
     return this.http.get<IexamDetails>(url);
   }
 

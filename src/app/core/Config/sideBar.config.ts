@@ -1,4 +1,4 @@
-import { ROUTESADMIN, ROUTESSTUDENT } from '../constants/const.route';
+import { ROUTESADMIN, ROUTESPROFESSOR, ROUTESSTUDENT } from '../constants/const.route';
 import { NavItem } from '../../layout/nav-item';
 
 export const ADMIN_NAV_ITEMS: readonly NavItem[] = [
@@ -51,3 +51,12 @@ export const STUDENT_NAV_ITEMS: readonly NavItem[] = [
   },
   { label: ROUTESSTUDENT.SETTINGS.title, icon: 'pi-cog', route: ROUTESSTUDENT.SETTINGS.path },
 ] as const;
+
+export const PROFESSOR_NAV_ITEMS: readonly NavItem[] = [
+  {
+    label: ROUTESPROFESSOR.COURSES.title,
+    icon: 'pi-book',
+    route: ROUTESPROFESSOR.COURSES.path,
+  },
+] as const;
+

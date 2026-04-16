@@ -11,11 +11,16 @@ import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { SidebarComponent } from '../layout/sidebar/sidebar';
 import { Toggle } from '../core/services/toggle';
 import { NavItem } from '../layout/nav-item';
-import { ADMIN_NAV_ITEMS, STUDENT_NAV_ITEMS } from '../core/Config/sideBar.config';
+import {
+  ADMIN_NAV_ITEMS,
+  PROFESSOR_NAV_ITEMS,
+  STUDENT_NAV_ITEMS,
+} from '../core/Config/sideBar.config';
 import { IdentityService } from '../core/services/identity-service';
 import { Theme } from '../core/services/theme';
 import { filter } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ROLES } from '../core/constants/ROLES';
 
 @Component({
   selector: 'app-main',
@@ -32,9 +37,15 @@ export class Main {
   private readonly destroyRef = inject(DestroyRef);
 
   /** Dynamically compute role from IdentityService */
-  protected readonly userRole = computed(
-    () => (this.identityService.userRole()?.toLowerCase() || 'student') as 'admin' | 'student',
-  );
+  protected readonly userRole = computed<'admin' | 'professor' | 'student'>(() => {
+    const role = this.identityService.userRole()?.toLowerCase();
+
+    if (role === 'admin' || role === 'professor' || role === 'student') {
+      return role;
+    }
+
+    return 'student';
+  });
 
   protected readonly activeRoute = signal('dashboard');
   protected readonly isMobile = signal(
@@ -42,23 +53,38 @@ export class Main {
   );
 
   /** Is the user a student? */
-  protected readonly isStudent = computed(() => this.userRole() === 'student');
+  protected readonly isStudent = computed(() => this.userRole() === ROLES.Student);
 
   /** Derived values from role */
-  protected readonly navItems = computed<readonly NavItem[]>(() =>
-    this.userRole() === 'admin' ? ADMIN_NAV_ITEMS : STUDENT_NAV_ITEMS,
-  );
+  protected readonly navItems = computed<readonly NavItem[]>(() => {
+    const role = this.userRole();
+
+    if (role === ROLES.Admin.toLowerCase()) {
+      return ADMIN_NAV_ITEMS;
+    }
+
+    if (role === ROLES.Professor.toLocaleLowerCase()) {
+      return PROFESSOR_NAV_ITEMS;
+    }
+    if (role === ROLES.Student.toLocaleLowerCase()) {
+      return STUDENT_NAV_ITEMS;
+    }
+    return [] as const;
+  });
 
   protected readonly userName = computed(() => {
     const fullName = this.identityService.userName() || 'User';
     return fullName;
   });
 
-  protected readonly userRoleLabel = computed(
-    () =>
-      this.identityService.userRole() ||
-      (this.userRole() === 'admin' ? 'System Administrator' : 'Student'),
-  );
+  protected readonly userRoleLabel = computed(() => {
+    const role = this.identityService.userRole();
+    return role === ROLES.Admin
+      ? ROLES.Admin
+      : role === ROLES.Professor
+        ? ROLES.Professor
+        : ROLES.Student;
+  });
 
   protected readonly pageTitle = computed(() => {
     const titles: Record<string, string> = {
@@ -79,11 +105,14 @@ export class Main {
       'past-results': 'My Results',
       settings: 'Settings',
       exam: 'Exam Session',
+
+      // Professor Features
+      'my-courses': 'My Courses',
     };
     return titles[this.activeRoute()] ?? 'Main Panel';
   });
 
-  protected readonly showNotifications = computed(() => this.userRole() === 'admin');
+  protected readonly showNotifications = computed(() => this.userRole() === ROLES.Admin);
 
   constructor() {
     this.syncActiveRouteWithUrl(this.router.url);
@@ -122,10 +151,17 @@ export class Main {
     const cleanUrl = url.split('?')[0];
     const segments = cleanUrl.split('/').filter(Boolean);
     const roleSegmentIndex = segments.findIndex(
-      (segment) => segment === 'admin' || segment === 'student',
+      (segment) => segment === 'admin' || segment === 'professor' || segment === 'student',
     );
-    const routeFromUrl = roleSegmentIndex >= 0 ? segments[roleSegmentIndex + 1] : 'dashboard';
 
-    this.activeRoute.set(routeFromUrl || 'dashboard');
+    const defaultRoute =
+      this.userRole() === 'admin'
+        ? 'dashboard'
+        : this.userRole() === 'professor'
+          ? 'my-courses'
+          : 'stdashboard';
+    const routeFromUrl = roleSegmentIndex >= 0 ? segments[roleSegmentIndex + 1] : defaultRoute;
+
+    this.activeRoute.set(routeFromUrl || defaultRoute);
   }
 }

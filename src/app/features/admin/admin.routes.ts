@@ -53,7 +53,7 @@ export const adminRoles: Routes = [
     path: ROUTESADMIN.RESET_PASSWORDS.path,
     title: ROUTESADMIN.RESET_PASSWORDS.title,
     loadComponent: () =>
-      import('../auth/pages/reset-passwords/reset-passwords').then((m) => m.ResetPasswords),
+      import('../auth/reset-passwords/reset-passwords').then((m) => m.ResetPasswords),
   },
   {
     path: ROUTESADMIN.SYSTEM_SETTINGS.path,

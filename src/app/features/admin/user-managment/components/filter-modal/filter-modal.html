@@ -3,7 +3,7 @@
   (click)="onBackdropClick()"
 >
   <div
-    class="w-full max-w-md overflow-hidden rounded-xl border border-border bg-white shadow-2xl"
+    class="w-full max-w-md overflow-hidden rounded-xl border border-border bg-card-bg shadow-2xl"
     (click)="$event.stopPropagation()"
     role="dialog"
     aria-modal="true"
@@ -25,7 +25,7 @@
         <label class="block text-xs font-semibold text-text-primary">Sort By</label>
         <div class="relative">
           <select
-            class="w-full appearance-none rounded-lg border border-border bg-white px-3 py-2 pr-9 text-sm text-text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
+            class="w-full appearance-none rounded-lg border border-border bg-card-bg/50 px-3 py-2 pr-9 text-sm text-text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
             [ngModel]="selectedSort()"
             (ngModelChange)="selectedSort.set($event)"
           >

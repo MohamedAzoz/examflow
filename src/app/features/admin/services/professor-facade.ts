@@ -52,7 +52,7 @@ export class ProfessorFacade {
       const id = this.assignedCoursesRequest();
       return id !== null
         ? this.professorService
-            .getAssignedCourses(id)
+            .getAssignedCoursesById(id)
             .pipe(tap((res) => this.assignedCourses.set(res.assignedCourses || [])))
         : of(null);
     },
@@ -106,7 +106,7 @@ export class ProfessorFacade {
   // rx
   getAssignedCourses(professorId: string) {
     this.assignedCoursesRequest.set(professorId);
-    return this.professorService.getAssignedCourses(professorId).pipe(
+    return this.professorService.getAssignedCoursesById(professorId).pipe(
       tap((res) => this.assignedCourses.set(res.assignedCourses || [])),
       catchError((err) => this.handleRequestError(err)),
       finalize(() => this.assignedCoursesResource.reload()),

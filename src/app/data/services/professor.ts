@@ -73,9 +73,12 @@ export class Professor {
 
   // GET
   // /api/Professor/assigned-courses
-  getAssignedCourses(id: string) {
-    return this.http.get<IAssignCourses>(`${environment.apiUrl}/Professor/assigned-courses`, {
-      params: { id },
-    });
+  getAssignedCourses() {
+    return this.http.get<IAssignCourses>(`${environment.apiUrl}/Professor/assigned-courses`);
+  }
+
+  // /api/Professor/{id}/assigned-courses
+  getAssignedCoursesById(id: string) {
+    return this.http.get<IAssignCourses>(`${environment.apiUrl}/Professor/${id}/assigned-courses`);
   }
 }

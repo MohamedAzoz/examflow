@@ -12,6 +12,12 @@ export interface PersistedAuthState {
 
 export type ThemePreference = 'dark' | 'light';
 
+export interface PersistedPasswordResetFlowState {
+  email: string;
+  resetToken: string;
+  updatedAt: number;
+}
+
 export interface PersistedExamSessionState {
   examId: number;
   examSnapshot: IstartExam;

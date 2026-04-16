@@ -17,7 +17,11 @@ export const routes: Routes = [
     path: ROUTES.LOGIN.path,
     title: ROUTES.LOGIN.title,
     canActivate: [guestGuard],
-    loadComponent: () => import('./features/auth/pages/login/login').then((m) => m.Login),
+    loadComponent: () => import('./features/auth/login/login').then((m) => m.Login),
+  },
+ {
+    path: 'auth',
+    loadChildren: () => import('./features/auth/auth.routes').then((m) => m.authRoutes),
   },
   {
     path: ROUTES.MAIN.path,
@@ -31,7 +35,15 @@ export const routes: Routes = [
         redirectTo: () => {
           const identity = inject(IdentityService);
           const role = identity.userRole();
-          return role === ROLES.Admin ? ROUTES.ADMIN.path : ROUTES.STUDENT.path;
+          if (role === ROLES.Admin) {
+            return ROUTES.ADMIN.path;
+          }
+
+          if (role === ROLES.Professor) {
+            return ROUTES.PROFESSOR.path;
+          }
+
+          return ROUTES.STUDENT.path;
         },
       },
       {
@@ -39,6 +51,13 @@ export const routes: Routes = [
         data: { role: ROLES.Admin },
         canActivate: [roleGuard],
         loadChildren: () => import('./features/admin/admin.routes').then((m) => m.adminRoles),
+      },
+      {
+        path: ROUTES.PROFESSOR.path,
+        data: { role: ROLES.Professor },
+        canActivate: [roleGuard],
+        loadChildren: () =>
+          import('./features/professor/professor.routes').then((m) => m.professorRoutes),
       },
       {
         path: ROUTES.STUDENT.path,
@@ -49,6 +68,7 @@ export const routes: Routes = [
       },
     ],
   },
+
 
   {
     path: ROUTES.ACCESS_DENIED.path,

@@ -108,7 +108,7 @@ export class DepartmentFacade {
     );
   }
 
-  /** @deprecated Use assignedCoursesResource. */
+  // /** @deprecated Use assignedCoursesResource. */
   getAssignCourses(id: number): Observable<IAssignCourses> {
     this.assignedCoursesRequest.set(id);
     return this.department.getAssignCourses(id).pipe(
