@@ -19,7 +19,7 @@ export const routes: Routes = [
     canActivate: [guestGuard],
     loadComponent: () => import('./features/auth/login/login').then((m) => m.Login),
   },
- {
+  {
     path: 'auth',
     loadChildren: () => import('./features/auth/auth.routes').then((m) => m.authRoutes),
   },
@@ -68,8 +68,10 @@ export const routes: Routes = [
       },
     ],
   },
-
-
+  {
+    path: ROUTES.AUTH.path,
+    loadChildren: () => import('./features/auth/auth.routes').then((m) => m.authRoutes),
+  },
   {
     path: ROUTES.ACCESS_DENIED.path,
     title: ROUTES.ACCESS_DENIED.title,

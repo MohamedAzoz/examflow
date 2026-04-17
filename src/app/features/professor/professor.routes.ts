@@ -11,6 +11,20 @@ export const professorRoutes: Routes = [
         pathMatch: 'full',
       },
       {
+        path: ROUTESPROFESSOR.COURSE_EXAMS.path,
+        title: ROUTESPROFESSOR.COURSE_EXAMS.title,
+        loadComponent: () =>
+          import('./exams-management/exams-management.component').then(
+            (m) => m.ExamsManagementComponent,
+          ),
+      },
+      {
+        path: ROUTESPROFESSOR.COURSE_DETAILS.path,
+        title: ROUTESPROFESSOR.COURSE_DETAILS.title,
+        loadComponent: () =>
+          import('./course-details/course-details.component').then((m) => m.CourseDetailsComponent),
+      },
+      {
         path: ROUTESPROFESSOR.COURSES.path,
         title: ROUTESPROFESSOR.COURSES.title,
         loadComponent: () =>

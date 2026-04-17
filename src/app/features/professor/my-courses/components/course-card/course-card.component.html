@@ -1,9 +1,17 @@
-<article
-  class="h-full rounded-3xl border border-border/65 bg-card-bg p-5 md:p-6 flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/5"
+<a
+  [routerLink]="[
+    '/',
+    routes.MAIN.path,
+    routes.PROFESSOR.path,
+    professorRoutes.COURSES.path,
+    course.courseId,
+  ]"
+  class="group h-full rounded-3xl border border-border/65 bg-card-bg p-5 md:p-6 flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35"
+  [attr.aria-label]="'Open details for ' + course.courseName"
 >
   <header class="mb-5 flex items-start justify-between gap-4">
     <div
-      class="flex h-13 w-13 items-center justify-center rounded-2xl bg-primary-light text-primary"
+      class="flex h-13 w-13 items-center justify-center rounded-2xl bg-primary-light text-primary transition-transform duration-300 group-hover:scale-105"
     >
       <i [class]="'pi ' + resolveIcon(course.courseId)" class="text-xl" aria-hidden="true"></i>
     </div>
@@ -29,23 +37,10 @@
     <span>Course ID: {{ course.courseId }}</span>
   </div>
 
-  <div class="mt-auto pt-6 grid grid-cols-2 gap-2.5">
-    <button
-      type="button"
-      class="btn rounded-xl border border-border bg-surface-container px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-text-secondary cursor-not-allowed opacity-75"
-      disabled
-      aria-label="Question Bank coming soon"
-    >
-      Question Bank
-    </button>
-
-    <button
-      type="button"
-      class="btn rounded-xl bg-primary px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-white cursor-not-allowed opacity-85"
-      disabled
-      aria-label="Create Exam coming soon"
-    >
-      Create Exam
-    </button>
+  <div class="mt-auto pt-5 flex items-center justify-between text-primary">
+    <span class="text-xs font-bold uppercase tracking-wider">Open Course Workspace</span>
+    <i
+      class="pi pi-arrow-right text-sm transition-transform duration-300 group-hover:translate-x-1"
+    ></i>
   </div>
-</article>
+</a>

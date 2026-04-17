@@ -1,0 +1,25 @@
+<article
+  class="rounded-3xl border border-border/65 bg-card-bg p-6 md:p-7 flex flex-col gap-5 h-full"
+>
+  <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-light text-primary">
+    <i [class]="'pi ' + icon" class="text-xl" aria-hidden="true"></i>
+  </div>
+
+  <div class="space-y-2">
+    <h3 class="text-2xl font-black text-text-primary leading-tight">{{ title }}</h3>
+    <p class="text-sm md:text-base text-text-secondary leading-relaxed">{{ description }}</p>
+  </div>
+
+  <button
+    type="button"
+    class="mt-auto btn inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold transition-colors"
+    [ngClass]="buttonClasses()"
+    [disabled]="disabled"
+    [class.opacity-60]="disabled"
+    [class.cursor-not-allowed]="disabled"
+    (click)="onActionClick()"
+  >
+    {{ buttonLabel }}
+    <i class="pi pi-arrow-right text-xs" aria-hidden="true"></i>
+  </button>
+</article>

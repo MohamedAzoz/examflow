@@ -1,0 +1,12 @@
+<article class="rounded-2xl border border-border/65 bg-card-bg px-5 py-4 flex items-center gap-4">
+  <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-light text-primary">
+    <i [class]="'pi ' + icon" class="text-lg" aria-hidden="true"></i>
+  </div>
+
+  <div class="space-y-0.5">
+    <p class="text-[11px] font-bold uppercase tracking-[0.12em] text-text-secondary">
+      {{ label }}
+    </p>
+    <p class="text-3xl font-black text-text-primary leading-none">{{ value }}</p>
+  </div>
+</article>

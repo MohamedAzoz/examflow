@@ -11,7 +11,7 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { MessageModule } from 'primeng/message';
 import { Theme } from '../../../core/services/theme';
-import { AUTH_ROUTES } from '../../../core/constants/const.route';
+import { AUTH_ROUTES, ROUTES } from '../../../core/constants/const.route';
 
 @Component({
   selector: 'app-login',
@@ -34,6 +34,7 @@ export class Login implements OnDestroy {
   public authFacade = inject(AuthFacade);
   private readonly theme = inject(Theme);
   readonly routes = AUTH_ROUTES;
+  readonly base = ROUTES;
 
   showPassword = signal(false);
 

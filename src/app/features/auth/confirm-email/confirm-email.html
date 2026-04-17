@@ -1,0 +1,83 @@
+<div
+  class="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,#dbeafe,#f8fbff_38%,#ffffff)] px-4 py-6 sm:px-8 sm:py-10"
+>
+  <div class="pointer-events-none absolute inset-0">
+    <div
+      class="decor-float absolute -left-16 top-10 h-56 w-56 rounded-full bg-sky-200/40 blur-3xl"
+    ></div>
+    <div
+      class="decor-float absolute -bottom-16 right-0 h-72 w-72 rounded-full bg-blue-300/30 blur-3xl"
+      style="animation-delay: -3s"
+    ></div>
+  </div>
+
+  <div
+    class="relative mx-auto flex min-h-[calc(100vh-3rem)] w-full max-w-4xl items-center justify-center"
+  >
+    <div
+      class="panel-enter w-full overflow-hidden rounded-3xl border border-sky-100 bg-white/90 shadow-[0_28px_90px_-35px_rgba(2,132,199,0.42)] backdrop-blur"
+    >
+      <section class="p-6 sm:p-8 md:p-10">
+        <div class="mb-8 flex items-center justify-center gap-3">
+          <img ngSrc="Logo.svg" width="38" height="38" priority class="h-9 w-9" alt="ExamFlow" />
+          <p class="text-lg font-semibold tracking-[0.2em] text-slate-800">EXAMFLOW</p>
+        </div>
+
+        <div class="mx-auto max-w-xl text-center">
+          @if (state() === 'loading') {
+            <div class="space-y-4">
+              <i class="pi pi-spin pi-spinner text-4xl text-sky-600" aria-hidden="true"></i>
+              <h1 class="text-2xl font-semibold text-slate-900">Confirming your email...</h1>
+              <p class="text-sm text-slate-600">
+                Please wait while we verify your email confirmation link.
+              </p>
+            </div>
+          }
+
+          @if (state() === 'success') {
+            <div class="space-y-4">
+              <div
+                class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100"
+              >
+                <i class="pi pi-check text-2xl text-emerald-600" aria-hidden="true"></i>
+              </div>
+              <h1 class="text-2xl font-semibold text-slate-900">Email Verified</h1>
+              <p class="text-sm text-slate-600">{{ message() }}</p>
+            </div>
+          }
+
+          @if (state() === 'error') {
+            <div class="space-y-4">
+              <div
+                class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-red-100"
+              >
+                <i class="pi pi-times text-2xl text-red-600" aria-hidden="true"></i>
+              </div>
+              <h1 class="text-2xl font-semibold text-slate-900">Email Verification Failed</h1>
+              <p class="text-sm text-slate-600">{{ message() }}</p>
+            </div>
+          }
+
+          <div class="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <a
+              [routerLink]="['/', routes.LOGIN.path]"
+              pButton
+              class="w-full rounded-xl border-none bg-sky-600 px-6 py-3 text-sm font-semibold transition hover:bg-sky-700 sm:w-auto"
+            >
+              Go to Login
+            </a>
+
+            <a
+              [routerLink]="['/', authRoutes.REQUEST_EMAIL.path]"
+              pButton
+              severity="secondary"
+              class="w-full rounded-xl px-6 py-3 text-sm font-semibold sm:w-auto"
+            >
+              Request Again
+            </a>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

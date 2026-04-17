@@ -1,17 +1,22 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { IAssignCourses } from '../../../../../data/models/department/iassign-courses';
+import { ROUTES, ROUTESPROFESSOR } from '../../../../../core/constants/const.route';
 
 type AssignedCourse = IAssignCourses['assignedCourses'][number];
 
 @Component({
   selector: 'app-course-card',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './course-card.component.html',
   styleUrl: './course-card.component.css',
 })
 export class CourseCardComponent {
   @Input({ required: true }) course!: AssignedCourse;
+
+  protected readonly routes = ROUTES;
+  protected readonly professorRoutes = ROUTESPROFESSOR;
 
   protected resolveLevelLabel(courseCode: string): string {
     const digits = courseCode.replace(/\D/g, '');

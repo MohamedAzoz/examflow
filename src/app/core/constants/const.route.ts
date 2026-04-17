@@ -7,6 +7,7 @@ export const ROUTES = {
   // RESET_PASSWORD: { path: 'reset-password', title: 'Reset Password' },
   MAIN: { path: 'main', title: 'Main' },
   ADMIN: { path: 'admin', title: 'Admin' },
+  AUTH: { path: 'auth', title: 'Authentication' },
   PROFESSOR: { path: 'professor', title: 'Professor' },
   STUDENT: { path: 'student', title: 'Student' },
   ACCESS_DENIED: { path: 'access-denied', title: 'Access Denied' },
@@ -14,6 +15,8 @@ export const ROUTES = {
 };
 
 export const AUTH_ROUTES = {
+  REQUEST_EMAIL: { path: 'request-email', title: 'Request Email Change' },
+  CONFIRM_EMAIL: { path: 'confirm-email', title: 'Confirm Email' },
   FORGET_PASSWORD: { path: 'forget-password', title: 'Forget Password' },
   VERIFY_OTP: { path: 'verify-otp', title: 'Verify OTP' },
   RESET_PASSWORD: { path: 'reset-password', title: 'Reset Password' },
@@ -42,4 +45,6 @@ export const ROUTESSTUDENT = {
 
 export const ROUTESPROFESSOR = {
   COURSES: { path: 'my-courses', title: 'My Courses' },
+  COURSE_DETAILS: { path: 'my-courses/:courseId', title: 'Course Details' },
+  COURSE_EXAMS: { path: 'my-courses/:courseId/exams', title: 'Exams Management' },
 };

@@ -1,0 +1,106 @@
+<section class="overflow-hidden rounded-2xl border border-border/70 bg-card-bg">
+  <div class="overflow-x-auto">
+    <table class="min-w-full border-collapse" aria-label="Exams table">
+      <thead class="bg-surface-container/70">
+        <tr class="border-b border-border/60">
+          <th class="px-4 py-3 text-left text-xs font-semibold tracking-wide text-text-secondary">
+            EXAM TITLE
+          </th>
+          <th class="px-4 py-3 text-left text-xs font-semibold tracking-wide text-text-secondary">
+            COURSE & LEVEL
+          </th>
+          <th class="px-4 py-3 text-left text-xs font-semibold tracking-wide text-text-secondary">
+            PASSING
+          </th>
+          <th class="px-4 py-3 text-left text-xs font-semibold tracking-wide text-text-secondary">
+            START TIME
+          </th>
+          <th class="px-4 py-3 text-left text-xs font-semibold tracking-wide text-text-secondary">
+            DURATION
+          </th>
+          <th class="px-4 py-3 text-left text-xs font-semibold tracking-wide text-text-secondary">
+            DEGREE
+          </th>
+          <th class="px-4 py-3 text-left text-xs font-semibold tracking-wide text-text-secondary">
+            STATUS
+          </th>
+          <th class="px-4 py-3 text-right text-xs font-semibold tracking-wide text-text-secondary">
+            ACTIONS
+          </th>
+        </tr>
+      </thead>
+
+      <tbody>
+        @for (exam of exams; track exam.id) {
+          <tr class="border-b border-border/50 text-sm transition-colors hover:bg-surface/70">
+            <td class="px-4 py-3">
+              <p class="font-semibold text-text-primary">{{ exam.title }}</p>
+            </td>
+
+            <td class="px-4 py-3">
+              <p class="font-medium text-text-primary">{{ exam.courseName }}</p>
+              <p class="text-xs text-text-secondary">{{ resolveLevel(exam.academicLevel) }}</p>
+            </td>
+
+            <td class="px-4 py-3 text-text-primary">{{ exam.passingScore }}%</td>
+
+            <td class="px-4 py-3 text-text-primary">{{ formatDateTime(exam.startTime) }}</td>
+
+            <td class="px-4 py-3 text-text-primary">{{ exam.durationMinutes }} Min</td>
+
+            <td class="px-4 py-3 text-text-primary">{{ exam.totalDegree }} Marks</td>
+
+            <td class="px-4 py-3">
+              <span
+                class="inline-flex rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide"
+                [class]="resolveStatusClass(exam.examStatus)"
+              >
+                {{ exam.examStatus }}
+              </span>
+            </td>
+
+            <td class="px-4 py-3">
+              <div class="flex items-center justify-end gap-1">
+                <button
+                  type="button"
+                  class="btn h-8 w-8 rounded-lg text-emerald-600 transition-colors hover:bg-emerald-50"
+                  aria-label="Publish exam"
+                  (click)="onPublish(exam)"
+                >
+                  <i class="pi pi-upload text-xs" aria-hidden="true"></i>
+                </button>
+
+                <button
+                  type="button"
+                  class="btn h-8 w-8 rounded-lg text-primary transition-colors hover:bg-primary-light"
+                  aria-label="Edit exam"
+                  (click)="onEdit(exam)"
+                >
+                  <i class="pi pi-pencil text-xs" aria-hidden="true"></i>
+                </button>
+
+                <button
+                  type="button"
+                  class="btn h-8 w-8 rounded-lg text-red-500 transition-colors hover:bg-red-50"
+                  aria-label="Delete exam"
+                  (click)="onDelete(exam)"
+                >
+                  <i class="pi pi-trash text-xs" aria-hidden="true"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="8" class="px-6 py-14 text-center text-text-secondary">
+              <div class="flex flex-col items-center gap-2">
+                <i class="pi pi-inbox text-3xl opacity-60"></i>
+                <p class="text-sm font-medium">No exams found</p>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table> 
+  </div>
+</section>

@@ -1,7 +1,17 @@
 import { Routes } from '@angular/router';
-import { AUTH_ROUTES, ROUTES } from '../../core/constants/const.route';
+import { AUTH_ROUTES } from '../../core/constants/const.route';
 
 export const authRoutes: Routes = [
+  {
+    path: AUTH_ROUTES.REQUEST_EMAIL.path,
+    title: AUTH_ROUTES.REQUEST_EMAIL.title,
+    loadComponent: () => import('./request-email/request-email').then((m) => m.RequestEmail),
+  },
+  {
+    path: AUTH_ROUTES.CONFIRM_EMAIL.path,
+    title: AUTH_ROUTES.CONFIRM_EMAIL.title,
+    loadComponent: () => import('./confirm-email/confirm-email').then((m) => m.ConfirmEmail),
+  },
   {
     path: AUTH_ROUTES.FORGET_PASSWORD.path,
     title: AUTH_ROUTES.FORGET_PASSWORD.title,

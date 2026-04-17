@@ -108,6 +108,7 @@ export class Main {
 
       // Professor Features
       'my-courses': 'My Courses',
+      exams: 'Exams Management',
     };
     return titles[this.activeRoute()] ?? 'Main Panel';
   });
@@ -150,6 +151,16 @@ export class Main {
   private syncActiveRouteWithUrl(url: string): void {
     const cleanUrl = url.split('?')[0];
     const segments = cleanUrl.split('/').filter(Boolean);
+
+    if (
+      this.userRole() === 'professor' &&
+      segments.includes('my-courses') &&
+      segments.includes('exams')
+    ) {
+      this.activeRoute.set('exams');
+      return;
+    }
+
     const roleSegmentIndex = segments.findIndex(
       (segment) => segment === 'admin' || segment === 'professor' || segment === 'student',
     );

@@ -46,7 +46,7 @@ export class AuthFacade {
   }
 
   // confirmEmail
-  confirmEmail(data: IconfirmEmail) {
+  confirmEmail(data: IconfirmEmail, onSuccess?: () => void, onError?: (message: string) => void) {
     this.isLoading.set(true);
     this.errorMessage.set(null);
     this.authService.confirmEmail(data).subscribe({
@@ -55,6 +55,7 @@ export class AuthFacade {
         this.appMessage.addSuccessMessage(
           'Email confirmed successfully. You can now log in with your new email.',
         );
+        onSuccess?.();
       },
       error: (error: IErrorResponse | unknown) => {
         this.isLoading.set(false);
@@ -63,6 +64,7 @@ export class AuthFacade {
           'Failed to confirm email. Please check the code and try again.',
         );
         this.errorMessage.set(detail);
+        onError?.(detail);
       },
     });
   }
@@ -91,7 +93,7 @@ export class AuthFacade {
   }
 
   //requestEmail
-  requestEmail(newEmail: string) {
+  requestEmail(newEmail: string, onSuccess?: () => void) {
     this.isLoading.set(true);
     this.errorMessage.set(null);
     this.authService.requestEmail(newEmail).subscribe({
@@ -100,6 +102,7 @@ export class AuthFacade {
         this.appMessage.addSuccessMessage(
           'A confirmation email has been sent to your new email address.',
         );
+        onSuccess?.();
       },
       error: (error: IErrorResponse | unknown) => {
         this.isLoading.set(false);
