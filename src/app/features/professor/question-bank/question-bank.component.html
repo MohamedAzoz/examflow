@@ -1,0 +1,72 @@
+<section class="max-w-350 mx-auto min-h-full p-4 md:p-6 lg:p-8">
+
+
+  <section class="rounded-2xl border border-border/70 bg-card-bg p-4 md:p-5">
+    <app-question-bank-toolbar
+      [searchValue]="searchTerm()"
+      [filterCount]="activeFilterCount()"
+      [disabled]="actionsDisabled()"
+      (searchChanged)="onSearchChanged($event)"
+      (filterClicked)="onOpenFilter()"
+      (importClicked)="onOpenImportModal()"
+      (createClicked)="onOpenCreateModal()"
+    ></app-question-bank-toolbar>
+
+    @if (actionsDisabled()) {
+      <div
+        class="mt-4 flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-surface/65 py-14 text-center"
+      >
+        <i class="pi pi-exclamation-triangle text-3xl text-amber-500/70" aria-hidden="true"></i>
+        <h2 class="mt-3 text-base font-bold text-text-primary">Invalid course context</h2>
+        <p class="mt-1 max-w-lg px-4 text-sm text-text-secondary">
+          Open Question Bank from the course details page to pass a valid course id.
+        </p>
+      </div>
+    } @else {
+      <app-question-bank-list
+        class="mt-4 block"
+        [questions]="questions()"
+        [loading]="loadingQuestions()"
+        [pageIndex]="pageIndex()"
+        [pageSize]="pageSize()"
+        [hasMore]="hasMore()"
+        [mutating]="mutatingQuestion()"
+        (editQuestion)="onOpenEditModal($event)"
+        (deleteQuestion)="onDeleteQuestion($event)"
+        (nextPage)="onNextPage()"
+        (previousPage)="onPreviousPage()"
+      ></app-question-bank-list>
+    }
+
+    @if (errorMessage()) {
+      <div class="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        {{ errorMessage() }}
+      </div>
+    }
+  </section>
+
+  <app-question-bank-filter-modal
+    [visible]="filterModalOpen()"
+    [currentQuestionType]="filters().questionType"
+    (closeModal)="onCloseFilter()"
+    (applyFilters)="onApplyFilter($event)"
+  ></app-question-bank-filter-modal>
+
+  <app-question-import-modal
+    [visible]="importModalOpen()"
+    [importing]="importingQuestions()"
+    [courseId]="activeCourseId()"
+    (closeModal)="onCloseImportModal()"
+    (importQuestions)="onImportQuestions($event)"
+  ></app-question-import-modal>
+
+  <app-question-form-modal
+    [visible]="formModalOpen()"
+    [mode]="formMode()"
+    [saving]="mutatingQuestion()"
+    [courseId]="activeCourseId()"
+    [question]="editingQuestion()"
+    (closeModal)="onCloseFormModal()"
+    (saveQuestion)="onQuestionSaved($event)"
+  ></app-question-form-modal>
+</section>

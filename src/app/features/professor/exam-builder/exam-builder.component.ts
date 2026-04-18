@@ -18,8 +18,7 @@ import { IExamQuestions } from '../../../data/models/ExamQuestions/iexam-questio
 import { IupdateExam } from '../../../data/models/ProfessorExam/IupdateExam';
 // import { AssignedQuestionsComponent } from './components/assigned-questions/assigned-questions.component';
 import {
-  ExamSettingsComponent,
-  ExamSettingsValue,
+  ExamSettingsComponent, ExamSettingsValue
 } from './components/exam-settings/exam-settings.component';
 // import { QuestionBankComponent } from './components/question-bank/question-bank.component';
 import { ExamBuilderFacade } from '../services/exam-builder.facade';
@@ -29,7 +28,7 @@ import { QuestionBankComponent } from './components/question-bank/question-bank.
 @Component({
   selector: 'app-exam-builder',
   standalone: true,
-  imports: [CommonModule, QuestionBankComponent, AssignedQuestionsComponent, ExamSettingsComponent],
+  imports: [CommonModule, QuestionBankComponent, AssignedQuestionsComponent, ExamSettingsComponent ],
   templateUrl: './exam-builder.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -103,24 +102,22 @@ export class ExamBuilderComponent implements OnInit, OnDestroy {
   });
 
   constructor() {
-    effect(
-      () => {
-        const currentCourseId = this.courseId();
-        const currentExamId = this.examId();
+    effect(() => {
+      const currentCourseId = this.courseId();
+      const currentExamId = this.examId();
 
-        if (!currentCourseId || !currentExamId) {
-          return;
-        }
-
-        const contextKey = `${currentCourseId}-${currentExamId}`;
-        if (this.initializedContextKey() === contextKey) {
-          return;
-        }
-
-        this.initializedContextKey.set(contextKey);
-        this.loadWorkspace(currentCourseId, currentExamId);
+      if (!currentCourseId || !currentExamId) {
+        return;
       }
-    );
+
+      const contextKey = `${currentCourseId}-${currentExamId}`;
+      if (this.initializedContextKey() === contextKey) {
+        return;
+      }
+
+      this.initializedContextKey.set(contextKey);
+      this.loadWorkspace(currentCourseId, currentExamId);
+    });
   }
 
   ngOnInit(): void {

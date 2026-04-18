@@ -1,0 +1,104 @@
+<div class="overflow-hidden rounded-2xl border border-border bg-surface/40">
+  @if (loading() && questions().length === 0) {
+    <div class="space-y-2 p-3">
+      @for (item of [1, 2, 3, 4, 5]; track item) {
+        <div class="h-22 animate-pulse rounded-xl border border-border bg-surface"></div>
+      }
+    </div>
+  } @else {
+    <div class="space-y-2 p-3">
+      @for (question of questions(); track trackByQuestionId($index, question)) {
+        <article
+          class="flex items-start justify-between gap-3 rounded-xl border border-border bg-card-bg px-4 py-3 transition hover:border-primary/35"
+        >
+          <div class="min-w-0 flex-1">
+            <div class="mb-1 flex flex-wrap items-center gap-x-3 gap-y-1">
+              <p class="text-[11px] font-bold uppercase tracking-[0.12em] text-text-secondary">
+                Question #{{ question.id }}
+              </p>
+              <p class="text-xs text-text-secondary">Course #{{ question.courseId }}</p>
+            </div>
+
+            <p class="line-clamp-2 text-sm font-semibold text-text-primary">
+              {{ question.text }}
+            </p>
+
+            <div class="mt-2 flex flex-wrap items-center gap-2">
+              <span
+                class="rounded-md px-2 py-1 text-[10px] font-bold"
+                [class]="questionTypeClass(question.questionType)"
+              >
+                {{ questionTypeLabel(question.questionType) }}
+              </span>
+
+              <span class="text-sm font-semibold text-text-primary">{{ question.degree }} Pts</span>
+
+              @if (question.options.length > 0) {
+                <span class="text-xs text-text-secondary"
+                  >{{ question.options.length }} options</span
+                >
+              }
+            </div>
+          </div>
+
+          <div class="flex shrink-0 items-center gap-1">
+            <button
+              type="button"
+              class="btn inline-flex h-8 w-8 items-center justify-center rounded-lg text-primary transition hover:bg-primary-light disabled:cursor-not-allowed disabled:opacity-50"
+              [disabled]="mutating()"
+              title="Edit question"
+              (click)="onEdit(question)"
+            >
+              <i class="pi pi-pencil text-sm" aria-hidden="true"></i>
+            </button>
+
+            <button
+              type="button"
+              class="btn inline-flex h-8 w-8 items-center justify-center rounded-lg text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+              [disabled]="mutating()"
+              title="Delete question"
+              (click)="onDelete(question)"
+            >
+              <i class="pi pi-trash text-sm" aria-hidden="true"></i>
+            </button>
+          </div>
+        </article>
+      } @empty {
+        <div
+          class="rounded-xl border border-dashed border-border bg-card-bg px-4 py-10 text-center"
+        >
+          <i class="pi pi-inbox text-2xl text-text-secondary/50" aria-hidden="true"></i>
+          <p class="mt-2 text-sm text-text-secondary">No questions found for current filters.</p>
+        </div>
+      }
+    </div>
+
+    <footer class="flex items-center justify-between border-t border-border px-4 py-3">
+      <p class="text-xs text-text-secondary">
+        Showing {{ showingFrom() }} to {{ showingTo() }} entries
+      </p>
+
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          class="btn inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card-bg text-text-secondary transition hover:bg-surface-container disabled:cursor-not-allowed disabled:opacity-45"
+          [disabled]="!canGoPrevious()"
+          (click)="onPreviousPage()"
+          aria-label="Previous page"
+        >
+          <i class="pi pi-chevron-left text-xs" aria-hidden="true"></i>
+        </button>
+
+        <button
+          type="button"
+          class="btn inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card-bg text-text-secondary transition hover:bg-surface-container disabled:cursor-not-allowed disabled:opacity-45"
+          [disabled]="!canGoNext()"
+          (click)="onNextPage()"
+          aria-label="Next page"
+        >
+          <i class="pi pi-chevron-right text-xs" aria-hidden="true"></i>
+        </button>
+      </div>
+    </footer>
+  }
+</div>

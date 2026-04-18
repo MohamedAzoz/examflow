@@ -59,4 +59,3 @@ export const PROFESSOR_NAV_ITEMS: readonly NavItem[] = [
     route: ROUTESPROFESSOR.COURSES.path,
   },
 ] as const;
-

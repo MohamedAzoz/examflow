@@ -54,18 +54,21 @@ export class ExamSettingsComponent {
   readonly isRandomQuestions = signal(true);
   readonly isRandomAnswers = signal(false);
 
-  readonly levelOptions = [1, 2, 3, 4, 5, 6] as const;
+  readonly levelOptions = [1, 2, 3, 4] as const;
 
   readonly selectedDepartmentName = computed(() => {
     const selectedId = this.departmentId();
+    if (selectedId <= 0) {
+      return 'All departments (general exam for this level)';
+    }
+
     const selected = this.departments().find((department) => department.id === selectedId);
-    return selected?.name ?? 'Not selected';
+    return selected?.name ?? 'All departments (general exam for this level)';
   });
 
   readonly canSave = computed(() => {
     const hasTitle = this.title().trim().length > 0;
     const hasStartTime = this.startTime().trim().length > 0;
-    const hasDepartment = this.departmentId() > 0;
 
     const isScoreValid = this.passingScore() >= 1 && this.passingScore() <= 100;
     const isTotalDegreeValid = this.totalDegree() >= 1;
@@ -75,7 +78,6 @@ export class ExamSettingsComponent {
     return (
       hasTitle &&
       hasStartTime &&
-      hasDepartment &&
       isScoreValid &&
       isTotalDegreeValid &&
       isDurationValid &&
@@ -87,22 +89,18 @@ export class ExamSettingsComponent {
   readonly canPublish = computed(() => this.canSave() && !this.publishing());
 
   constructor() {
-    effect(
-      () => {
-        this.isCollapsed.set(this.collapsedByDefault());
-      }
-    );
+    effect(() => {
+      this.isCollapsed.set(this.collapsedByDefault());
+    });
 
-    effect(
-      () => {
-        const incoming = this.initialSettings();
-        if (!incoming) {
-          return;
-        }
-
-        this.patchFromInput(incoming);
+    effect(() => {
+      const incoming = this.initialSettings();
+      if (!incoming) {
+        return;
       }
-    );
+
+      this.patchFromInput(incoming);
+    });
   }
 
   collapse(): void {

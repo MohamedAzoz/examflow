@@ -24,11 +24,6 @@ import { ExamHeaderComponent } from './components/exam-header/exam-header';
 import { QuestionAreaComponent } from './components/question-area/question-area';
 import { QuestionMapComponent } from './components/question-map/question-map';
 
-interface AntiCheatCounters {
-  serverResponses: number;
-  sessionId: number;
-}
-
 interface PerfMetric {
   count: number;
   totalMs: number;
@@ -60,7 +55,12 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
   readonly markedQuestions = signal<Record<number, boolean>>({});
   readonly syncedAnsweredIds = signal<Record<number, boolean>>({});
   readonly essayDirtyMap = signal<Record<number, boolean>>({});
-  readonly antiCheatCounters = signal<AntiCheatCounters>({ serverResponses: 0, sessionId: 0 });
+
+  // Anti-cheat counters are split into dedicated signals for predictable updates.
+  readonly tabSwitches = signal(0);
+  readonly copyPasteAttempts = signal(0);
+  readonly sessionId = signal(0);
+  readonly totalSuspiciousActions = computed(() => this.tabSwitches() + this.copyPasteAttempts());
 
   readonly showNavigationWarning = signal<boolean>(false);
   readonly isSubmitting = signal<boolean>(false);
@@ -70,6 +70,7 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
   private timerInitialized = false;
   private lastShortcutTimestamp = 0;
   private lastTabSwitchTimestamp = 0;
+  private resizeTimeout: ReturnType<typeof setTimeout> | null = null;
   private readonly persistDebounceMs = 350;
   private persistTimeoutId: ReturnType<typeof setTimeout> | null = null;
   private persistQueue: Promise<void> = Promise.resolve();
@@ -139,6 +140,11 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
     this.flushPersistQueueInBackground();
     this.toggleService.examMode(false);
     this.timerService.stopExam();
+
+    if (this.resizeTimeout !== null) {
+      clearTimeout(this.resizeTimeout);
+      this.resizeTimeout = null;
+    }
   }
 
   canDeactivate(): boolean {
@@ -221,11 +227,10 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
     const examId = this.currentExam()?.exam.examId;
     if (!examId) return;
 
-    const counters = this.antiCheatCounters();
     const payload: IsubmitExam = {
       examId,
-      serverResponses: counters.serverResponses,
-      sessionId: counters.sessionId,
+      serverResponses: this.copyPasteAttempts(),
+      sessionId: this.sessionId(),
     };
 
     this.isSubmitting.set(true);
@@ -277,15 +282,40 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
   @HostListener('document:visibilitychange')
   onVisibilityChange(): void {
     if (document.hidden) {
-      this.incrementTabSwitch();
+      this.incrementTabSwitch('visibility-hidden');
     }
   }
 
   @HostListener('window:blur')
   onWindowBlur(): void {
     if (document.visibilityState === 'hidden') {
-      this.incrementTabSwitch();
+      this.incrementTabSwitch('window-blur');
     }
+  }
+
+  @HostListener('document:fullscreenchange')
+  onFullscreenChange(): void {
+    if (!document.fullscreenElement) {
+      this.incrementTabSwitch('fullscreen-exit');
+    }
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    if (this.resizeTimeout !== null) {
+      clearTimeout(this.resizeTimeout);
+    }
+
+    this.resizeTimeout = setTimeout(() => {
+      this.resizeTimeout = null;
+
+      const now = Date.now();
+      if (now - this.lastTabSwitchTimestamp < 800) {
+        return;
+      }
+
+      this.incrementTabSwitch('window-resize');
+    }, 250);
   }
 
   private setupExamInitialization(): void {
@@ -361,15 +391,14 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
     const exam = this.currentExam();
     if (!exam) return false;
 
-    const counters = this.antiCheatCounters();
     const payload: IsendAnswer = {
       examId: exam.exam.examId,
       studentExamId: exam.studentExamId,
       questionId,
       selectedOptionId: this.selectedOptions()[questionId] ?? 0,
       eassayAnswer: this.essayAnswers()[questionId] ?? '',
-      serverResponses: counters.serverResponses,
-      sessionId: counters.sessionId,
+      serverResponses: this.copyPasteAttempts(),
+      sessionId: this.sessionId(),
     };
 
     try {
@@ -386,22 +415,20 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
   }
 
   private incrementCopyPaste(): void {
-    this.antiCheatCounters.update((state) => ({
-      ...state,
-      serverResponses: state.serverResponses + 1,
-    }));
+    this.copyPasteAttempts.update((value) => value + 1);
     this.persistExamSessionStateInBackground();
   }
 
-  private incrementTabSwitch(): void {
+  private incrementTabSwitch(reason: string = 'tab-switch'): void {
     const now = Date.now();
     if (now - this.lastTabSwitchTimestamp < 800) return;
 
+    // Keep reason available for future telemetry expansion while preserving behavior.
+    void reason;
+
     this.lastTabSwitchTimestamp = now;
-    this.antiCheatCounters.update((state) => ({
-      ...state,
-      sessionId: state.sessionId + 1,
-    }));
+    this.tabSwitches.update((value) => value + 1);
+    this.sessionId.update((value) => value + 1);
     this.persistExamSessionStateInBackground();
   }
 
@@ -417,10 +444,9 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
     this.essayAnswers.set(cachedState.essayAnswers ?? {});
     this.markedQuestions.set(cachedState.markedQuestions ?? {});
     this.syncedAnsweredIds.set(cachedState.syncedAnsweredIds ?? {});
-    this.antiCheatCounters.set({
-      serverResponses: cachedState.serverResponses ?? 0,
-      sessionId: cachedState.sessionId ?? 0,
-    });
+    this.copyPasteAttempts.set(cachedState.serverResponses ?? 0);
+    this.sessionId.set(cachedState.sessionId ?? 0);
+    this.tabSwitches.set(cachedState.sessionId ?? 0);
 
     const restoredIndex = this.resolveQuestionIndex(
       cachedState.examSnapshot,
@@ -579,7 +605,6 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
       return null;
     }
 
-    const counters = this.antiCheatCounters();
     return {
       examId: exam.exam.examId,
       examSnapshot: exam,
@@ -589,8 +614,8 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
       syncedAnsweredIds: { ...this.syncedAnsweredIds() },
       currentQuestionId: this.currentQuestion()?.questionId ?? null,
       currentQuestionIndex: this.questionIndex(),
-      serverResponses: counters.serverResponses,
-      sessionId: counters.sessionId,
+      serverResponses: this.copyPasteAttempts(),
+      sessionId: this.sessionId(),
       updatedAt: Date.now(),
     };
   }
@@ -664,12 +689,5 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
     if (nextCount % this.perfLogEverySamples !== 0) {
       return;
     }
-
-    const avgMs = Number((nextTotalMs / nextCount).toFixed(2));
-    const maxMs = Number(nextMaxMs.toFixed(2));
-
-    console.info(
-      `[Perf][ExamSession] ${metricName}: avg=${avgMs}ms max=${maxMs}ms samples=${nextCount}`,
-    );
   }
 }

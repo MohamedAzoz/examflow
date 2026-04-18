@@ -82,6 +82,13 @@
                 <span class="text-xs font-medium text-text-secondary"
                   >{{ question.degree }} Pts</span
                 >
+                @if (isSelected(question.id)) {
+                  <span
+                    class="rounded-md bg-emerald-100 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700"
+                  >
+                    In Exam
+                  </span>
+                }
               </div>
             </div>
           </label>
@@ -128,7 +135,7 @@
       @if (isAssigning()) {
         Assigning...
       } @else {
-        Assign Selected ({{ selectedCount() }})
+        Assign Selected ({{ pendingSelectedCount() }})
       }
     </button>
   </div>

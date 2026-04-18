@@ -95,6 +95,17 @@ export class CourseDetailsComponent {
     ]);
   }
 
+  protected openQuestionBank(courseId: number): void {
+    this.router.navigate([
+      '/',
+      this.routes.MAIN.path,
+      this.routes.PROFESSOR.path,
+      this.professorRoutes.COURSES.path,
+      courseId,
+      'question-bank',
+    ]);
+  }
+
   private readHttpError(error: unknown): string | null {
     if (!error) {
       return null;

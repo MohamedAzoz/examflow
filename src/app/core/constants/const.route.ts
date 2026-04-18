@@ -45,6 +45,7 @@ export const ROUTESSTUDENT = {
 
 export const ROUTESPROFESSOR = {
   COURSES: { path: 'my-courses', title: 'My Courses' },
+  QUESTION_BANK: { path: 'my-courses/:courseId/question-bank', title: 'Question Bank' },
   COURSE_DETAILS: { path: 'my-courses/:courseId', title: 'Course Details' },
   COURSE_EXAMS: { path: 'my-courses/:courseId/exams', title: 'Exams Management' },
   COURSE_EXAM_BUILDER: {

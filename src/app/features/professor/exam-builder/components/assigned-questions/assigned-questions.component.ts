@@ -16,10 +16,7 @@ import { finalize } from 'rxjs';
 import { AppMessageService } from '../../../../../core/services/app-message';
 import { QuestionType } from '../../../../../data/enums/question-type';
 import { IExamQuestions } from '../../../../../data/models/ExamQuestions/iexam-questions';
-import {
-  ExamBuilderFacade,
-  ExamBuilderCreateQuestionData,
-} from '../../../services/exam-builder.facade';
+import { ExamBuilderFacade } from '../../../services/exam-builder.facade';
 import {
   QuestionEditorComponent,
   QuestionEditorDisplayMode,
@@ -64,6 +61,7 @@ export class AssignedQuestionsComponent {
 
   readonly editableQuestions = signal<EditableAssignedQuestion[]>([]);
   readonly uploadingQuestionId = signal<number | null>(null);
+  readonly removingQuestionId = signal<number | null>(null);
   readonly dragSourceId = signal<number | null>(null);
   readonly dragTargetId = signal<number | null>(null);
   readonly errorMessage = signal<string | null>(null);
@@ -79,24 +77,20 @@ export class AssignedQuestionsComponent {
   private readonly handledCreateTick = signal(0);
 
   constructor() {
-    effect(
-      () => {
-        const incoming = this.assignedQuestions();
-        this.resetEditableQuestions(incoming);
-      }
-    );
+    effect(() => {
+      const incoming = this.assignedQuestions();
+      this.resetEditableQuestions(incoming);
+    });
 
-    effect(
-      () => {
-        const tick = this.openCreateRequestTick();
-        if (tick <= 0 || tick === this.handledCreateTick()) {
-          return;
-        }
-
-        this.handledCreateTick.set(tick);
-        this.openCreateEditor();
+    effect(() => {
+      const tick = this.openCreateRequestTick();
+      if (tick <= 0 || tick === this.handledCreateTick()) {
+        return;
       }
-    );
+
+      this.handledCreateTick.set(tick);
+      this.openCreateEditor();
+    });
 
     this.destroyRef.onDestroy(() => {
       this.revokeAllObjectUrls();
@@ -361,6 +355,38 @@ export class AssignedQuestionsComponent {
     if (inputElement) {
       inputElement.value = '';
     }
+  }
+
+  onDeleteQuestion(questionId: number): void {
+    const wasPersisted = this.examBuilderFacade.isPersistedQuestion(questionId);
+
+    this.removingQuestionId.set(questionId);
+    this.errorMessage.set(null);
+
+    this.examBuilderFacade
+      .removeAssignedQuestion(questionId)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => {
+          if (this.removingQuestionId() === questionId) {
+            this.removingQuestionId.set(null);
+          }
+        }),
+      )
+      .subscribe({
+        next: () => {
+          this.appMessageService.addSuccessMessage(
+            wasPersisted
+              ? 'Question removed from exam successfully.'
+              : 'Question removed from current selection.',
+          );
+        },
+        error: (error) => {
+          this.errorMessage.set(
+            this.appMessageService.showHttpError(error, 'Failed to remove question from center.'),
+          );
+        },
+      });
   }
 
   applyBold(questionId: number, textarea: HTMLTextAreaElement): void {

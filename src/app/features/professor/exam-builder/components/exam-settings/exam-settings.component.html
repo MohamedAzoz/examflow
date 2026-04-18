@@ -115,7 +115,7 @@
               [ngModel]="departmentId()"
               (ngModelChange)="departmentId.set(toNumber($event, 0))"
             >
-              <option [ngValue]="0" disabled>Select department</option>
+              <option [ngValue]="0">All departments (general for this level)</option>
               @for (department of departments(); track department.id) {
                 <option [ngValue]="department.id">{{ department.name }}</option>
               }

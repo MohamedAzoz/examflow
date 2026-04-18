@@ -25,6 +25,14 @@ export const professorRoutes: Routes = [
           import('./exam-builder/exam-builder.component').then((m) => m.ExamBuilderComponent),
       },
       {
+        path: ROUTESPROFESSOR.QUESTION_BANK.path,
+        title: ROUTESPROFESSOR.QUESTION_BANK.title,
+        loadComponent: () =>
+          import('./question-bank/question-bank.component').then(
+            (m) => m.ProfessorQuestionBankComponent,
+          ),
+      },
+      {
         path: ROUTESPROFESSOR.COURSE_DETAILS.path,
         title: ROUTESPROFESSOR.COURSE_DETAILS.title,
         loadComponent: () =>

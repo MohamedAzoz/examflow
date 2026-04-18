@@ -2,6 +2,10 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { catchError, finalize, map, Observable, of, switchMap, tap, throwError } from 'rxjs';
 import { QuestionType } from '../../../data/enums/question-type';
+import {
+  IAssignQuestion,
+  IAssignQuestionsToExam,
+} from '../../../data/models/ExamQuestions/IAssignQuestionsToExam';
 import { IExamQuestions } from '../../../data/models/ExamQuestions/iexam-questions';
 import { IassignDepartments } from '../../../data/models/course/IassignDepartments';
 import { IexamByIddetails } from '../../../data/models/ProfessorExam/Iexamdetails.2';
@@ -77,6 +81,8 @@ export class ExamBuilderFacade {
 
   readonly currentExam = signal<ExamBuilderCurrentExam | null>(null);
   readonly assignedQuestions = signal<IExamQuestions[]>([]);
+  readonly selectedQuestionIds = signal<number[]>([]);
+  readonly persistedAssignedQuestionIds = signal<number[]>([]);
   readonly departments = signal<IassignDepartments[]>([]);
 
   readonly questionBank = signal<ExamBuilderQuestionBankState>({
@@ -99,8 +105,25 @@ export class ExamBuilderFacade {
   readonly error = signal<string | null>(null);
 
   setContext(courseId: number | null, examId: number | null): void {
-    this.currentCourseId.set(courseId && courseId > 0 ? courseId : null);
-    this.currentExamId.set(examId && examId > 0 ? examId : null);
+    const normalizedCourseId = courseId && courseId > 0 ? courseId : null;
+    const normalizedExamId = examId && examId > 0 ? examId : null;
+
+    const contextChanged =
+      this.currentCourseId() !== normalizedCourseId || this.currentExamId() !== normalizedExamId;
+
+    this.currentCourseId.set(normalizedCourseId);
+    this.currentExamId.set(normalizedExamId);
+
+    if (!contextChanged) {
+      return;
+    }
+
+    this.currentExam.set(null);
+    this.assignedQuestions.set([]);
+    this.selectedQuestionIds.set([]);
+    this.persistedAssignedQuestionIds.set([]);
+    this.resetQuestionBank();
+    this.error.set(null);
   }
 
   setCourseId(courseId: number | null): void {
@@ -122,7 +145,49 @@ export class ExamBuilderFacade {
   }
 
   setAssignedQuestions(questions: IExamQuestions[]): void {
-    this.assignedQuestions.set(questions ?? []);
+    const normalizedQuestions = questions ?? [];
+    this.assignedQuestions.set(normalizedQuestions);
+
+    const idsInMiddle = new Set(normalizedQuestions.map((question) => question.id));
+    this.selectedQuestionIds.update((ids) => ids.filter((id) => idsInMiddle.has(id)));
+  }
+
+  isSelectedQuestion(questionId: number): boolean {
+    return this.selectedQuestionIds().includes(questionId);
+  }
+
+  isPersistedQuestion(questionId: number): boolean {
+    return this.persistedAssignedQuestionIds().includes(questionId);
+  }
+
+  selectQuestionFromBank(question: IQuestionResponse): void {
+    if (!Number.isFinite(question.id) || question.id <= 0) {
+      return;
+    }
+
+    this.selectedQuestionIds.update((ids) =>
+      ids.includes(question.id) ? ids : [...ids, question.id],
+    );
+
+    this.assignedQuestions.update((questions) => {
+      if (questions.some((item) => item.id === question.id)) {
+        return questions;
+      }
+
+      return [...questions, this.mapQuestionBankItemToAssigned(question)];
+    });
+  }
+
+  deselectQuestionFromBank(questionId: number): void {
+    if (this.isPersistedQuestion(questionId)) {
+      return;
+    }
+
+    this.selectedQuestionIds.update((ids) => ids.filter((id) => id !== questionId));
+
+    this.assignedQuestions.update((questions) =>
+      questions.filter((question) => question.id !== questionId),
+    );
   }
 
   loadExamWorkspace(): Observable<ExamBuilderWorkspaceData> {
@@ -147,6 +212,10 @@ export class ExamBuilderFacade {
       tap((workspace) => {
         this.currentExam.set(workspace.exam);
         this.assignedQuestions.set(workspace.assignedQuestions);
+
+        const assignedIds = workspace.assignedQuestions.map((question) => question.id);
+        this.persistedAssignedQuestionIds.set(assignedIds);
+        this.selectedQuestionIds.set(assignedIds);
       }),
       catchError((error) => this.handleError(error, 'Failed to load exam workspace.')),
       finalize(() => this.loadingExam.set(false)),
@@ -290,24 +359,78 @@ export class ExamBuilderFacade {
     this.error.set(null);
 
     return this.examQuestionsService.getExamQuestions(examId).pipe(
-      tap((questions) => this.assignedQuestions.set(questions ?? [])),
+      tap((questions) => {
+        const normalizedQuestions = questions ?? [];
+        const assignedIds = normalizedQuestions.map((question) => question.id);
+
+        this.assignedQuestions.set(normalizedQuestions);
+        this.persistedAssignedQuestionIds.set(assignedIds);
+        this.selectedQuestionIds.set(assignedIds);
+      }),
       catchError((error) => this.handleError(error, 'Failed to load assigned questions.')),
       finalize(() => this.loadingAssignedQuestions.set(false)),
     );
   }
 
-  assignQuestionsToExam(examId: number, questionIds: number[]): Observable<IExamQuestions[]> {
-    const uniqueIds = this.uniquePositiveIds(questionIds);
-    if (uniqueIds.length === 0) {
+  assignQuestionsToExam(payload: IAssignQuestionsToExam): Observable<IExamQuestions[]> {
+    const examId = payload.examId;
+    if (!Number.isFinite(examId) || examId <= 0) {
+      const message = 'Exam id is required before assigning questions to exam.';
+      this.error.set(message);
+      return throwError(() => new Error(message));
+    }
+
+    const normalizedQuestions = this.normalizeAssignQuestions(payload.questions ?? []);
+    const questionsToAssign = normalizedQuestions.filter(
+      (question) => !this.persistedAssignedQuestionIds().includes(question.id),
+    );
+
+    if (questionsToAssign.length === 0) {
       return of(this.assignedQuestions());
     }
 
     this.mutatingQuestions.set(true);
     this.error.set(null);
 
-    return this.examQuestionsService.assignQuestionsToExam(examId, uniqueIds).pipe(
+    return this.examQuestionsService
+      .assignQuestionsToExam({ examId, questions: questionsToAssign })
+      .pipe(
+        switchMap(() => this.loadAssignedQuestions(examId)),
+        catchError((error) => this.handleError(error, 'Failed to assign questions to exam.')),
+        finalize(() => this.mutatingQuestions.set(false)),
+      );
+  }
+
+  removeAssignedQuestion(
+    questionId: number,
+    examId = this.currentExamId(),
+  ): Observable<IExamQuestions[]> {
+    if (!Number.isFinite(questionId) || questionId <= 0) {
+      return of(this.assignedQuestions());
+    }
+
+    const persisted = this.isPersistedQuestion(questionId);
+    this.selectedQuestionIds.update((ids) => ids.filter((id) => id !== questionId));
+
+    if (!persisted) {
+      this.assignedQuestions.update((questions) =>
+        questions.filter((question) => question.id !== questionId),
+      );
+      return of(this.assignedQuestions());
+    }
+
+    if (!examId || examId <= 0) {
+      const message = 'Exam id is required before removing assigned question.';
+      this.error.set(message);
+      return throwError(() => new Error(message));
+    }
+
+    this.mutatingQuestions.set(true);
+    this.error.set(null);
+
+    return this.examQuestionsService.deleteQuestionFromExam(examId, questionId).pipe(
       switchMap(() => this.loadAssignedQuestions(examId)),
-      catchError((error) => this.handleError(error, 'Failed to assign questions to exam.')),
+      catchError((error) => this.handleError(error, 'Failed to remove question from exam.')),
       finalize(() => this.mutatingQuestions.set(false)),
     );
   }
@@ -435,16 +558,35 @@ export class ExamBuilderFacade {
     return current && current > 0 ? current : null;
   }
 
-  private uniquePositiveIds(ids: number[]): number[] {
-    const unique = new Set<number>();
+  private normalizeAssignQuestions(questions: IAssignQuestion[]): IAssignQuestion[] {
+    const unique = new Map<number, IAssignQuestion>();
 
-    for (const id of ids) {
-      if (Number.isFinite(id) && id > 0) {
-        unique.add(id);
+    for (const question of questions) {
+      const id = Number(question.id);
+      if (!Number.isFinite(id) || id <= 0) {
+        continue;
       }
+
+      const degree = this.normalizeDegree(Number(question.questionDegree));
+      unique.set(id, { id, questionDegree: degree });
     }
 
-    return Array.from(unique);
+    return Array.from(unique.values());
+  }
+
+  private mapQuestionBankItemToAssigned(question: IQuestionResponse): IExamQuestions {
+    const resolvedCourseId = this.resolveCourseId(question.courseId);
+
+    return {
+      id: question.id,
+      text: question.text,
+      imagePath: '',
+      questionType: question.questionType,
+      degree: this.normalizeDegree(question.degree),
+      courseId: resolvedCourseId ?? 0,
+      options: question.options ?? [],
+      correctOptionText: question.correctOptionText ?? '',
+    };
   }
 
   private mergeQuestionsById(

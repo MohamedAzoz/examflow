@@ -41,10 +41,19 @@ export class CreateExamModalComponent {
   readonly isRandomQuestions = signal(true);
   readonly isRandomAnswers = signal(false);
 
+  readonly selectedDepartmentName = computed(() => {
+    const selectedId = this.departmentId();
+    if (selectedId <= 0) {
+      return 'All departments (general exam for this level)';
+    }
+
+    const selected = this.departments().find((department) => department.id === selectedId);
+    return selected?.name ?? 'All departments (general exam for this level)';
+  });
+
   readonly canSubmit = computed(() => {
     const hasTitle = this.title().trim().length > 0;
     const hasStartTime = this.startTime().trim().length > 0;
-    const hasDepartment = this.departmentId() > 0;
 
     const durationValid = this.durationMinutes() > 0;
     const passingValid = this.passingScore() > 0 && this.passingScore() <= 100;
@@ -54,7 +63,6 @@ export class CreateExamModalComponent {
     return (
       hasTitle &&
       hasStartTime &&
-      hasDepartment &&
       durationValid &&
       passingValid &&
       totalDegreeValid &&
@@ -64,26 +72,27 @@ export class CreateExamModalComponent {
   });
 
   constructor() {
-    effect(
-      () => {
-        const isVisible = this.visible();
-        const departments = this.departments();
+    effect(() => {
+      const isVisible = this.visible();
+      const departments = this.departments();
 
-        if (!isVisible) {
-          this.hasOpenedInCurrentCycle.set(false);
-          return;
-        }
-
-        if (!this.hasOpenedInCurrentCycle()) {
-          this.resetForm();
-          this.hasOpenedInCurrentCycle.set(true);
-        }
-
-        if (this.departmentId() <= 0 && departments.length > 0) {
-          this.departmentId.set(departments[0].id);
-        }
+      if (!isVisible) {
+        this.hasOpenedInCurrentCycle.set(false);
+        return;
       }
-    );
+
+      if (!this.hasOpenedInCurrentCycle()) {
+        this.resetForm();
+        this.hasOpenedInCurrentCycle.set(true);
+      }
+
+      if (
+        this.departmentId() > 0 &&
+        !departments.some((department) => department.id === this.departmentId())
+      ) {
+        this.departmentId.set(0);
+      }
+    });
   }
 
   onBackdropClick(event: MouseEvent): void {
@@ -116,7 +125,8 @@ export class CreateExamModalComponent {
       isRandomQuestions: this.isRandomQuestions(),
       isRandomAnswers: this.isRandomAnswers(),
       academicLevel: this.normalizeRange(this.academicLevel(), 1, 6, 1),
-      departmentsIds: [this.departmentId()],
+      departmentsIds:
+        this.departmentId() > 0 ? [this.normalizePositive(this.departmentId(), 0)] : [],
     });
   }
 

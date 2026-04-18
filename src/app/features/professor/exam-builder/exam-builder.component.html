@@ -55,15 +55,10 @@
   }
 
   <section class="relative flex h-[calc(100dvh-56px)] flex-col md:flex-row">
-    <aside
-      class="relative shrink-0 overflow-hidden bg-card-bg transition-[width] duration-200"
-      [class.w-0]="isQuestionBankCollapsed()"
-      [class.w-full]="!isQuestionBankCollapsed()"
-      [class.md:w-80]="!isQuestionBankCollapsed()"
-      [class.md:border-r]="!isQuestionBankCollapsed()"
-      [class.md:border-border]="!isQuestionBankCollapsed()"
-    >
-      @if (!isQuestionBankCollapsed()) {
+    @if (!isQuestionBankCollapsed()) {
+      <aside
+        class="relative w-full shrink-0 border-b border-border bg-card-bg md:w-80 md:border-b-0 md:border-r"
+      >
         <app-question-bank
           [examId]="examId()"
           [courseId]="courseId()"
@@ -71,8 +66,8 @@
           (createNewQuestion)="requestCreateQuestionFromBank()"
           (closeRequested)="onQuestionBankCloseRequested()"
         ></app-question-bank>
-      }
-    </aside>
+      </aside>
+    }
 
     @if (isQuestionBankCollapsed()) {
       <button
@@ -100,10 +95,10 @@
         [departments]="departments()"
         [activeCourseName]="exam()?.courseName || ''"
         [saving]="facade.savingExam()"
-        [publishing]="facade.publishingExam()"
         (saveUpdates)="onExamSettingsSave($event)"
         (publishExam)="publishExam()"
       ></app-exam-settings>
+
     </div>
   </section>
 </div>

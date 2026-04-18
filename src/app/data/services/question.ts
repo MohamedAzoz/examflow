@@ -23,13 +23,16 @@ CourseId
 PageIndex
 PageSize
   */
+
   getAllQuestions(data: IGetQuestion): Observable<IQuestionResponse[]> {
     let params = new HttpParams();
     params = this.appendParam(params, 'QuestionTextSearch', data.QuestionTextSearch);
     if (data.QuestionType !== 0) {
       params = this.appendParam(params, 'QuestionType', data.QuestionType);
     }
-    params = this.appendParam(params, 'CourseId', data.CourseId);
+    if (typeof data.CourseId === 'number' && data.CourseId > 0) {
+      params = this.appendParam(params, 'CourseId', data.CourseId);
+    }
     params = this.appendParam(params, 'PageIndex', data.PageIndex);
     params = this.appendParam(params, 'PageSize', data.PageSize);
 
@@ -134,7 +137,11 @@ PageSize
 
   // POST: /api/Question/import-questions
   importQuestions(data: IQuestionImport): Observable<unknown> {
-    return this.http.post(`${environment.apiUrl}/Question/import-questions`, data);
+    const formData = new FormData();
+    formData.append('excelFile', data.excelFile);
+    formData.append('courseId', String(data.courseId));
+
+    return this.http.post(`${environment.apiUrl}/Question/import-questions`, formData);
   }
 
   //POST: /api/Question/upload-media

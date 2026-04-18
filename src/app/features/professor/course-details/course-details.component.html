@@ -42,9 +42,9 @@
         icon="pi-database"
         title="Question Bank"
         description="Add, edit, and organize the question pool. Categorize by difficulty, topic, and track usage statistics across terms."
-        buttonLabel="Coming Soon"
+        buttonLabel="Open Question Bank"
         buttonVariant="outline"
-        [disabled]="true"
+        (action)="openQuestionBank(selectedCourse.courseId)"
       ></app-feature-action-card>
     </section>
 

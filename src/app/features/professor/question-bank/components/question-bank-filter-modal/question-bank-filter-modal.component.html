@@ -1,0 +1,60 @@
+@if (visible()) {
+  <div
+    class="fixed inset-0 z-350 flex items-center justify-center bg-slate-950/45 p-4"
+    (click)="onBackdropClick($event)"
+  >
+    <section class="w-full max-w-md rounded-2xl border border-border bg-card-bg shadow-2xl">
+      <header class="flex items-center justify-between border-b border-border px-5 py-4">
+        <div>
+          <p class="text-xs font-bold uppercase tracking-[0.12em] text-text-secondary">Filters</p>
+          <h2 class="text-lg font-bold text-text-primary">Question Filters</h2>
+        </div>
+
+        <button
+          type="button"
+          class="btn inline-flex h-8 w-8 items-center justify-center rounded-lg text-text-secondary transition hover:bg-surface"
+          aria-label="Close filter dialog"
+          (click)="onClose()"
+        >
+          <i class="pi pi-times text-sm" aria-hidden="true"></i>
+        </button>
+      </header>
+
+      <div class="space-y-4 px-5 py-4">
+        <label class="space-y-1 block">
+          <span class="text-xs font-bold uppercase tracking-[0.12em] text-text-secondary"
+            >Question Type</span
+          >
+          <select
+            class="h-10 w-full rounded-xl border border-border bg-surface px-3 text-sm text-text-primary outline-none"
+            [ngModel]="draftQuestionType()"
+            (ngModelChange)="draftQuestionType.set(toQuestionType($event))"
+          >
+            <option [ngValue]="0">All Types</option>
+            <option [ngValue]="1">Multiple Choice (MCQ)</option>
+            <option [ngValue]="2">True / False</option>
+            <option [ngValue]="3">Essay</option>
+          </select>
+        </label>
+      </div>
+
+      <footer class="flex items-center justify-end gap-2 border-t border-border px-5 py-4">
+        <button
+          type="button"
+          class="btn h-10 rounded-xl border border-border bg-surface px-4 text-sm font-semibold text-text-secondary transition hover:bg-surface-container"
+          (click)="onReset()"
+        >
+          Reset
+        </button>
+
+        <button
+          type="button"
+          class="btn h-10 rounded-xl bg-primary px-4 text-sm font-semibold text-white transition hover:brightness-95"
+          (click)="onApply()"
+        >
+          Apply Filters
+        </button>
+      </footer>
+    </section>
+  </div>
+}

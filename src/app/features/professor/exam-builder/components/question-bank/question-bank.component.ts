@@ -12,9 +12,12 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { finalize } from 'rxjs';
 import { AppMessageService } from '../../../../../core/services/app-message';
 import { QuestionType } from '../../../../../data/enums/question-type';
+import {
+  IAssignQuestion,
+  IAssignQuestionsToExam,
+} from '../../../../../data/models/ExamQuestions/IAssignQuestionsToExam';
 import { IQuestionResponse } from '../../../../../data/models/question/iquestion-response';
 import { ExamBuilderFacade } from '../../../services/exam-builder.facade';
 
@@ -47,7 +50,6 @@ export class QuestionBankComponent {
 
   readonly searchInput = signal('');
   readonly selectedType = signal<QuestionType>(QuestionType.Unknown);
-  readonly selectedQuestionIds = signal<number[]>([]);
   readonly localErrorMessage = signal<string | null>(null);
 
   private readonly debouncedSearchText = signal('');
@@ -64,49 +66,47 @@ export class QuestionBankComponent {
   readonly currentPageIndex = computed(() => this.facade.questionBank().pageIndex);
   readonly isLoading = computed(() => this.facade.loadingQuestionBank());
   readonly isAssigning = computed(() => this.facade.mutatingQuestions());
+  readonly selectedQuestionIds = computed(() => this.facade.selectedQuestionIds());
   readonly errorMessage = computed(() => this.localErrorMessage() ?? this.facade.error());
 
   readonly selectedCount = computed(() => this.selectedQuestionIds().length);
+  readonly pendingSelectedCount = computed(
+    () => this.selectedQuestionIds().filter((id) => !this.facade.isPersistedQuestion(id)).length,
+  );
   readonly isInitialLoading = computed(() => this.isLoading() && this.questions().length === 0);
   readonly isLoadingMore = computed(() => this.isLoading() && this.questions().length > 0);
 
   readonly canAssignSelected = computed(() => {
     const currentExamId = this.examId() ?? 0;
-    return currentExamId > 0 && this.selectedCount() > 0 && !this.isAssigning();
+    return currentExamId > 0 && this.pendingSelectedCount() > 0 && !this.isAssigning();
   });
 
   constructor() {
-    effect(
-      (onCleanup) => {
-        const search = this.searchInput().trim();
-        const timerId = setTimeout(() => {
-          this.debouncedSearchText.set(search);
-        }, 350);
+    effect((onCleanup) => {
+      const search = this.searchInput().trim();
+      const timerId = setTimeout(() => {
+        this.debouncedSearchText.set(search);
+      }, 350);
 
-        onCleanup(() => clearTimeout(timerId));
-      }
-    );
+      onCleanup(() => clearTimeout(timerId));
+    });
 
-    effect(
-      () => {
-        const currentCourseId = this.courseId();
-        this.selectedType();
-        this.debouncedSearchText();
-        this.pageSize();
+    effect(() => {
+      const currentCourseId = this.courseId();
+      this.selectedType();
+      this.debouncedSearchText();
+      this.pageSize();
 
-        if (!currentCourseId || currentCourseId <= 0) {
-          this.selectedQuestionIds.set([]);
-          this.localErrorMessage.set(null);
-          this.facade.resetQuestionBank();
-          return;
-        }
-
-        this.facade.setCourseId(currentCourseId);
-        this.selectedQuestionIds.set([]);
+      if (!currentCourseId || currentCourseId <= 0) {
         this.localErrorMessage.set(null);
-        this.loadPage(1);
+        this.facade.resetQuestionBank();
+        return;
       }
-    );
+
+      this.facade.setCourseId(currentCourseId);
+      this.localErrorMessage.set(null);
+      this.loadPage(1);
+    });
   }
 
   onSearchInputChange(value: string): void {
@@ -142,13 +142,21 @@ export class QuestionBankComponent {
   }
 
   isSelected(questionId: number): boolean {
-    return this.selectedQuestionIds().includes(questionId);
+    return this.facade.isSelectedQuestion(questionId);
   }
 
   toggleSelection(questionId: number): void {
-    this.selectedQuestionIds.update((ids) =>
-      ids.includes(questionId) ? ids.filter((id) => id !== questionId) : [...ids, questionId],
-    );
+    if (this.facade.isSelectedQuestion(questionId)) {
+      this.facade.deselectQuestionFromBank(questionId);
+      return;
+    }
+
+    const selectedQuestion = this.questions().find((question) => question.id === questionId);
+    if (!selectedQuestion) {
+      return;
+    }
+
+    this.facade.selectQuestionFromBank(selectedQuestion);
   }
 
   assignSelectedQuestions(): void {
@@ -163,21 +171,45 @@ export class QuestionBankComponent {
       return;
     }
 
+    const assignedById = new Map(
+      this.facade.assignedQuestions().map((question) => [question.id, question]),
+    );
+
+    const questions: IAssignQuestion[] = selectedIds
+      .filter((id) => !this.facade.isPersistedQuestion(id))
+      .map((id) => {
+        const sourceFromCenter = assignedById.get(id);
+        const sourceFromBank = this.questions().find((question) => question.id === id);
+
+        const degreeCandidate = sourceFromCenter?.degree ?? sourceFromBank?.degree ?? 1;
+        const normalizedDegree =
+          Number.isFinite(degreeCandidate) && degreeCandidate > 0 ? Math.floor(degreeCandidate) : 1;
+
+        return {
+          id,
+          questionDegree: normalizedDegree,
+        };
+      });
+
+    if (questions.length === 0) {
+      this.appMessageService.addInfoMessage('All selected questions are already assigned.');
+      return;
+    }
+
+    const payload: IAssignQuestionsToExam = {
+      examId: currentExamId,
+      questions,
+    };
+
     this.localErrorMessage.set(null);
 
     this.facade
-      .assignQuestionsToExam(currentExamId, selectedIds)
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        finalize(() => {
-          // State completion is handled by facade; this finalize keeps stream local.
-        }),
-      )
+      .assignQuestionsToExam(payload)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
           this.appMessageService.addSuccessMessage('Selected questions assigned successfully.');
-          this.assignDone.emit(selectedIds);
-          this.selectedQuestionIds.set([]);
+          this.assignDone.emit(questions.map((question) => question.id));
         },
         error: (error) => {
           this.localErrorMessage.set(

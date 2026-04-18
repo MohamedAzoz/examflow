@@ -18,7 +18,7 @@ export class ProfessorExam {
   }
 
   updateExam(exam: IupdateExam) {
-    return this.http.post(`${environment.apiUrl}/ProfessorExam/update`, exam);
+    return this.http.put(`${environment.apiUrl}/ProfessorExam/update`, exam);
   }
 
   deleteExam(examId: number) {

@@ -1,0 +1,54 @@
+<div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+  <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-2.5">
+    <label class="relative block w-full sm:w-84">
+      <i
+        class="pi pi-search pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-xs text-text-secondary"
+      ></i>
+      <input
+        type="search"
+        class="h-10 w-full rounded-xl border border-border bg-surface pl-9 pr-3 text-sm text-text-primary outline-none"
+        [value]="searchValue()"
+        [disabled]="disabled()"
+        (input)="onSearchInput($any($event.target).value)"
+        placeholder="Search questions, tags..."
+      />
+    </label>
+
+    <button
+      type="button"
+      class="btn inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-border bg-surface px-4 text-sm font-semibold text-text-secondary transition hover:bg-surface-container disabled:cursor-not-allowed disabled:opacity-60"
+      [disabled]="disabled()"
+      (click)="onOpenFilter()"
+    >
+      <i class="pi pi-filter text-xs" aria-hidden="true"></i>
+      Filter
+      @if (filterCount() > 0) {
+        <span class="rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-white">
+          {{ filterCount() }}
+        </span>
+      }
+    </button>
+  </div>
+
+  <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-end">
+    <button
+      type="button"
+      class="btn inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-border bg-surface px-4 text-sm font-semibold text-primary transition hover:bg-primary-light disabled:cursor-not-allowed disabled:opacity-60"
+      [disabled]="disabled()"
+      (click)="onOpenImport()"
+    >
+      <i class="pi pi-file-import text-xs" aria-hidden="true"></i>
+      Import (.xlsx)
+    </button>
+
+    <button
+      type="button"
+      class="btn inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-white shadow-lg shadow-primary/20 transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
+      [disabled]="disabled()"
+      (click)="onOpenCreate()"
+    >
+      <i class="pi pi-plus text-[11px]" aria-hidden="true"></i>
+      Create New Question
+    </button>
+  </div>
+</div>

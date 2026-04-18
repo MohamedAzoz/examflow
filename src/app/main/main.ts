@@ -108,6 +108,7 @@ export class Main {
 
       // Professor Features
       'my-courses': 'My Courses',
+      'question-bank': 'Question Bank',
       exams: 'Exams Management',
     };
     return titles[this.activeRoute()] ?? 'Main Panel';
@@ -151,6 +152,15 @@ export class Main {
   private syncActiveRouteWithUrl(url: string): void {
     const cleanUrl = url.split('?')[0];
     const segments = cleanUrl.split('/').filter(Boolean);
+
+    if (
+      this.userRole() === 'professor' &&
+      segments.includes('my-courses') &&
+      segments.includes('question-bank')
+    ) {
+      this.activeRoute.set('question-bank');
+      return;
+    }
 
     if (
       this.userRole() === 'professor' &&
