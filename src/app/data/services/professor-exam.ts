@@ -1,6 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { IcreateExam } from '../models/ProfessorExam/icreate-exam';
 import { IupdateExam } from '../models/ProfessorExam/IupdateExam';
@@ -14,21 +13,19 @@ import { IexamByIddetails } from '../models/ProfessorExam/Iexamdetails.2';
 export class ProfessorExam {
   private http = inject(HttpClient);
 
-  async createExam(exam: IcreateExam): Promise<{ id: number }> {
-    return firstValueFrom(
-      this.http.post<{ id: number }>(`${environment.apiUrl}/ProfessorExam/create`, exam),
-    );
+  createExam(exam: IcreateExam) {
+    return this.http.post<{ id: number }>(`${environment.apiUrl}/ProfessorExam/create`, exam);
   }
 
-  async updateExam(exam: IupdateExam): Promise<unknown> {
-    return firstValueFrom(this.http.put(`${environment.apiUrl}/ProfessorExam/update`, exam));
+  updateExam(exam: IupdateExam) {
+    return this.http.post(`${environment.apiUrl}/ProfessorExam/update`, exam);
   }
 
-  async deleteExam(examId: number): Promise<unknown> {
-    return firstValueFrom(this.http.delete(`${environment.apiUrl}/ProfessorExam/${examId}`));
+  deleteExam(examId: number) {
+    return this.http.delete(`${environment.apiUrl}/ProfessorExam/${examId}`);
   }
 
-  async getExamDetails(details: Iexamdetails = {}): Promise<IexamDetails> {
+  getExamDetails(details: Iexamdetails = {}) {
     let params = new HttpParams();
 
     params = this.appendParam(params, 'courseId', details.courseId);
@@ -41,21 +38,11 @@ export class ProfessorExam {
     params = this.appendParam(params, 'pageIndex', details.pageIndex);
     params = this.appendParam(params, 'pageSize', details.pageSize);
 
-    return firstValueFrom(
-      this.http.get<IexamDetails>(`${environment.apiUrl}/ProfessorExam/details`, { params }),
-    );
+    return this.http.get<IexamDetails>(`${environment.apiUrl}/ProfessorExam/details`, { params });
   }
 
-  async publishExam(examId: number): Promise<unknown> {
-    return firstValueFrom(
-      this.http.put(`${environment.apiUrl}/ProfessorExam/${examId}/publish`, {}),
-    );
-  }
-
-  async getExamById(examId: number): Promise<IexamByIddetails> {
-    return firstValueFrom(
-      this.http.get<IexamByIddetails>(`${environment.apiUrl}/ProfessorExam/${examId}`),
-    );
+  publishExam(examId: number) {
+    return this.http.put(`${environment.apiUrl}/ProfessorExam/${examId}/publish`, {});
   }
 
   private appendParam(
@@ -73,33 +60,27 @@ export class ProfessorExam {
 
     return params.set(key, String(value));
   }
+  // /api/ProfessorExam/{id}
+  public getExamById(examId: number) {
+    return this.http.get<IexamByIddetails>(`${environment.apiUrl}/ProfessorExam/${examId}`);
+  }
 
   //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-  public async getExamResultsReport(examId: number): Promise<unknown> {
-    return firstValueFrom(
-      this.http.get(`${environment.apiUrl}/ProfessorExam/results-report/${examId}`),
-    );
+  public getExamResultsReport(examId: number) {
+    return this.http.get(`${environment.apiUrl}/ProfessorExam/results-report/${examId}`);
+  }
+  public getExamCheatingReport(examId: number) {
+    return this.http.get(`${environment.apiUrl}/ProfessorExam/cheating-report/${examId}`);
   }
 
-  public async getExamCheatingReport(examId: number): Promise<unknown> {
-    return firstValueFrom(
-      this.http.get(`${environment.apiUrl}/ProfessorExam/cheating-report/${examId}`),
-    );
+  public getStudentsEssaysForGrading(examId: number) {
+    return this.http.get(`${environment.apiUrl}/ProfessorExam/students-essays-grading`, {
+      params: { examId },
+    });
   }
-
-  public async getStudentsEssaysForGrading(examId: number): Promise<unknown> {
-    return firstValueFrom(
-      this.http.get(`${environment.apiUrl}/ProfessorExam/students-essays-grading`, {
-        params: { examId },
-      }),
-    );
-  }
-
   public gradeEssays(
     gradingData: { examId: number; studentId: number; questionId: number; grade: number }[],
-  ): Promise<unknown> {
-    return firstValueFrom(
-      this.http.post(`${environment.apiUrl}/ProfessorExam/grade-essays`, gradingData),
-    );
+  ) {
+    return this.http.post(`${environment.apiUrl}/ProfessorExam/grade-essays`, gradingData);
   }
 }

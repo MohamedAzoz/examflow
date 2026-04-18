@@ -6,7 +6,6 @@ import { ButtonModule } from 'primeng/button';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
-import { AUTH_ROUTES, ROUTES } from '../../../core/constants/const.route';
 import { Theme } from '../../../core/services/theme';
 import { AuthFacade } from '../services/auth-facade';
 
@@ -29,9 +28,6 @@ import { AuthFacade } from '../services/auth-facade';
 export class RequestEmail implements OnDestroy {
   readonly authFacade = inject(AuthFacade);
   private readonly theme = inject(Theme);
-
-  readonly routes = ROUTES;
-  readonly authRoutes = AUTH_ROUTES;
 
   readonly isSubmitted = signal(false);
   readonly submittedEmail = signal('');

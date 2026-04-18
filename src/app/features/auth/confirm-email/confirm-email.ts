@@ -33,12 +33,14 @@ export class ConfirmEmail implements OnInit, OnDestroy {
   readonly confirmationPayload = computed<IconfirmEmail | null>(() => {
     const token = this.queryParams().get('token')?.trim() ?? '';
     const newEmail = this.queryParams().get('newEmail')?.trim() ?? '';
-    if (!token || !newEmail) {
+    const userId = this.queryParams().get('userId')?.trim() ?? '';
+    if (!token || !newEmail || !userId) {
       return null;
     }
     return {
-      token,
-      newEmail,
+      "token": token,
+      "userId": userId,
+      "newEmail": newEmail
     };
   });
 

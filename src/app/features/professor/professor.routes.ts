@@ -11,18 +11,18 @@ export const professorRoutes: Routes = [
         pathMatch: 'full',
       },
       {
-        path: ROUTESPROFESSOR.COURSE_EXAM_BUILDER.path,
-        title: ROUTESPROFESSOR.COURSE_EXAM_BUILDER.title,
-        loadComponent: () =>
-          import('./exam-builder/exam-builder.component').then((m) => m.ExamBuilderComponent),
-      },
-      {
         path: ROUTESPROFESSOR.COURSE_EXAMS.path,
         title: ROUTESPROFESSOR.COURSE_EXAMS.title,
         loadComponent: () =>
           import('./exams-management/exams-management.component').then(
             (m) => m.ExamsManagementComponent,
           ),
+      },
+      {
+        path: ROUTESPROFESSOR.COURSE_EXAM_BUILDER.path,
+        title: ROUTESPROFESSOR.COURSE_EXAM_BUILDER.title,
+        loadComponent: () =>
+          import('./exam-builder/exam-builder.component').then((m) => m.ExamBuilderComponent),
       },
       {
         path: ROUTESPROFESSOR.COURSE_DETAILS.path,

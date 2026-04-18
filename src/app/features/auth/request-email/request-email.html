@@ -105,21 +105,6 @@
             {{ authFacade.isLoading() ? 'Sending...' : 'Send Verification Link' }}
           </button>
         </form>
-
-        <div class="mt-6 text-center text-sm text-slate-600">
-          Back to
-          <a
-            [routerLink]="['/', routes.LOGIN.path]"
-            class="font-semibold text-sky-700 transition hover:text-sky-800 hover:underline"
-            >Login</a
-          >
-          or
-          <a
-            [routerLink]="['/', authRoutes.FORGET_PASSWORD.path]"
-            class="font-semibold text-sky-700 transition hover:text-sky-800 hover:underline"
-            >Reset Password</a
-          >
-        </div>
       </section>
     </div>
   </div>

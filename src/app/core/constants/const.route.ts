@@ -52,3 +52,7 @@ export const ROUTESPROFESSOR = {
     title: 'Exam Builder',
   },
 };
+
+export function examBuilderPath(courseId: number, examId: number): string {
+  return `/main/professor/my-courses/${courseId}/exams/${examId}/builder`;
+}
