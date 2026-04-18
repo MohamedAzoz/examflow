@@ -49,12 +49,12 @@ export const adminRoles: Routes = [
         (m) => m.EnrollStudentsManagment,
       ),
   },
-  {
-    path: ROUTESADMIN.RESET_PASSWORDS.path,
-    title: ROUTESADMIN.RESET_PASSWORDS.title,
-    loadComponent: () =>
-      import('../auth/reset-passwords/reset-passwords').then((m) => m.ResetPasswords),
-  },
+  // {
+  //   path: ROUTESADMIN.RESET_PASSWORDS.path,
+  //   title: ROUTESADMIN.RESET_PASSWORDS.title,
+  //   loadComponent: () =>
+  //     import('../auth/reset-passwords/reset-passwords').then((m) => m.ResetPasswords),
+  // },
   {
     path: ROUTESADMIN.SYSTEM_SETTINGS.path,
     title: ROUTESADMIN.SYSTEM_SETTINGS.title,

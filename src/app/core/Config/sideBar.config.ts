@@ -1,4 +1,4 @@
-import { ROUTESADMIN, ROUTESPROFESSOR, ROUTESSTUDENT } from '../constants/const.route';
+import { AUTH_ROUTES, ROUTESADMIN, ROUTESPROFESSOR, ROUTESSTUDENT } from '../constants/const.route';
 import { NavItem } from '../../layout/nav-item';
 
 export const ADMIN_NAV_ITEMS: readonly NavItem[] = [
@@ -21,9 +21,9 @@ export const ADMIN_NAV_ITEMS: readonly NavItem[] = [
     route: ROUTESADMIN.ASSIGN_COURSES.path,
   },
   {
-    label: ROUTESADMIN.RESET_PASSWORDS.title,
+    label: AUTH_ROUTES.RESET_PASSWORD.title,
     icon: 'pi-pen-to-square',
-    route: ROUTESADMIN.RESET_PASSWORDS.path,
+    route: AUTH_ROUTES.RESET_PASSWORD.path,
   },
   {
     label: ROUTESADMIN.ENROLL_STUDENTS.title,

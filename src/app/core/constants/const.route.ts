@@ -30,7 +30,7 @@ export const ROUTESADMIN = {
   DEPARTMENTS: { path: 'departments-managment', title: 'Departments Management' },
   ASSIGN_COURSES: { path: 'assign-courses-managment', title: 'Assign Courses' },
   ENROLL_STUDENTS: { path: 'enroll-students-managment', title: 'Enroll Students' },
-  RESET_PASSWORDS: { path: 'reset-passwords-managment', title: 'Reset Passwords' },
+  // RESET_PASSWORDS: { path: 'reset-passwords-managment', title: 'Reset Passwords' },
   SYSTEM_SETTINGS: { path: 'system-settings-managment', title: 'System Settings' },
 };
 
