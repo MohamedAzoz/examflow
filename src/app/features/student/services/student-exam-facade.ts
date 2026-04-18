@@ -1,6 +1,7 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { finalize, of, tap } from 'rxjs';
+import { catchError, finalize, from, of, switchMap, tap, throwError } from 'rxjs';
+import { AppDatabase } from '../../../core/AppDbContext/app-database';
 import { Timer } from '../../../core/services/timer';
 import { Toggle } from '../../../core/services/toggle';
 import { IavailableExams } from '../../../data/models/StudentExam/IavailableExams';
@@ -22,6 +23,7 @@ export class StudentExamFacade {
   private readonly toggleService = inject(Toggle);
   private readonly timerService = inject(Timer);
   private readonly appMessage = inject(AppMessageService);
+  private readonly appDb = inject(AppDatabase);
   private readonly isOnline = connectivitySignal();
 
   readonly upcomingExams = signal<IavailableExams[]>([]);
@@ -63,7 +65,13 @@ export class StudentExamFacade {
 
     const start = new Date(exam.startTime).getTime();
     const joinWindowEnd = start + exam.durationMinutes * 60_000 * this.percentage;
-    return Math.floor(joinWindowEnd - this.currentTime());
+    const remainingMs = joinWindowEnd - this.currentTime();
+
+    if (remainingMs <= 0) {
+      return 0;
+    }
+
+    return Math.ceil(remainingMs / 1000);
   });
 
   readonly activeExamRemainingSeconds = computed<number>(() => {
@@ -183,18 +191,18 @@ export class StudentExamFacade {
     this.errorMessage.set(null);
 
     return this.studentExamService.submitExam(exam).pipe(
-      tap(
-        () => {
-          this.toggleService.examMode(false);
-          this.resetExamSessionState();
-          this.appMessage.addSuccessMessage('Exam submitted successfully.');
-          this.router.navigate(['/main/student/past-results']);
-        },
-        (error) => {
-          const detail = this.appMessage.showHttpError(error, 'Failed to submit exam.');
-          this.errorMessage.set(detail);
-        },
-      ),
+      switchMap(() => from(this.appDb.clearExamSessionState(exam.examId))),
+      tap(() => {
+        this.toggleService.examMode(false);
+        this.resetExamSessionState();
+        this.appMessage.addSuccessMessage('Exam submitted successfully.');
+        this.router.navigate(['/main/student/past-results']);
+      }),
+      catchError((error) => {
+        const detail = this.appMessage.showHttpError(error, 'Failed to submit exam.');
+        this.errorMessage.set(detail);
+        return throwError(() => error);
+      }),
       finalize(() => this.isLoading.set(false)),
     );
   }

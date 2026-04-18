@@ -9,12 +9,12 @@
       [style.background]="scoreRingBackground()"
     >
       <div class="grid place-items-center gap-1 text-center px-2">
-        <span class="m-0 text-[0.7rem] uppercase tracking-[0.14em] text-text-secondary font-black"
+        <span class="m-0 text-[0.7rem] uppercase tracking-[0.14em] text-gray font-black"
           >Score</span
         >
-        <strong class="text-text-primary text-[clamp(1.8rem,3.5vw,2.3rem)] leading-none font-black">
+        <strong class="text-[clamp(1.8rem,3.5vw,2.3rem)] leading-none font-black" [style.color]="gradeTheme().ringColor">
           {{ studentScore() | number: '1.0-1' }}
-          <span class="text-[0.95rem] font-bold text-text-secondary">/{{ examMaxScore() }}</span>
+          <span class="text-[0.95rem] font-bold text-gray">/{{ examMaxScore() }}</span>
         </strong>
         <small class="text-base font-black" [style.color]="gradeTheme().ringColor"
           >{{ percentage() | number: '1.0-0' }}%</small

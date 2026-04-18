@@ -1,14 +1,15 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, RouterLink } from '@angular/router';
-import { ROUTES, ROUTESPROFESSOR } from '../../../core/constants/const.route';
+import { ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { IcreateExam } from '../../../data/models/ProfessorExam/icreate-exam';
 import { Iexamdetails } from '../../../data/models/ProfessorExam/Iexamdetails.1';
 import { IexamDetailsData } from '../../../data/models/ProfessorExam/IexamDetails';
-import { IupdateExam } from '../../../data/models/ProfessorExam/IupdateExam';
+import { ROUTES } from '../../../core/constants/const.route';
+import { ROUTESPROFESSOR } from '../../../core/constants/const.route';
 import { ProfessorExamFacade } from '../services/professor-exam-facade';
+import { ProfessorExamBuilderFacade } from '../services/professor-exam-builder-facade';
 import { ExamFilterModalComponent } from './components/exam-filter-modal/exam-filter-modal.component';
 import {
   ExamEditorModalComponent,
@@ -19,25 +20,15 @@ import { ExamsTableComponent } from './components/exams-table/exams-table.compon
 @Component({
   selector: 'app-exams-management',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterLink,
-    ExamsTableComponent,
-    ExamEditorModalComponent,
-    ExamFilterModalComponent,
-  ],
+  imports: [CommonModule, ExamsTableComponent, ExamEditorModalComponent, ExamFilterModalComponent],
   templateUrl: './exams-management.component.html',
   styleUrl: './exams-management.component.css',
 })
 export class ExamsManagementComponent {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   protected readonly examFacade = inject(ProfessorExamFacade);
-
-  protected readonly routes = ROUTES;
-  protected readonly professorRoutes = ROUTESPROFESSOR;
-
-  protected readonly examDetailsResource = this.examFacade.examDetailsResource;
-  protected readonly departmentsResource = this.examFacade.departmentsResource;
+  private readonly examBuilderFacade = inject(ProfessorExamBuilderFacade);
 
   protected readonly pageSize = signal(5);
   protected readonly pageIndex = signal(1);
@@ -45,8 +36,6 @@ export class ExamsManagementComponent {
   protected readonly filterVisible = signal(false);
 
   protected readonly editorVisible = signal(false);
-  protected readonly editorMode = signal<'create' | 'edit'>('create');
-  protected readonly selectedExam = signal<IexamDetailsData | null>(null);
   protected readonly currentFilters = this.examFacade.examsRequest;
 
   private readonly params = toSignal(this.route.paramMap, {
@@ -56,7 +45,7 @@ export class ExamsManagementComponent {
   protected readonly courseId = computed(() => {
     const rawId = this.params().get('courseId') ?? '';
     const parsed = Number(rawId);
-    return Number.isFinite(parsed) ? parsed : null;
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
   });
 
   protected readonly exams = computed(() => {
@@ -80,29 +69,35 @@ export class ExamsManagementComponent {
     return pages > 0 ? pages : 1;
   });
 
-  protected readonly isLoading = computed(
-    () =>
-      this.examDetailsResource.isLoading() ||
-      this.departmentsResource.isLoading() ||
-      this.examFacade.loading(),
+  protected readonly draftCount = computed(() => {
+    return this.exams().filter((exam) => exam.examStatus.toLowerCase().includes('draft')).length;
+  });
+
+  protected readonly publishedCount = computed(() => {
+    return this.exams().filter((exam) => exam.examStatus.toLowerCase().includes('publish')).length;
+  });
+
+  protected readonly noticeMessage = this.examFacade.notice;
+
+  protected readonly isDataLoading = computed(
+    () => this.examFacade.loadingExams() || this.examFacade.loadingDepartments(),
   );
 
-  protected readonly errorMessage = computed(() => {
-    const facadeError = this.examFacade.error();
-    if (facadeError) {
-      return facadeError;
-    }
+  protected readonly isMutating = computed(
+    () =>
+      this.examFacade.creatingExam() ||
+      this.examFacade.updatingExam() ||
+      this.examFacade.deletingExam() ||
+      this.examFacade.publishingExam(),
+  );
 
-    return (
-      this.readHttpError(this.examDetailsResource.error()) ||
-      this.readHttpError(this.departmentsResource.error())
-    );
-  });
+  protected readonly errorMessage = this.examFacade.error;
 
-  private syncCourseEffect() { effect(() => {
-    this.examFacade.setCourseId(this.courseId());
-  });
-}
+  private syncCourseEffect() {
+    effect(() => {
+      this.examFacade.setCourseId(this.courseId());
+    });
+  }
 
   constructor() {
     this.examFacade.setPagination(this.pageIndex(), this.pageSize());
@@ -110,8 +105,6 @@ export class ExamsManagementComponent {
   }
 
   protected openCreateModal(): void {
-    this.editorMode.set('create');
-    this.selectedExam.set(null);
     this.editorVisible.set(true);
   }
 
@@ -134,10 +127,14 @@ export class ExamsManagementComponent {
     this.pageIndex.set(1);
   }
 
-  protected openEditModal(exam: IexamDetailsData): void {
-    this.editorMode.set('edit');
-    this.selectedExam.set(exam);
-    this.editorVisible.set(true);
+  protected openBuilder(exam: IexamDetailsData): void {
+    const currentCourseId = this.courseId();
+    if (!currentCourseId) {
+      return;
+    }
+
+    this.examBuilderFacade.seedExamFromExisting(exam);
+    this.navigateToBuilder(currentCourseId, exam.id);
   }
 
   protected closeModal(): void {
@@ -145,49 +142,11 @@ export class ExamsManagementComponent {
   }
 
   protected submitExam(payload: ExamEditorSubmitPayload): void {
-    if (this.editorMode() === 'create') {
-      const createPayload: Omit<IcreateExam, 'courseId'> = {
-        title: payload.title,
-        passingScore: payload.passingScore,
-        startTime: payload.startTime,
-        durationMinutes: payload.durationMinutes,
-        totalDegree: payload.totalDegree,
-        isRandomQuestions: payload.isRandomQuestions,
-        isRandomAnswers: payload.isRandomAnswers,
-        academicLevel: payload.academicLevel,
-        departmentsIds: payload.departmentsIds,
-      };
-
-      this.examFacade.createExam(createPayload).subscribe({
-        next: () => this.closeModal(),
-      });
-      return;
-    }
-
-    if (!payload.id) {
-      return;
-    }
-
-    const updatePayload: IupdateExam = {
-      id: payload.id,
-      title: payload.title,
-      startTime: payload.startTime,
-      durationMinutes: payload.durationMinutes,
-      passingScore: payload.passingScore,
-      isRandomQuestions: payload.isRandomQuestions,
-      isRandomAnswers: payload.isRandomAnswers,
-      totalDegree: payload.totalDegree,
-      academicLevel: payload.academicLevel,
-      departmentId: payload.departmentsIds[0] ?? 0,
-    };
-
-    this.examFacade.updateExam(updatePayload).subscribe({
-      next: () => this.closeModal(),
-    });
+    void this.handleCreateExam(payload);
   }
 
   protected publishExam(exam: IexamDetailsData): void {
-    this.examFacade.publishExam(exam.id).subscribe();
+    void this.examFacade.publishExam(exam.id);
   }
 
   protected deleteExam(exam: IexamDetailsData): void {
@@ -196,12 +155,19 @@ export class ExamsManagementComponent {
       return;
     }
 
-    this.examFacade.deleteExam(exam.id).subscribe();
+    void this.examFacade.deleteExam(exam.id);
   }
 
   protected retry(): void {
-    this.examFacade.reloadExams();
-    this.departmentsResource.reload();
+    void this.examFacade.reloadAll();
+  }
+
+  protected dismissNotice(): void {
+    this.examFacade.notice.set(null);
+  }
+
+  protected dismissError(): void {
+    this.examFacade.error.set(null);
   }
 
   protected previousPage(): void {
@@ -224,26 +190,44 @@ export class ExamsManagementComponent {
     this.examFacade.setPagination(next, this.pageSize());
   }
 
-  private readHttpError(error: unknown): string | null {
-    if (!error) {
-      return null;
+  private async handleCreateExam(payload: ExamEditorSubmitPayload): Promise<void> {
+    const currentCourseId = this.courseId();
+    if (!currentCourseId) {
+      return;
     }
 
-    if (error instanceof HttpErrorResponse) {
-      const backendError = error.error as Record<string, unknown> | null;
-      const message = backendError?.['errorMessage'] ?? backendError?.['message'];
+    const createPayload: Omit<IcreateExam, 'courseId'> = {
+      title: payload.title,
+      passingScore: payload.passingScore,
+      startTime: payload.startTime,
+      durationMinutes: payload.durationMinutes,
+      totalDegree: payload.totalDegree,
+      isRandomQuestions: payload.isRandomQuestions,
+      isRandomAnswers: payload.isRandomAnswers,
+      academicLevel: payload.academicLevel,
+      departmentsIds: payload.departmentsIds,
+    };
 
-      if (typeof message === 'string' && message.trim().length > 0) {
-        return message;
-      }
-
-      return error.message || 'Failed to load exams.';
+    const response = await this.examFacade.createExam(createPayload);
+    if (!response) {
+      return;
     }
 
-    if (error instanceof Error) {
-      return error.message;
-    }
+    this.examBuilderFacade.seedExamFromCreate(response.id, createPayload);
+    this.closeModal();
+    this.navigateToBuilder(currentCourseId, response.id);
+  }
 
-    return 'Failed to load exams.';
+  private navigateToBuilder(courseId: number, examId: number): void {
+    this.router.navigate([
+      '/',
+      ROUTES.MAIN.path,
+      ROUTES.PROFESSOR.path,
+      ROUTESPROFESSOR.COURSES.path,
+      courseId,
+      'exams',
+      examId,
+      'builder',
+    ]);
   }
 }

@@ -90,8 +90,8 @@
               class="h-10 w-full rounded-lg border border-border/70 bg-surface px-3 text-sm text-text-primary outline-none"
             >
               <option value="">All departments</option>
-              @for (department of departments; track department.courseId) {
-                <option [value]="department.courseId">{{ department.courseName }}</option>
+              @for (department of departments; track department.id) {
+                <option [value]="department.id">{{ department.name }}</option>
               }
             </select>
           </div>

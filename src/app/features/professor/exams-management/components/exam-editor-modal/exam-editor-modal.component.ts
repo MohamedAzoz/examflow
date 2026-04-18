@@ -9,10 +9,9 @@ import {
   inject,
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { IexamDetailsData } from '../../../../../data/models/ProfessorExam/IexamDetails';
+import { IassignDepartments } from '../../../../../data/models/course/IassignDepartments';
 
 export interface ExamEditorSubmitPayload {
-  id?: number;
   title: string;
   startTime: string;
   durationMinutes: number;
@@ -35,14 +34,7 @@ export class ExamEditorModalComponent implements OnChanges {
   private readonly fb = inject(FormBuilder);
 
   @Input() visible = false;
-  @Input() mode: 'create' | 'edit' = 'create';
-  @Input() submitting = false;
-  @Input() exam: IexamDetailsData | null = null;
-  @Input() departments: {
-    courseId: number;
-    courseName: string;
-    courseCode: string;
-  }[] = [];
+  @Input() departments: IassignDepartments[] = [];
 
   @Output() closeModal = new EventEmitter<void>();
   @Output() submitExam = new EventEmitter<ExamEditorSubmitPayload>();
@@ -53,26 +45,14 @@ export class ExamEditorModalComponent implements OnChanges {
     durationMinutes: [120, [Validators.required, Validators.min(1)]],
     passingScore: [50, [Validators.required, Validators.min(1), Validators.max(100)]],
     totalDegree: [100, [Validators.required, Validators.min(1)]],
-    academicLevel: [1, [Validators.required, Validators.min(1), Validators.max(6)]],
+    academicLevel: [1, [Validators.required]],
     departmentsIds: [[] as number[], [Validators.required]],
     isRandomQuestions: [true],
     isRandomAnswers: [false],
   });
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (!this.visible) {
-      return;
-    }
-
-    const shouldSync =
-      !!changes['visible'] || !!changes['mode'] || !!changes['exam'] || !!changes['departments'];
-
-    if (!shouldSync) {
-      return;
-    }
-
-    if (this.mode === 'edit' && this.exam) {
-      this.patchForEdit(this.exam);
+    if (!this.visible || !changes['visible']) {
       return;
     }
 
@@ -98,14 +78,10 @@ export class ExamEditorModalComponent implements OnChanges {
       passingScore: Number(value.passingScore),
       totalDegree: Number(value.totalDegree),
       academicLevel: Number(value.academicLevel),
-      departmentsIds: (value.departmentsIds || []).map((id) => Number(id)).filter((id) => id > 0),
+      departmentsIds: value.departmentsIds || [],
       isRandomQuestions: !!value.isRandomQuestions,
       isRandomAnswers: !!value.isRandomAnswers,
     };
-
-    if (this.mode === 'edit' && this.exam) {
-      payload.id = this.exam.id;
-    }
 
     this.submitExam.emit(payload);
   }
@@ -122,39 +98,5 @@ export class ExamEditorModalComponent implements OnChanges {
       isRandomQuestions: true,
       isRandomAnswers: false,
     });
-  }
-
-  private patchForEdit(exam: IexamDetailsData): void {
-    const mappedDepartments = this.departments
-      .filter((item) => exam.departmentNames.includes(item.courseName))
-      .map((item) => item.courseId);
-
-    this.form.patchValue({
-      title: exam.title,
-      startTime: this.toLocalDateTimeInput(exam.startTime),
-      durationMinutes: exam.durationMinutes,
-      passingScore: exam.passingScore,
-      totalDegree: exam.totalDegree,
-      academicLevel: exam.academicLevel,
-      departmentsIds: mappedDepartments,
-      isRandomQuestions: exam.isRandomQuestions,
-      isRandomAnswers: exam.isRandomAnswers,
-    });
-  }
-
-  private toLocalDateTimeInput(dateLike: Date): string {
-    const date = new Date(dateLike);
-    if (Number.isNaN(date.getTime())) {
-      return '';
-    }
-
-    const pad = (value: number) => value.toString().padStart(2, '0');
-    const year = date.getFullYear();
-    const month = pad(date.getMonth() + 1);
-    const day = pad(date.getDate());
-    const hours = pad(date.getHours());
-    const minutes = pad(date.getMinutes());
-
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
   }
 }

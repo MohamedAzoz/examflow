@@ -35,6 +35,8 @@ export class Course {
   }
   // /api/Course/{id}/assign-departments
   assignDepartments(courseId: number) {
-    return this.http.get<IassignDepartments[]>(`${environment.apiUrl}/Course/${courseId}/assign-departments`);
+    return this.http.get<IassignDepartments[]>(
+      `${environment.apiUrl}/Course/${courseId}/assign-departments`,
+    );
   }
 }

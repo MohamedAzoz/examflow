@@ -13,6 +13,7 @@ import { ExamSortingOptions } from '../../../../../data/enums/ExamSortingOptions
 import { ProfessorExamStatus } from '../../../../../data/enums/ProfessorExamStatus';
 import { Iexamdetails } from '../../../../../data/models/ProfessorExam/Iexamdetails.1';
 import { IDepartmentById } from '../../../../../data/models/department/idepartment-by-id';
+import { IassignDepartments } from '../../../../../data/models/course/IassignDepartments';
 
 @Component({
   selector: 'app-exam-filter-modal',
@@ -25,11 +26,7 @@ export class ExamFilterModalComponent implements OnChanges {
   private readonly fb = inject(FormBuilder);
 
   @Input() visible = false;
-  @Input() departments: {
-    courseId: number;
-    courseName: string;
-    courseCode: string;
-  }[] = [];
+  @Input() departments: IassignDepartments[] = [];
   @Input() currentCourseId: number | null = null;
   @Input() initialFilters: Iexamdetails | null = null;
 

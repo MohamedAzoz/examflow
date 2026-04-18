@@ -3,7 +3,7 @@
   flex: 0 0 auto;
 }
 .sidebar .active-item {
-  background-color: #13626c !important;
+  background-color: var(--color-primary) !important;
   color: white !important;
 }
 

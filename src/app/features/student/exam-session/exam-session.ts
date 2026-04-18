@@ -238,6 +238,8 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
       this.clearPersistScheduler();
       await this.appDb.clearExamSessionState(examId);
       this.lastPersistSignature = null;
+    } catch {
+      // Facade already sets a user-facing error message.
     } finally {
       this.isSubmitting.set(false);
     }

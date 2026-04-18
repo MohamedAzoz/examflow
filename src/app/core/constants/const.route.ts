@@ -47,4 +47,8 @@ export const ROUTESPROFESSOR = {
   COURSES: { path: 'my-courses', title: 'My Courses' },
   COURSE_DETAILS: { path: 'my-courses/:courseId', title: 'Course Details' },
   COURSE_EXAMS: { path: 'my-courses/:courseId/exams', title: 'Exams Management' },
+  COURSE_EXAM_BUILDER: {
+    path: 'my-courses/:courseId/exams/:examId/builder',
+    title: 'Exam Builder',
+  },
 };

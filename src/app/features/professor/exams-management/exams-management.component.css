@@ -1,3 +1,27 @@
 :host {
   display: block;
 }
+
+.exams-management-shell {
+  position: relative;
+  isolation: isolate;
+}
+
+.exams-management-shell::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      55rem 18rem at 5% -15%,
+      color-mix(in oklab, var(--color-primary) 16%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      48rem 16rem at 95% -10%,
+      color-mix(in oklab, var(--color-primary) 9%, transparent),
+      transparent 72%
+    );
+}
