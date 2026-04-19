@@ -31,7 +31,9 @@ export class SidebarComponent {
   readonly userName = input<string>(this.identityService.userName() || '');
   readonly userRole = input<string>(this.identityService.userRole() || '');
   readonly activeRoute = input<string>('User Management');
+  readonly isAdmin = input<boolean>(this.identityService.isAdmin());
   readonly isStudent = input<boolean>(this.identityService.isStudent());
+  readonly isProfessor = input<boolean>(this.identityService.isProfessor());
 
   readonly navItemSelected = output<string>();
 

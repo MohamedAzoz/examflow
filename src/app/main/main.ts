@@ -54,6 +54,8 @@ export class Main {
 
   /** Is the user a student? */
   protected readonly isStudent = computed(() => this.userRole() === ROLES.Student);
+  protected readonly isAdmin = computed(() => this.userRole() === ROLES.Admin);
+  protected readonly isProfessor = computed(() => this.userRole() === ROLES.Professor);
   protected readonly hasConfirmedEmail = this.identityService.hasConfirmedEmail;
 
   /** Derived values from role */
@@ -110,6 +112,9 @@ export class Main {
       // Professor Features
       'my-courses': 'My Courses',
       'question-bank': 'Question Bank',
+      analysis: 'Analysis',
+      'prof-dashboard': 'Professor Dashboard',
+      'prof-settings': 'Professor Settings',
       exams: 'Exams Management',
     };
     return titles[this.activeRoute()] ?? 'Main Panel';

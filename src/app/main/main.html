@@ -18,6 +18,8 @@
         [userRole]="userRoleLabel()"
         [activeRoute]="activeRoute()"
         [isStudent]="isStudent()"
+        [isAdmin]="isAdmin()"
+        [isProfessor]="isProfessor()"
         (navItemSelected)="onNavItemSelected($event)"
       />
     }
@@ -50,13 +52,13 @@
             @if (!hasConfirmedEmail()) {
               <a
                 routerLink="/auth/request-email"
-                class="group relative inline-flex items-center justify-center h-9 w-9 md:h-10 md:w-10 rounded-full border border-orange-200 bg-orange-50 text-orange-500 shadow-sm transition-all duration-300 hover:border-orange-300 hover:bg-orange-100 focus:outline-none focus:ring-2 focus:ring-orange-500/50"
+                class="group relative inline-flex items-center justify-center h-9 w-9 md:h-10 md:w-10 rounded-full border border-orange-200 bg-orange-50 text-orange shadow-sm transition-all duration-300 hover:border-orange-300 hover:bg-orange-100 focus:outline-none focus:ring-2 focus:ring-orange"
                 title="Your email is unconfirmed. Click to update or confirm."
                 aria-label="Confirm Email"
               >
                 <!-- Pulse effect ring behind the icon -->
-                <span class="absolute inset-0 animate-ping rounded-full bg-orange-400 opacity-20"></span>
-                <i class="pi pi-exclamation-triangle text-sm md:text-base animate-pulse"></i>
+                <span class="absolute inset-0 animate-ping rounded-full bg-orange dark:bg-white opacity-20"></span>
+                <i class="pi pi-envelope text-sm md:text-base animate-pulse"></i>
               </a>
             }
 

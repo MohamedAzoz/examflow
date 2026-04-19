@@ -54,8 +54,23 @@ export const STUDENT_NAV_ITEMS: readonly NavItem[] = [
 
 export const PROFESSOR_NAV_ITEMS: readonly NavItem[] = [
   {
+    label: ROUTESPROFESSOR.DASHBOARD.title,
+    icon: 'pi-objects-column',
+    route: ROUTESPROFESSOR.DASHBOARD.path,
+  },
+  {
     label: ROUTESPROFESSOR.COURSES.title,
     icon: 'pi-book',
     route: ROUTESPROFESSOR.COURSES.path,
+  },
+  {
+    label: ROUTESPROFESSOR.ANALYSIS.title,
+    icon: 'pi-chart-bar',
+    route: ROUTESPROFESSOR.ANALYSIS.path,
+  },
+  {
+    label: ROUTESPROFESSOR.SETTINGS.title,
+    icon: 'pi-cog',
+    route: ROUTESPROFESSOR.SETTINGS.path,
   },
 ] as const;

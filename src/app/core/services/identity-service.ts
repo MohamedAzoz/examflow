@@ -46,7 +46,9 @@ export class IdentityService {
     return expiration > currentTime;
   });
 
+  readonly isAdmin = computed(() => this._role() === 'Admin');
   readonly isStudent = computed(() => this._role() === 'Student');
+  readonly isProfessor = computed(() => this._role() === 'Professor');
 
   readonly dashboardPath = computed(() => {
     const role = this.userRole();
@@ -119,7 +121,7 @@ export class IdentityService {
       issuedAt: this.toNumberOrNull(decoded.iat),
       notBefore: this.toNumberOrNull(decoded.nbf),
       expiresAt: this.toNumberOrNull(decoded.exp),
-      hasConfirmedEmail
+      hasConfirmedEmail,
     };
 
     this.applyAuthState(authState);

@@ -60,15 +60,15 @@
 
           <div class="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <a
-              [routerLink]="['/', routes.LOGIN.path]"
               pButton
-              class="w-full rounded-xl border-none bg-sky-600 px-6 py-3 text-sm font-semibold transition hover:bg-sky-700 sm:w-auto"
+              class="w-full btn rounded-xl border-none bg-sky-600 px-6 py-3 text-sm font-semibold transition hover:bg-sky-700 sm:w-auto"
+              (click)="authFacade.logout()"
             >
               Go to Login
             </a>
 
             <a
-              [routerLink]="['/', authRoutes.REQUEST_EMAIL.path]"
+              [routerLink]="['/', routes.AUTH.path, authRoutes.REQUEST_EMAIL.path]"
               pButton
               severity="secondary"
               class="w-full rounded-xl px-6 py-3 text-sm font-semibold sm:w-auto"
