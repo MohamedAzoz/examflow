@@ -17,13 +17,21 @@ import { IcreateExam } from '../../../data/models/ProfessorExam/icreate-exam';
 import { IexamDetailsData } from '../../../data/models/ProfessorExam/IexamDetails';
 import { CreateExamModalComponent } from './components/create-exam-modal/create-exam-modal.component';
 import { ExamsTableComponent } from './components/exams-table/exams-table.component';
+import { FilterExamsModalComponent } from './components/filter-exams-modal/filter-exams-modal.component';
 import { ProfessorExamFacade } from '../services/professor-exam-facade';
-import { isDraftExamStatus } from '../../../shared/utils/exam-status.utils';
+import { isDraftExamStatus, isPublishedExamStatus } from '../../../shared/utils/exam-status.utils';
+import { ExamSortingOptions } from '../../../data/enums/ExamSortingOptions';
+import { ProfessorExamStatus } from '../../../data/enums/ProfessorExamStatus';
 
 @Component({
   selector: 'app-exams-management',
   standalone: true,
-  imports: [CommonModule, ExamsTableComponent, CreateExamModalComponent],
+  imports: [
+    CommonModule,
+    ExamsTableComponent,
+    CreateExamModalComponent,
+    FilterExamsModalComponent,
+  ],
   templateUrl: './exams-management.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -39,11 +47,21 @@ export class ExamsManagementComponent {
     initialValue: this.route.snapshot.paramMap,
   });
 
+  readonly examSortingOptions = ExamSortingOptions;
+  readonly professorExamStatus = ProfessorExamStatus;
+
+  readonly requestState = computed(() => this.examFacade.examsRequest());
+  readonly currentSorting = computed(() => this.requestState().sorting);
+  readonly currentStatus = computed(() => this.requestState().examStatus);
+  readonly currentSemester = computed(() => this.requestState().semesterId);
+
   readonly pageSize = signal(ExamsManagementComponent.DEFAULT_PAGE_SIZE);
   readonly pageIndex = signal(1);
   readonly searchTerm = signal('');
 
   readonly createModalOpen = signal(false);
+  readonly filterModalOpen = signal(false);
+
   readonly creatingExam = signal(false);
 
   readonly courseId = computed(() => {
@@ -113,8 +131,64 @@ export class ExamsManagementComponent {
     if (this.creatingExam()) {
       return;
     }
-
     this.createModalOpen.set(false);
+  }
+
+  onOpenFilterModal(): void {
+    this.filterModalOpen.set(true);
+  }
+
+  onCloseFilterModal(): void {
+    this.filterModalOpen.set(false);
+  }
+
+  onApplyFilters(filters: any): void {
+    // Basic filter logic (would be expanded in facade ideally)
+    const activeFilters: any = {};
+    if (filters.status !== undefined && filters.status !== null) {
+      activeFilters.examStatus = filters.status;
+    } else {
+      activeFilters.examStatus = null;
+    }
+
+    if (filters.level !== undefined && filters.level !== null) {
+      activeFilters.academicLevel = filters.level;
+    }
+
+    if (filters.semester !== undefined && filters.semester !== null) {
+      // In real scenario this would map properly, using placeholder to show logic matching UI
+      activeFilters.semesterId = filters.semester;
+    }
+
+    this.examFacade.applyFilters(activeFilters);
+    this.examFacade.setPagination(1, this.pageSize());
+    this.examFacade.reloadExams();
+  }
+
+  clearFilter(filterKey: 'status' | 'semester'): void {
+    if (filterKey === 'status') {
+      this.examFacade.applyFilters({ examStatus: null });
+    } else if (filterKey === 'semester') {
+      this.examFacade.applyFilters({ semesterId: null });
+    }
+    this.examFacade.reloadExams();
+  }
+
+  onSortChange(value: string | number | any): void {
+    const parsed = Number(value);
+    this.examFacade.applyFilters({ sorting: parsed });
+    this.examFacade.reloadExams();
+  }
+
+  getStatusName(status: number | null | undefined): string {
+    switch (status) {
+      case ProfessorExamStatus.Draft: return 'Draft';
+      case ProfessorExamStatus.Published: return 'Published';
+      case ProfessorExamStatus.Completed: return 'Completed';
+      case ProfessorExamStatus.PendingManualGrading: return 'Pending Manual Grading';
+      case ProfessorExamStatus.AllGraded: return 'All Graded';
+      default: return 'Unknown Status';
+    }
   }
 
   onCreateExam(payload: Omit<IcreateExam, 'courseId'>): void {
@@ -152,18 +226,15 @@ export class ExamsManagementComponent {
   }
 
   onOpenBuilder(exam: IexamDetailsData): void {
-    if (!isDraftExamStatus(exam.examStatus)) {
-      return;
+    if (isDraftExamStatus(exam.examStatus) || isPublishedExamStatus(exam.examStatus)) {
+      this.navigateToBuilder(exam.id);
     }
-
-    this.navigateToBuilder(exam.id);
   }
 
   onPublishExam(exam: IexamDetailsData): void {
     if (!isDraftExamStatus(exam.examStatus)) {
       return;
     }
-
     this.examFacade.publishExam(exam.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
   }
 
@@ -172,8 +243,36 @@ export class ExamsManagementComponent {
     if (!confirmed) {
       return;
     }
-
     this.examFacade.deleteExam(exam.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
+  }
+
+  onGradeEssays(exam: IexamDetailsData): void {
+    const currentCourseId = this.courseId();
+    if (currentCourseId) {
+      this.router.navigate(['/main', 'professor', 'my-courses', currentCourseId, 'exams', exam.id, 'grade']);
+    }
+  }
+
+  onDownloadPdf(exam: IexamDetailsData): void {
+    // Utilize the exam report service for the pdf download
+    // Since getExamResultsReport returns an observable, we would typically handle blob conversion here
+    // We are triggering the backend endpoint as requested.
+    this.examFacade['professorExamService']?.getExamResultsReport(exam.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response: any) => {
+          const blob = new Blob([response], { type: 'application/pdf' });
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `${exam.title}_results.pdf`;
+          link.click();
+          window.URL.revokeObjectURL(url);
+        },
+        error: () => {
+          window.alert('Error occurred while fetching PDF report.');
+        }
+      });
   }
 
   onPreviousPage(): void {
@@ -271,3 +370,4 @@ export class ExamsManagementComponent {
     return 'Failed to load exams.';
   }
 }
+

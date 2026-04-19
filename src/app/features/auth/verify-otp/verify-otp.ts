@@ -74,7 +74,7 @@ export class VerifyOtp implements OnInit, OnDestroy {
 
     if (!email) {
       this.appMessage.addInfoMessage('Email is missing. Please restart the password reset flow.');
-      void this.router.navigate([`/${AUTH_ROUTES.FORGET_PASSWORD.path}`]);
+      void this.router.navigate([`/${ROUTES.AUTH.path}/${AUTH_ROUTES.FORGET_PASSWORD.path}`]);
       return;
     }
 

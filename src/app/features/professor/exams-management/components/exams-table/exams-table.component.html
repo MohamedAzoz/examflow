@@ -4,88 +4,153 @@
       class="border-b border-border bg-surface/70 text-[11px] font-bold uppercase tracking-[0.12em] text-text-secondary"
     >
       <tr>
-        <th class="px-4 py-3">Exam Title</th>
-        <th class="px-4 py-3">Course &amp; Level</th>
-        <th class="px-4 py-3">Passing</th>
-        <th class="px-4 py-3">Start Time</th>
-        <th class="px-4 py-3">Duration</th>
-        <th class="px-4 py-3">Degree</th>
-        <th class="px-4 py-3">Status</th>
-        <th class="px-4 py-3">Actions</th>
+        <th class="px-5 py-4">EXAM TITLE & COURSE</th>
+        <th class="px-5 py-4">SEMESTER & DEPTS</th>
+        <th class="px-5 py-4">DATE & DURATION</th>
+        <th class="px-5 py-4">PASSING / TOTAL</th>
+        <th class="px-5 py-4">STATUS</th>
+        <th class="px-5 py-4 text-right">ACTIONS</th>
       </tr>
     </thead>
 
     <tbody>
       @for (exam of exams(); track trackByExamId($index, exam)) {
         <tr class="border-b border-border/70 transition-colors hover:bg-surface/60">
-          <td class="px-4 py-3">
-            <p class="text-sm font-semibold text-text-primary">{{ exam.title }}</p>
+          <!-- EXAM TITLE & COURSE -->
+          <td class="px-5 py-4">
+            <p class="text-[0.78rem] font-bold text-text-primary">{{ exam.title }}</p>
+            <p class="mt-1 text-xs text-text-secondary">
+              {{ exam.departmentNames }} <span class="mx-1">&bull;</span> Level {{ exam.academicLevel }}
+            </p>
           </td>
 
-          <td class="px-4 py-3">
-            <p class="text-sm font-medium text-text-primary">{{ exam.courseName }}</p>
-            <p class="text-xs text-text-secondary">Level {{ exam.academicLevel }}</p>
+          <!-- SEMESTER & DEPTS -->
+          <td class="px-5 py-4">
+            <p class="text-[0.7rem] font-semibold text-text-primary">{{ exam.semesterName }}</p>
+            <div class="mt-1 flex flex-wrap gap-1 ">
+              @for (dept of exam.departmentNames; track dept) {
+                <span class="inline-flex rounded-md bg-surface-container px-2 py-0.5 text-[0.6rem] font-semibold text-text-secondary">
+                  {{ dept }}
+                </span>
+              } @empty {
+                <span class="inline-flex rounded-md bg-surface-container px-2 py-0.5 text-[0.6rem] font-semibold text-text-secondary">
+                  N/A
+                </span>
+              }
+            </div>
           </td>
 
-          <td class="px-4 py-3 text-sm font-medium text-text-primary">{{ exam.passingScore }}%</td>
-
-          <td class="px-4 py-3">
-            <p class="text-sm text-text-primary">{{ exam.startTime | date: 'MMM d, y' }}</p>
-            <p class="text-xs text-text-secondary">{{ exam.startTime | date: 'hh:mm a' }}</p>
+          <!-- DATE & DURATION -->
+          <td class="px-5 py-4">
+            <p class="text-xs text-text-primary font-semibold">
+              {{ exam.startTime | date: 'MMM d, yyyy - hh:mm a' }}
+            </p>
+            <p class="mt-1 text-xs text-text-secondary">{{ exam.durationMinutes }} mins</p>
           </td>
 
-          <td class="px-4 py-3 text-sm text-text-primary">{{ exam.durationMinutes }} Min</td>
+          <!-- PASSING / TOTAL -->
+          <td class="px-5 py-4">
+            <p class="text-xs font-semibold text-text-primary">
+              {{ exam.passingScore }} / {{ exam.totalDegree }} Deg.
+            </p>
+          </td>
 
-          <td class="px-4 py-3 text-sm text-text-primary">{{ exam.totalDegree }} Marks</td>
-
-          <td class="px-4 py-3">
+          <!-- STATUS -->
+          <td class="px-5 py-4">
             <span
-              class="inline-flex rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide"
+              class="inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10px] font-semibold"
               [class]="statusBadgeClass(exam.examStatus)"
             >
-              {{ exam.examStatus }}
+              <i [class]="getStatusIcon(exam.examStatus)" class="text-[10px]" aria-hidden="true"></i>
+              {{ getDisplayStatus(exam.examStatus) }}
             </span>
           </td>
 
-          <td class="px-4 py-3">
-            <div class="flex items-center gap-1">
+          <!-- ACTIONS -->
+          <td class="px-5 py-4">
+            <div class="flex items-center justify-end gap-2 text-text-secondary">
+              <!-- Pending Essays -> Download PDF & Grade -->
+              @if (isPendingGradingStatus(exam.examStatus)) {
+                <button
+                  type="button"
+                  class="btn inline-flex h-8 w-8 items-center justify-center rounded-lg hover:bg-surface-container hover:text-amber-600 transition"
+                  title="Grade Essays"
+                  (click)="onGradeEssays(exam)"
+                >
+                  <i class="pi pi-pencil" aria-hidden="true"></i>
+                </button>
+                <button
+                  type="button"
+                  class="btn inline-flex h-8 w-8 items-center justify-center rounded-lg hover:bg-surface-container hover:text-text-primary transition"
+                  title="Download PDF"
+                  (click)="onDownloadPdf(exam)"
+                >
+                  <i class="pi pi-download" aria-hidden="true"></i>
+                </button>
+              }
+
+              <!-- Published -> Edit Only -->
+              @if (isPublishedStatus(exam.examStatus)) {
+                <button
+                  type="button"
+                  class="btn inline-flex h-8 w-8 items-center justify-center rounded-lg hover:bg-surface-container hover:text-emerald-600 transition"
+                  title="Edit Exam"
+                  (click)="onOpenBuilder(exam)"
+                >
+                  <i class="pi pi-pencil" aria-hidden="true"></i>
+                </button>
+              }
+
+              <!-- Draft -> Edit, Publish, Delete -->
               @if (isDraftStatus(exam.examStatus)) {
                 <button
                   type="button"
-                  class="btn inline-flex h-8 items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-100"
+                  class="btn inline-flex h-8 w-8 items-center justify-center rounded-lg hover:bg-surface-container hover:text-emerald-600 transition"
                   title="Open Builder"
                   (click)="onOpenBuilder(exam)"
                 >
-                  <i class="pi pi-bolt text-[10px]" aria-hidden="true"></i>
-                  Builder
+                  <i class="pi pi-pencil" aria-hidden="true"></i>
                 </button>
-              }
-
-              @if (isDraftStatus(exam.examStatus)) {
                 <button
                   type="button"
-                  class="btn inline-flex h-8 w-8 items-center justify-center rounded-lg text-emerald-700 transition hover:bg-emerald-50"
-                  title="Publish exam"
+                  class="btn inline-flex h-8 w-8 items-center justify-center rounded-lg hover:bg-surface-container hover:text-text-primary transition"
+                  title="Publish Exam"
                   (click)="onPublishExam(exam)"
                 >
-                  <i class="pi pi-upload text-sm" aria-hidden="true"></i>
+                  <i class="pi pi-upload" aria-hidden="true"></i>
+                </button>
+                <button
+                  type="button"
+                  class="btn inline-flex h-8 w-8 items-center justify-center rounded-lg hover:bg-surface-container hover:text-red-600 transition"
+                  title="Delete Exam"
+                  (click)="onDeleteExam(exam)"
+                >
+                  <i class="pi pi-trash" aria-hidden="true"></i>
                 </button>
               }
 
-              <button
-                type="button"
-                class="btn inline-flex h-8 w-8 items-center justify-center rounded-lg text-red-600 transition hover:bg-red-50"
-                title="Delete exam"
-                (click)="onDeleteExam(exam)"
-              >
-                <i class="pi pi-trash text-sm" aria-hidden="true"></i>
-              </button>
+              <!-- All Graded -> Download PDF -->
+              @if (isAllGradedStatus(exam.examStatus)) {
+                <button
+                  type="button"
+                  class="btn inline-flex h-8 w-8 items-center justify-center rounded-lg hover:bg-surface-container hover:text-text-primary transition"
+                  title="Download PDF"
+                  (click)="onDownloadPdf(exam)"
+                >
+                  <i class="pi pi-download" aria-hidden="true"></i>
+                </button>
+              }
+
+              <!-- Completed -> No actions -->
+              @if (isCompletedStatus(exam.examStatus)) {
+                <span class="px-2 font-medium text-text-tertiary">-</span>
+              }
             </div>
           </td>
         </tr>
       } @empty {
         <tr>
-          <td colspan="8" class="px-4 py-10 text-center text-sm text-text-secondary">
+          <td colspan="6" class="px-5 py-10 text-center text-sm text-text-secondary">
             No exams found for the current filters.
           </td>
         </tr>

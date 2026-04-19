@@ -71,7 +71,7 @@ export class ForgetPassword implements OnInit, OnDestroy {
     await this.resetFlowState.setEmail(email);
 
     this.authFacade.forgetPassword(email, () => {
-      void this.router.navigate([`/${AUTH_ROUTES.VERIFY_OTP.path}`]);
+      void this.router.navigate([`/${ROUTES.AUTH.path}/${AUTH_ROUTES.VERIFY_OTP.path}`]);
     });
   }
 }

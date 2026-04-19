@@ -1,94 +1,88 @@
-<div
-  class="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,#dbeafe,#f8fbff_38%,#ffffff)] px-4 py-6 sm:px-8 sm:py-10"
->
-  <div class="pointer-events-none absolute inset-0">
-    <div
-      class="decor-float absolute -left-16 top-10 h-56 w-56 rounded-full bg-sky-200/40 blur-3xl"
-    ></div>
-    <div
-      class="decor-float absolute -bottom-16 right-0 h-72 w-72 rounded-full bg-blue-300/30 blur-3xl"
-      style="animation-delay: -3s"
-    ></div>
-  </div>
+<div class="min-h-screen flex items-center justify-center bg-[#EFEFEF] py-12 px-4 sm:px-6 lg:px-8 font-sans">
+  <div class="max-w-md w-full bg-white rounded-xl shadow-sm p-8 space-y-8">
+    
+    <!-- Header: Logo & Name -->
+    <div class="flex items-center justify-center gap-3">
+      <img ngSrc="Logo.svg" width="32" height="32" priority class="h-8 w-8" alt="ExamFlow" />
+      <span class="text-xl font-medium tracking-widest text-[#152C36] uppercase">EXAMFLOW</span>
+    </div>
 
-  <div
-    class="relative mx-auto flex min-h-[calc(100vh-3rem)] w-full max-w-2xl items-center justify-center"
-  >
-    <section
-      class="panel-enter w-full overflow-hidden rounded-3xl border border-sky-100 bg-white/90 shadow-[0_28px_90px_-35px_rgba(2,132,199,0.42)] backdrop-blur"
-    >
-      <header class="border-b border-sky-100 bg-linear-to-r from-sky-50 to-white px-6 py-5 sm:px-8">
-        <div class="mb-3 flex items-center gap-3">
-          <img ngSrc="Logo.svg" width="40" height="40" priority class="h-10 w-10" alt="ExamFlow" />
-          <p class="text-lg font-semibold tracking-[0.2em] text-slate-800">EXAMFLOW</p>
-        </div>
+    <!-- Icon & Titles -->
+    <div class="flex flex-col items-center justify-center text-center mt-6">
+      <h2 class="text-[#30787C] text-2xl font-bold mb-3">Verify Your Email</h2>
+      <p class="text-sm text-slate-500 px-4">
+        We've sent a secure OTP code to your email. Please enter it below.
+      </p>
+    </div>
 
-        <div
-          class="mb-3 flex items-center gap-2 text-xs font-semibold tracking-wide text-slate-500"
-        >
-          <span class="rounded-full bg-slate-100 px-2.5 py-1">1. Email</span>
-          <span class="rounded-full bg-sky-600 px-2.5 py-1 text-white">2. OTP</span>
-          <span class="rounded-full bg-slate-100 px-2.5 py-1">3. New Password</span>
-        </div>
+    <!-- Feedback -->
+    @if (authFacade.errorMessage()) {
+      <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
+        {{ authFacade.errorMessage() }}
+      </div>
+    }
 
-        <h1 class="text-3xl font-semibold leading-tight text-slate-900">OTP Verification</h1>
-        <p class="mt-2 text-sm text-slate-600">
-          Enter the verification code we sent to
-          <span class="font-semibold text-slate-800">{{ email() }}</span>
-          .
-        </p>
-      </header>
+    <!-- Form -->
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="mt-8 space-y-6">
+      
+      <!-- Readonly Email Field -->
+      <div>
+        <label for="email_display" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2">Code Sent To:</label>
+        <p-iconfield>
+          <p-inputicon class="pi pi-envelope text-slate-400" />
+          <input
+            id="email_display"
+            type="email"
+            pInputText
+            [value]="email()"
+            readonly
+            class="w-full rounded-xl border-none bg-slate-50 py-3 text-sm text-slate-500 opacity-80 cursor-not-allowed outline-none"
+          />
+        </p-iconfield>
+      </div>
 
-      <section class="p-6 sm:p-8">
-        @if (authFacade.errorMessage()) {
-          <div
-            class="mb-5 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
-            role="alert"
-          >
-            {{ authFacade.errorMessage() }}
-          </div>
+      <!-- OTP Input -->
+      <div>
+        <input
+          id="code"
+          type="text"
+          pInputText
+          formControlName="code"
+          placeholder="••••••"
+          autocomplete="one-time-code"
+          maxlength="6"
+          class="w-full rounded-xl border-none bg-[#EBF5F5] py-4 text-center text-2xl tracking-[1em] text-[#30787C] font-mono focus:ring-2 focus:ring-[#30787C] outline-none transition"
+          [class.ring-1]="form.controls.code.touched && form.controls.code.invalid"
+          [class.ring-red-400]="form.controls.code.touched && form.controls.code.invalid"
+        />
+        @if (form.controls.code.touched && form.controls.code.invalid) {
+          <p class="mt-2 text-xs text-red-500 text-center">Please enter a valid OTP code.</p>
         }
+      </div>
 
-        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5">
-          <div class="space-y-1.5">
-            <label for="code" class="text-sm font-medium text-slate-700">Verification Code</label>
-            <p-iconfield>
-              <p-inputicon class="pi pi-hashtag text-slate-400" />
-              <input
-                id="code"
-                type="text"
-                pInputText
-                formControlName="code"
-                placeholder="Enter OTP code"
-                autocomplete="one-time-code"
-                class="w-full rounded-xl border border-slate-200 bg-slate-50 py-3 text-sm tracking-[0.25em] uppercase focus:border-sky-500"
-              />
-            </p-iconfield>
-            @if (form.controls.code.touched && form.controls.code.invalid) {
-              <small class="text-xs font-medium text-red-600">Enter a valid code.</small>
-            }
-          </div>
+      <!-- Action Button -->
+      <button
+        type="submit"
+        pButton
+        [loading]="authFacade.isLoading()"
+        [disabled]="authFacade.isLoading()"
+        class="w-full flex justify-center items-center rounded-xl border-none bg-[#30787C] py-3.5 text-sm font-semibold text-white transition hover:bg-[#28666A]"
+      >
+        {{ authFacade.isLoading() ? 'Verifying...' : 'Verify Code' }}
+      </button>
 
-          <button
-            type="submit"
-            pButton
-            [loading]="authFacade.isLoading()"
-            [disabled]="authFacade.isLoading()"
-            class="w-full rounded-xl border-none bg-sky-600 py-3 text-sm font-semibold transition hover:bg-sky-700"
-          >
-            {{ authFacade.isLoading() ? 'Verifying...' : 'Verify OTP' }}
-          </button>
-        </form>
+    </form>
 
-        <div class="mt-6 text-center text-sm text-slate-600">
-          Wrong email?
-          <a
-            [routerLink]="['/', routes.FORGET_PASSWORD.path]"
-            class="font-semibold text-sky-700 transition hover:text-sky-800 hover:underline"
-            >Change email</a
-          >
-        </div>
-      </section>
-    </section>
+    <!-- Footer Link -->
+    <div class="mt-6 text-center text-sm">
+      <span class="text-slate-500">Didn't receive the code?</span>
+      <button
+        type="button"
+        class="ml-1 font-semibold text-[#30787C] transition hover:text-[#28666A]"
+      >
+        Resend OTP
+      </button>
+    </div>
+
   </div>
 </div>

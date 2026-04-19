@@ -44,6 +44,31 @@ export const professorRoutes: Routes = [
         loadComponent: () =>
           import('./my-courses/my-courses.component').then((m) => m.MyCoursesComponent),
       },
+      {
+        path: ROUTESPROFESSOR.COURSE_EXAM_GRADING.path,
+        title: ROUTESPROFESSOR.COURSE_EXAM_GRADING.title,
+        loadComponent: () =>
+          import('./exams-management/components/essay-grading/essay-grading.component').then(
+            (m) => m.EssayGradingComponent,
+          ),
+      },  {
+        path: ROUTESPROFESSOR.DASHBOARD.path,
+        title: ROUTESPROFESSOR.DASHBOARD.title,
+        loadComponent: () =>
+          import('./dashboard/dashboard').then((m) => m.Dashboard),
+      },
+      {
+        path: ROUTESPROFESSOR.ANALYSIS.path,
+        title: ROUTESPROFESSOR.ANALYSIS.title,
+        loadComponent: () =>
+          import('./analysis/analysis').then((m) => m.Analysis),
+      },
+      {
+        path: ROUTESPROFESSOR.SETTINGS.path,
+        title: ROUTESPROFESSOR.SETTINGS.title,
+        loadComponent: () =>
+          import('./settings/settings').then((m) => m.Settings),
+      },
     ],
   },
 ];

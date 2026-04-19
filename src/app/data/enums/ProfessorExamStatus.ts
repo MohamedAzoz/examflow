@@ -4,4 +4,4 @@ export enum ProfessorExamStatus {
   Completed = 2,
   PendingManualGrading = 3,
   AllGraded = 4,
-}
+} 

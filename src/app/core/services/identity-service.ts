@@ -21,6 +21,7 @@ export class IdentityService {
   private readonly _role = signal<string | null>(null);
   private readonly _name = signal<string | null>(null);
   private readonly _exp = signal<number | null>(null);
+  private readonly _hasConfirmedEmail = signal<boolean>(true); // default true for safety
 
   async init(): Promise<void> {
     if (!this.initPromise) {
@@ -35,6 +36,7 @@ export class IdentityService {
   readonly userRole = this._role.asReadonly();
   readonly userName = this._name.asReadonly();
   readonly tokenExpiration = this._exp.asReadonly();
+  readonly hasConfirmedEmail = this._hasConfirmedEmail.asReadonly();
   readonly isAuthenticated = computed(() => {
     const token = this._token();
     const expiration = this.tokenExpiration();
@@ -86,6 +88,7 @@ export class IdentityService {
       issuedAt: state.issuedAt ?? this.toNumberOrNull(decoded.iat),
       notBefore: state.notBefore ?? this.toNumberOrNull(decoded.nbf),
       expiresAt: state.expiresAt ?? this.toNumberOrNull(decoded.exp),
+      hasConfirmedEmail: state.hasConfirmedEmail ?? true,
     };
   }
 
@@ -94,6 +97,7 @@ export class IdentityService {
     this._role.set(state.role);
     this._name.set(state.userName);
     this._exp.set(state.expiresAt);
+    this._hasConfirmedEmail.set(state.hasConfirmedEmail ?? true);
   }
 
   private toNumberOrNull(value: unknown): number | null {
@@ -105,7 +109,7 @@ export class IdentityService {
    * Updates the authentication state reactively.
    * Called by AuthFacade after successful login/register.
    */
-  setAuth(token: string): void {
+  setAuth(token: string, hasConfirmedEmail: boolean = true): void {
     const decoded = this.jwt.decodeToken(token) as IJWT;
     const authState: PersistedAuthState = {
       token,
@@ -115,6 +119,7 @@ export class IdentityService {
       issuedAt: this.toNumberOrNull(decoded.iat),
       notBefore: this.toNumberOrNull(decoded.nbf),
       expiresAt: this.toNumberOrNull(decoded.exp),
+      hasConfirmedEmail
     };
 
     this.applyAuthState(authState);
@@ -132,5 +137,6 @@ export class IdentityService {
     this._role.set(null);
     this._name.set(null);
     this._exp.set(null);
+    this._hasConfirmedEmail.set(true);
   }
 }

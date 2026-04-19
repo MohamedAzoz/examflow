@@ -30,7 +30,7 @@ export const ROUTESADMIN = {
   DEPARTMENTS: { path: 'departments-managment', title: 'Departments Management' },
   ASSIGN_COURSES: { path: 'assign-courses-managment', title: 'Assign Courses' },
   ENROLL_STUDENTS: { path: 'enroll-students-managment', title: 'Enroll Students' },
-  // RESET_PASSWORDS: { path: 'reset-passwords-managment', title: 'Reset Passwords' },
+  RESET_PASSWORDS: { path: 'reset-passwords-managment', title: 'Reset Passwords' },
   SYSTEM_SETTINGS: { path: 'system-settings-managment', title: 'System Settings' },
 };
 
@@ -52,6 +52,13 @@ export const ROUTESPROFESSOR = {
     path: 'my-courses/:courseId/exams/:examId/builder',
     title: 'Exam Builder',
   },
+  COURSE_EXAM_GRADING: {
+    path: 'my-courses/:courseId/exams/:examId/grade',
+    title: 'Grade Essays',
+  },
+  DASHBOARD: { path: 'prof-dashboard', title: 'Dashboard' },
+  ANALYSIS: { path: 'analysis', title: 'Analysis' },
+  SETTINGS: { path: 'prof-settings', title: 'Settings' },
 };
 
 export function examBuilderPath(courseId: number, examId: number): string {

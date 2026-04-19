@@ -7,7 +7,7 @@ import {
   computed,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
+import { Router, RouterOutlet, NavigationEnd, RouterModule } from '@angular/router';
 import { SidebarComponent } from '../layout/sidebar/sidebar';
 import { Toggle } from '../core/services/toggle';
 import { NavItem } from '../layout/nav-item';
@@ -24,7 +24,7 @@ import { ROLES } from '../core/constants/ROLES';
 
 @Component({
   selector: 'app-main',
-  imports: [RouterOutlet, SidebarComponent],
+  imports: [RouterOutlet, SidebarComponent, RouterModule],
   templateUrl: './main.html',
   styleUrl: './main.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -54,6 +54,7 @@ export class Main {
 
   /** Is the user a student? */
   protected readonly isStudent = computed(() => this.userRole() === ROLES.Student);
+  protected readonly hasConfirmedEmail = this.identityService.hasConfirmedEmail;
 
   /** Derived values from role */
   protected readonly navItems = computed<readonly NavItem[]>(() => {

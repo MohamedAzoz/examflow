@@ -57,7 +57,7 @@ export class ResetPassword implements OnInit, OnDestroy {
 
     if (!this.email()) {
       this.appMessage.addInfoMessage('Please start by entering your email first.');
-      void this.router.navigate([`/${AUTH_ROUTES.FORGET_PASSWORD.path}`]);
+      void this.router.navigate([`/${ROUTES.AUTH.path}/${AUTH_ROUTES.FORGET_PASSWORD.path}`]);
       return;
     }
 

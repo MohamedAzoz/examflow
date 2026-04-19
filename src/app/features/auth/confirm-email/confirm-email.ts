@@ -31,16 +31,24 @@ export class ConfirmEmail implements OnInit, OnDestroy {
   });
 
   readonly confirmationPayload = computed<IconfirmEmail | null>(() => {
-    const token = this.queryParams().get('token')?.trim() ?? '';
-    const newEmail = this.queryParams().get('newEmail')?.trim() ?? '';
+    let token = this.queryParams().get('token') ?? '';
+    token = token.replace(/ /g, '+').trim();
+
     const userId = this.queryParams().get('userId')?.trim() ?? '';
-    if (!token || !newEmail || !userId) {
+
+    // Either a change email flow (newEmail) or regular register confirm (email)
+    const newEmail =
+      this.queryParams().get('newEmail')?.trim() || this.queryParams().get('email')?.trim() || '';
+
+    // If userId or token is missing, the link is definitely broken
+    if (!token || !userId) {
       return null;
     }
+
     return {
-      "token": token,
-      "userId": userId,
-      "newEmail": newEmail
+      token,
+      userId,
+      newEmail,
     };
   });
 

@@ -6,6 +6,7 @@ import { IupdateExam } from '../models/ProfessorExam/IupdateExam';
 import { IexamDetails } from '../models/ProfessorExam/IexamDetails';
 import { Iexamdetails } from '../models/ProfessorExam/Iexamdetails.1';
 import { IexamByIddetails } from '../models/ProfessorExam/Iexamdetails.2';
+import { IEssayGradingDetails } from '../models/ProfessorExam/IEssayGradingDetails';
 
 @Injectable({
   providedIn: 'root',
@@ -67,15 +68,24 @@ export class ProfessorExam {
 
   //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
   public getExamResultsReport(examId: number) {
-    return this.http.get(`${environment.apiUrl}/ProfessorExam/results-report/${examId}`);
+    return this.http.get(`${environment.apiUrl}/ProfessorExam/results-report/${examId}`, {
+      responseType: 'blob',
+    });
   }
   public getExamCheatingReport(examId: number) {
-    return this.http.get(`${environment.apiUrl}/ProfessorExam/cheating-report/${examId}`);
+    return this.http.get(`${environment.apiUrl}/ProfessorExam/cheating-report/${examId}`, {
+      responseType: 'blob',
+    });
   }
+  /*
+ExamId
+PageIndex
+Pagesize
 
-  public getStudentsEssaysForGrading(examId: number) {
+*/
+  public getStudentsEssaysForGrading(data: IEssayGradingDetails) {
     return this.http.get(`${environment.apiUrl}/ProfessorExam/students-essays-grading`, {
-      params: { examId },
+      params: { ExamId: data.ExamId, PageIndex: data.PageIndex, PageSize: data.PageSize },
     });
   }
   public gradeEssays(
