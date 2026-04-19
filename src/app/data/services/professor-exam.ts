@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { IcreateExam } from '../models/ProfessorExam/icreate-exam';
@@ -7,6 +7,7 @@ import { IexamDetails } from '../models/ProfessorExam/IexamDetails';
 import { Iexamdetails } from '../models/ProfessorExam/Iexamdetails.1';
 import { IexamByIddetails } from '../models/ProfessorExam/Iexamdetails.2';
 import { IEssayGradingDetails } from '../models/ProfessorExam/IEssayGradingDetails';
+import { SkipLoading } from '../../core/interceptors/loading-interceptor';
 
 @Injectable({
   providedIn: 'root',
@@ -63,7 +64,9 @@ export class ProfessorExam {
   }
   // /api/ProfessorExam/{id}
   public getExamById(examId: number) {
-    return this.http.get<IexamByIddetails>(`${environment.apiUrl}/ProfessorExam/${examId}`);
+    return this.http.get<IexamByIddetails>(`${environment.apiUrl}/ProfessorExam/${examId}`,{
+      context: new HttpContext().set(SkipLoading, true)
+    });
   }
 
   //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx

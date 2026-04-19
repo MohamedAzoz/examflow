@@ -18,17 +18,25 @@ import { IExamQuestions } from '../../../data/models/ExamQuestions/iexam-questio
 import { IupdateExam } from '../../../data/models/ProfessorExam/IupdateExam';
 // import { AssignedQuestionsComponent } from './components/assigned-questions/assigned-questions.component';
 import {
-  ExamSettingsComponent, ExamSettingsValue
+  ExamSettingsComponent,
+  ExamSettingsValue,
 } from './components/exam-settings/exam-settings.component';
-// import { QuestionBankComponent } from './components/question-bank/question-bank.component';
-import { ExamBuilderFacade } from '../services/exam-builder.facade';
-import { AssignedQuestionsComponent } from './components/assigned-questions/assigned-questions.component';
 import { QuestionBankComponent } from './components/question-bank/question-bank.component';
+import { ExamBuilderFacade } from '../services/exam-builder.facade';
+import { IQuestionResponse } from '../../../data/models/question/iquestion-response';
+import { FormsModule } from '@angular/forms';
+import { QuestionEditorComponent } from './components/question-editor/question-editor.component';
 
 @Component({
   selector: 'app-exam-builder',
   standalone: true,
-  imports: [CommonModule, QuestionBankComponent, AssignedQuestionsComponent, ExamSettingsComponent ],
+  imports: [
+    CommonModule,
+    FormsModule,
+    QuestionBankComponent,
+    ExamSettingsComponent,
+    QuestionEditorComponent,
+  ],
   templateUrl: './exam-builder.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -49,6 +57,7 @@ export class ExamBuilderComponent implements OnInit, OnDestroy {
   private readonly pendingSettings = signal<ExamSettingsValue | null>(null);
 
   protected readonly isQuestionBankCollapsed = signal(false);
+  protected readonly isSettingsCollapsed = signal(false);
   protected readonly createQuestionRequestTick = signal(0);
 
   protected readonly courseId = computed(() => {
@@ -66,6 +75,32 @@ export class ExamBuilderComponent implements OnInit, OnDestroy {
   protected readonly exam = computed(() => this.facade.currentExam());
   protected readonly assignedQuestions = computed(() => this.facade.assignedQuestions());
   protected readonly departments = computed(() => this.facade.departments());
+
+  // Main UI Center Workspace State
+  protected readonly activeCenterMode = signal<'empty' | 'create' | 'edit' | 'view'>('empty');
+  protected readonly viewedQuestion = signal<IQuestionResponse | null>(null);
+
+  protected readonly editorInitialQuestion = computed(() => {
+    if (this.activeCenterMode() === 'edit' && this.viewedQuestion()) {
+      const q = this.viewedQuestion()!;
+      return {
+        id: q.id,
+        text: q.text,
+        questionType: q.questionType,
+        degree: q.degree,
+        options: Array.isArray(q.options) ? q.options : [],
+        correctOptionText: q.correctOptionText || '',
+        imagePath: (q as any).imagePath || null,
+      };
+    }
+    return null;
+  });
+
+  protected readonly isViewedQuestionAssigned = computed(() => {
+    const qid = this.viewedQuestion()?.id;
+    if (!qid) return false;
+    return this.assignedQuestions().some((aq) => aq.id === qid);
+  });
 
   protected readonly totalAssignedDegree = computed(() =>
     this.assignedQuestions().reduce((sum, question) => sum + Number(question.degree || 0), 0),
@@ -136,8 +171,112 @@ export class ExamBuilderComponent implements OnInit, OnDestroy {
     this.isQuestionBankCollapsed.set(false);
   }
 
+  protected expandSettings(): void {
+    this.isSettingsCollapsed.set(false);
+  }
+
+  protected collapseSettings(value: boolean): void {
+    this.isSettingsCollapsed.set(value);
+  }
+
   protected requestCreateQuestionFromBank(): void {
     this.createQuestionRequestTick.update((value) => value + 1);
+    this.activeCenterMode.set('create');
+    this.viewedQuestion.set(null);
+  }
+
+  protected onViewQuestion(question: IQuestionResponse): void {
+    this.viewedQuestion.set(question);
+    this.activeCenterMode.set('view');
+  }
+
+  protected closeCenterView(): void {
+    this.activeCenterMode.set('empty');
+    // We intentionally keep viewedQuestion so the next logic can work smoothly or clear it
+    this.viewedQuestion.set(null);
+  }
+
+  protected editViewedQuestion(): void {
+    if (this.viewedQuestion()) {
+      this.activeCenterMode.set('edit');
+    }
+  }
+
+  protected assignViewedQuestion(): void {
+    const q = this.viewedQuestion();
+    const examId = this.examId();
+    if (q && examId) {
+      this.facade
+        .assignQuestionsToExam({
+          examId,
+          questions: [{ id: q.id, questionDegree: q.degree }],
+        })
+        .subscribe(() => {
+          this.appMessageService.addSuccessMessage('Question assigned directly.');
+          // Refresh assigned questions
+          this.onQuestionsAssigned();
+        });
+    }
+  }
+
+  protected removeAssignedQuestion(questionId: number): void {
+    const examId = this.examId();
+    if (!examId) return;
+
+    // We can assume exam-builder-facade has unassign handling or we use updateAssignedQuestions
+    const newAssigned = this.assignedQuestions().filter((q) => q.id !== questionId);
+    this.onAssignedQuestionsChange(newAssigned);
+    this.appMessageService.addSuccessMessage('Question removed from exam.');
+  }
+
+  protected getAssignedDegree(questionId: number): number {
+    const assigned = this.assignedQuestions().find((q) => q.id === questionId);
+    return assigned ? assigned.degree : 1;
+  }
+
+  protected onAssignDegreeChange(questionId: number, degreeStr: unknown): void {
+    const newDegree = this.normalizePositive(degreeStr as number, 1);
+    const existing = this.assignedQuestions().map((q) => {
+      if (q.id === questionId) {
+        return { ...q, degree: newDegree };
+      }
+      return q;
+    });
+    this.onAssignedQuestionsChange(existing);
+  }
+
+  protected onQuestionEditorSaved(event: unknown): void {
+    // Re-load the workspace or course questions to reflect changes
+    const courseId = this.courseId();
+    if (courseId) {
+      // Ideally we could append it to our question bank cache.
+      // The facade handles refreshing when re-mounting question list.
+    }
+    this.closeCenterView();
+  }
+
+  protected questionTypeLabel(questionType: number): string {
+    switch (questionType) {
+      case 1:
+        return 'Multiple Choice (MCQ)';
+      case 2:
+        return 'True / False';
+      case 3:
+        return 'Essay';
+      default:
+        return 'Other';
+    }
+  }
+
+  protected hasOptions(questionType: number): boolean {
+    return questionType === 1 || questionType === 2;
+  }
+
+  protected parseOptions(options: unknown): string[] {
+    if (Array.isArray(options)) {
+      return options.map(String);
+    }
+    return [];
   }
 
   protected onQuestionsAssigned(): void {

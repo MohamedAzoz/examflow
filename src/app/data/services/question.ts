@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { IQuestionRequest } from '../models/question/iquestion-request';
@@ -7,6 +7,7 @@ import { IQuestionResponse } from '../models/question/iquestion-response';
 import { IQuestionUploadMedia } from '../models/question/iquestion-upload-media';
 import { IQuestionImport } from '../models/question/iquestion-import';
 import { IGetQuestion } from '../models/question/IGetQuestion';
+import { SkipLoading } from '../../core/interceptors/loading-interceptor';
 
 @Injectable({
   providedIn: 'root',
@@ -39,6 +40,7 @@ PageSize
     return this.http
       .get<unknown>(`${environment.apiUrl}/Question`, {
         params,
+        context: new HttpContext().set(SkipLoading, true),
       })
       .pipe(map((response) => this.extractQuestionItems(response)));
   }
@@ -117,7 +119,9 @@ PageSize
 
   // GET: /api/Question/{id}
   getQuestionById(id: number): Observable<IQuestionResponse> {
-    return this.http.get<IQuestionResponse>(`${environment.apiUrl}/Question/${id}`);
+    return this.http.get<IQuestionResponse>(`${environment.apiUrl}/Question/${id}`, {
+      context: new HttpContext().set(SkipLoading, true),
+    });
   }
 
   // POST: /api/Question/create

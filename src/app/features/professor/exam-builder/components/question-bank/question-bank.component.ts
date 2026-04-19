@@ -21,15 +21,12 @@ import {
 import { IQuestionResponse } from '../../../../../data/models/question/iquestion-response';
 import { ExamBuilderFacade } from '../../../services/exam-builder.facade';
 
-interface QuestionTypeFilterOption {
-  label: string;
-  value: QuestionType;
-}
+import { BankFilterModalComponent } from './components/bank-filter-modal/bank-filter-modal.component';
 
 @Component({
   selector: 'app-question-bank',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, BankFilterModalComponent],
   templateUrl: './question-bank.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -47,6 +44,12 @@ export class QuestionBankComponent {
   readonly assignDone = output<number[]>();
   readonly createNewQuestion = output<void>();
   readonly closeRequested = output<void>();
+  readonly selectForView = output<IQuestionResponse>();
+  readonly viewedQuestionId = input<number | null>(null);
+
+  onSelectForView(question: IQuestionResponse): void {
+    this.selectForView.emit(question);
+  }
 
   readonly searchInput = signal('');
   readonly selectedType = signal<QuestionType>(QuestionType.Unknown);
@@ -54,12 +57,24 @@ export class QuestionBankComponent {
 
   private readonly debouncedSearchText = signal('');
 
-  readonly questionTypeOptions: readonly QuestionTypeFilterOption[] = [
-    { label: 'All Types', value: QuestionType.Unknown },
-    { label: 'MCQ', value: QuestionType.MultipleChoice },
-    { label: 'True / False', value: QuestionType.TrueFalse },
-    { label: 'Essay', value: QuestionType.Essay },
-  ];
+  readonly isFilterOpen = signal(false);
+
+  toggleFilterModal(): void {
+    this.isFilterOpen.update((v) => !v);
+  }
+
+  getQuestionTypeBadgeClass(questionType: number): string {
+    switch (questionType) {
+      case QuestionType.MultipleChoice:
+        return 'bg-teal-100 text-teal-700';
+      case QuestionType.TrueFalse:
+        return 'bg-teal-100 text-teal-700';
+      case QuestionType.Essay:
+        return 'bg-slate-100 text-slate-700';
+      default:
+        return 'bg-slate-100 text-slate-700';
+    }
+  }
 
   readonly questions = computed(() => this.facade.questionBank().items);
   readonly hasMore = computed(() => this.facade.questionBank().hasMore);

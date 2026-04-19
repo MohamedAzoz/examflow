@@ -36,10 +36,8 @@ export class ExamSettingsComponent {
   readonly activeCourseName = input<string>('');
   readonly collapsedByDefault = input<boolean>(false);
   readonly saving = input<boolean>(false);
-  readonly publishing = input<boolean>(false);
 
   readonly saveUpdates = output<ExamSettingsValue>();
-  readonly publishExam = output<void>();
   readonly collapsedChange = output<boolean>();
 
   readonly isCollapsed = signal(false);
@@ -86,7 +84,6 @@ export class ExamSettingsComponent {
     );
   });
 
-  readonly canPublish = computed(() => this.canSave() && !this.publishing());
 
   constructor() {
     effect(() => {
@@ -131,13 +128,6 @@ export class ExamSettingsComponent {
     });
   }
 
-  onPublishExam(): void {
-    if (!this.canPublish()) {
-      return;
-    }
-
-    this.publishExam.emit();
-  }
 
   toNumber(value: string | number | null | undefined, fallback: number): number {
     const parsed = Number(value);
