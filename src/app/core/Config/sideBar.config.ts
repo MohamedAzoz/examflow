@@ -21,15 +21,16 @@ export const ADMIN_NAV_ITEMS: readonly NavItem[] = [
     route: ROUTESADMIN.ASSIGN_COURSES.path,
   },
   {
-    label: AUTH_ROUTES.RESET_PASSWORD.title,
+    label: ROUTESADMIN.RESET_PASSWORDS.title,
     icon: 'pi-pen-to-square',
-    route: AUTH_ROUTES.RESET_PASSWORD.path,
+    route: ROUTESADMIN.RESET_PASSWORDS.path,
   },
   {
     label: ROUTESADMIN.ENROLL_STUDENTS.title,
     icon: 'pi-graduation-cap',
     route: ROUTESADMIN.ENROLL_STUDENTS.path,
   },
+
   {
     label: ROUTESADMIN.SYSTEM_SETTINGS.title,
     icon: 'pi-cog',
