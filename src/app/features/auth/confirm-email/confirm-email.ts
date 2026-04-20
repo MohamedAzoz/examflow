@@ -32,9 +32,13 @@ export class ConfirmEmail implements OnInit, OnDestroy {
 
   readonly confirmationPayload = computed<IconfirmEmail | null>(() => {
     let token = this.queryParams().get('token') ?? '';
-    const userId = this.queryParams().get('userId')?.trim() ?? '';
-    const newEmail =
-      this.queryParams().get('newEmail')?.trim() || this.queryParams().get('email')?.trim() || '';
+
+    if (token) {
+      token = encodeURIComponent(token);
+    }
+
+    const userId = this.queryParams().get('userId') ?? '';
+    const newEmail = this.queryParams().get('newEmail') || '';
 
     if (!token || !userId || !newEmail) {
       return null;
@@ -69,6 +73,7 @@ export class ConfirmEmail implements OnInit, OnDestroy {
         this.message.set(
           'Your email has been verified successfully. You can now continue using your account.',
         );
+        this.authFacade.logout();
       },
       (errorMessage) => {
         this.state.set('error');

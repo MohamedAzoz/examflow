@@ -36,7 +36,7 @@ import { ProfessorExamStatus } from '../../../data/enums/ProfessorExamStatus';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExamsManagementComponent {
-  private static readonly DEFAULT_PAGE_SIZE = 5;
+  private static readonly DEFAULT_PAGE_SIZE = 8;
 
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);

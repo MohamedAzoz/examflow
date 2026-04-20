@@ -18,6 +18,7 @@ import { Course } from '../../../data/services/course';
 import { ExamQuestions } from '../../../data/services/exam-questions';
 import { ProfessorExam } from '../../../data/services/professor-exam';
 import { Question } from '../../../data/services/question';
+import { getExamStatusTitle } from '../../../shared/utils/exam-status-title.util';
 
 export interface ExamBuilderQuestionBankState {
   items: IQuestionResponse[];
@@ -324,7 +325,10 @@ export class ExamBuilderFacade {
           return;
         }
 
-        const items = Array.isArray(response) ? response : [];
+        const items = Array.isArray(response.data) ? response.data : [];
+        const effectivePageIndex = this.normalizePageIndex(response.pageIndex);
+        const effectivePageSize = this.normalizePageSize(response.pageSize);
+        const totalSize = response.totalSize ?? 0;
         const current = this.questionBank();
         const mergedItems =
           safePageIndex === 1 ? items : this.mergeQuestionsById(current.items, items);
@@ -335,10 +339,11 @@ export class ExamBuilderFacade {
           pageSize: safePageSize,
           search: normalizedSearch,
           type,
-          hasMore: items.length >= safePageSize,
+          hasMore: effectivePageIndex * effectivePageSize < totalSize,
           totalLoaded: mergedItems.length,
         });
       }),
+      map((response) => (Array.isArray(response.data) ? response.data : [])),
       catchError((error) => this.handleError(error, 'Failed to load question bank.')),
       finalize(() => {
         if (requestToken === this.questionBankRequestToken) {
@@ -511,7 +516,7 @@ export class ExamBuilderFacade {
       totalDegree: exam.totalDegree,
       isRandomQuestions: exam.isRandomQuestions,
       isRandomAnswers: exam.isRandomAnswers,
-      examStatus: exam.examStatus,
+      examStatus: getExamStatusTitle(exam.examStatus),
       academicLevel: exam.academicLevel,
       semesterName: exam.semesterName,
       courseName: exam.courseName,

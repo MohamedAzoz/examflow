@@ -74,8 +74,10 @@
     </div>
 
     <footer class="flex items-center justify-between border-t border-border px-4 py-3">
-      <p class="text-xs text-text-secondary">
-        Showing {{ showingFrom() }} to {{ showingTo() }} entries
+      <p class="text-sm text-text-secondary">
+        Showing <span class="font-semibold">{{ showingFrom() }}</span> to
+        <span class="font-semibold">{{ showingTo() }}</span> of
+        <span class="font-semibold">{{ totalCount() }}</span> questions
       </p>
 
       <div class="flex items-center gap-2">

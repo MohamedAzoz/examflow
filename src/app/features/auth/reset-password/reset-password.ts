@@ -16,7 +16,6 @@ import { PasswordResetFlowState } from '../services/password-reset-flow-state';
 @Component({
   selector: 'app-reset-password',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     RouterModule,
     ButtonModule,
@@ -35,7 +34,8 @@ export class ResetPassword implements OnInit, OnDestroy {
   private readonly theme = inject(Theme);
   private readonly resetFlowState = inject(PasswordResetFlowState);
 
-  readonly routes = AUTH_ROUTES;
+  readonly routes = ROUTES;
+  readonly authRoutes = AUTH_ROUTES;
   readonly email = this.resetFlowState.email;
   readonly resetToken = this.resetFlowState.resetToken;
 
@@ -63,7 +63,7 @@ export class ResetPassword implements OnInit, OnDestroy {
 
     if (!this.resetToken()) {
       this.appMessage.addInfoMessage('Please verify OTP before setting a new password.');
-      void this.router.navigate([`/${AUTH_ROUTES.VERIFY_OTP.path}`]);
+      void this.router.navigate([`/${ROUTES.AUTH.path}/${AUTH_ROUTES.VERIFY_OTP.path}`]);
     }
   }
 

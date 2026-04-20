@@ -46,9 +46,9 @@ export class IdentityService {
     return expiration > currentTime;
   });
 
-  readonly isAdmin = computed(() => this._role() === 'Admin');
-  readonly isStudent = computed(() => this._role() === 'Student');
-  readonly isProfessor = computed(() => this._role() === 'Professor');
+  readonly isAdmin = computed(() => this._role() === ROLES.Admin);
+  readonly isStudent = computed(() => this._role() === ROLES.Student);
+  readonly isProfessor = computed(() => this._role() === ROLES.Professor);
 
   readonly dashboardPath = computed(() => {
     const role = this.userRole();
@@ -115,9 +115,9 @@ export class IdentityService {
     const decoded = this.jwt.decodeToken(token) as IJWT;
     const authState: PersistedAuthState = {
       token,
-      role: decoded.role ?? null,
-      userName: decoded.unique_name ?? null,
-      userId: decoded.nameid ?? null,
+      role: decoded.role,
+      userName: decoded.unique_name ,
+      userId: decoded.nameid,
       issuedAt: this.toNumberOrNull(decoded.iat),
       notBefore: this.toNumberOrNull(decoded.nbf),
       expiresAt: this.toNumberOrNull(decoded.exp),

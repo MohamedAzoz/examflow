@@ -8,6 +8,7 @@ import { IQuestionUploadMedia } from '../models/question/iquestion-upload-media'
 import { IQuestionImport } from '../models/question/iquestion-import';
 import { IGetQuestion } from '../models/question/IGetQuestion';
 import { SkipLoading } from '../../core/interceptors/loading-interceptor';
+import { IQuestionListResponse } from '../models/question/IQuestionListResponse';
 
 @Injectable({
   providedIn: 'root',
@@ -25,7 +26,7 @@ PageIndex
 PageSize
   */
 
-  getAllQuestions(data: IGetQuestion): Observable<IQuestionResponse[]> {
+  getAllQuestions(data: IGetQuestion): Observable<IQuestionListResponse> {
     let params = new HttpParams();
     params = this.appendParam(params, 'QuestionTextSearch', data.QuestionTextSearch);
     if (data.QuestionType !== 0) {
@@ -38,59 +39,91 @@ PageSize
     params = this.appendParam(params, 'PageSize', data.PageSize);
 
     return this.http
-      .get<unknown>(`${environment.apiUrl}/Question`, {
+      .get<IQuestionListResponse>(`${environment.apiUrl}/Question`, {
         params,
         context: new HttpContext().set(SkipLoading, true),
       })
       .pipe(map((response) => this.extractQuestionItems(response)));
   }
 
-  private extractQuestionItems(response: unknown): IQuestionResponse[] {
+  private extractQuestionItems(response: unknown): IQuestionListResponse {
     const directItems = this.extractArrayCandidate(response);
     if (directItems) {
-      return directItems;
+      return this.createPagedResponse(directItems);
     }
 
     if (!response || typeof response !== 'object') {
-      return [];
+      return this.createPagedResponse([]);
     }
 
-    const payload = response as Record<string, unknown>;
+    const root = response as Record<string, unknown>;
+    const candidates: Record<string, unknown>[] = [root];
 
-    const firstLevelCandidates = [
-      payload['data'],
-      payload['items'],
-      payload['questions'],
-      payload['result'],
-    ];
-
-    for (const candidate of firstLevelCandidates) {
-      const list = this.extractArrayCandidate(candidate);
-      if (list) {
-        return list;
+    for (const key of ['data', 'items', 'questions', 'result']) {
+      const candidate = root[key];
+      if (candidate && typeof candidate === 'object' && !Array.isArray(candidate)) {
+        candidates.push(candidate as Record<string, unknown>);
       }
+    }
 
-      if (!candidate || typeof candidate !== 'object') {
-        continue;
-      }
-
-      const nested = candidate as Record<string, unknown>;
-      const nestedCandidates = [
-        nested['data'],
-        nested['items'],
-        nested['questions'],
-        nested['result'],
-      ];
-
-      for (const nestedCandidate of nestedCandidates) {
-        const nestedList = this.extractArrayCandidate(nestedCandidate);
-        if (nestedList) {
-          return nestedList;
+    for (const candidate of candidates) {
+      for (const key of ['data', 'items', 'questions', 'result']) {
+        const list = this.extractArrayCandidate(candidate[key]);
+        if (!list) {
+          continue;
         }
+
+        return this.createPagedResponse(
+          list,
+          this.readNumber(candidate, 'pageSize', 'PageSize') ??
+            this.readNumber(root, 'pageSize', 'PageSize') ??
+            list.length,
+          this.readNumber(candidate, 'pageIndex', 'PageIndex') ??
+            this.readNumber(root, 'pageIndex', 'PageIndex') ??
+            (list.length > 0 ? 1 : 0),
+          this.readNumber(candidate, 'totalSize', 'TotalSize') ??
+            this.readNumber(root, 'totalSize', 'TotalSize') ??
+            list.length,
+        );
       }
     }
 
-    return [];
+    return this.createPagedResponse([]);
+  }
+
+  private createPagedResponse(
+    data: IQuestionResponse[],
+    pageSize?: number,
+    pageIndex?: number,
+    totalSize?: number,
+  ): IQuestionListResponse {
+    return {
+      pageSize: this.toNonNegativeInt(pageSize, data.length),
+      pageIndex: this.toNonNegativeInt(pageIndex, data.length > 0 ? 1 : 0),
+      totalSize: this.toNonNegativeInt(totalSize, data.length),
+      data,
+    };
+  }
+
+  private readNumber(
+    source: Record<string, unknown>,
+    lowerCaseKey: string,
+    pascalCaseKey: string,
+  ): number | undefined {
+    const value = source[lowerCaseKey] ?? source[pascalCaseKey];
+    if (typeof value !== 'number' || !Number.isFinite(value)) {
+      return undefined;
+    }
+
+    return value;
+  }
+
+  private toNonNegativeInt(value: number | undefined, fallback: number): number {
+    if (typeof value !== 'number' || !Number.isFinite(value) || value < 0) {
+      return fallback;
+    }
+
+    return Math.floor(value);
   }
 
   private extractArrayCandidate(value: unknown): IQuestionResponse[] | null {

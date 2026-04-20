@@ -26,7 +26,6 @@ export class SidebarComponent {
   private readonly router = inject(Router);
   private readonly identityService = inject(IdentityService);
 
-
   readonly navItems = input.required<readonly NavItem[]>();
   readonly userName = input<string>(this.identityService.userName() || '');
   readonly userRole = input<string>(this.identityService.userRole() || '');

@@ -1,3 +1,5 @@
+import { ProfessorExamStatus } from "../../enums/ProfessorExamStatus";
+
 export interface IexamByIddetails {
   title: string;
   passingScore: number;
@@ -6,7 +8,7 @@ export interface IexamByIddetails {
   totalDegree: number;
   isRandomQuestions: boolean;
   isRandomAnswers: boolean;
-  examStatus: string;
+  examStatus: ProfessorExamStatus;
   academicLevel: number;
   semesterName: string;
   courseName: string;

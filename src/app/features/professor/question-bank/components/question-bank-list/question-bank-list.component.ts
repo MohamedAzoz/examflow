@@ -13,6 +13,7 @@ export class QuestionBankListComponent {
   readonly loading = input(false);
   readonly pageIndex = input(1);
   readonly pageSize = input(8);
+  readonly totalCount = input(0);
   readonly hasMore = input(false);
   readonly mutating = input(false);
 
@@ -22,7 +23,7 @@ export class QuestionBankListComponent {
   readonly previousPage = output<void>();
 
   readonly showingFrom = computed(() => {
-    if (this.questions().length === 0) {
+    if (this.totalCount() === 0) {
       return 0;
     }
 
@@ -30,11 +31,12 @@ export class QuestionBankListComponent {
   });
 
   readonly showingTo = computed(() => {
-    if (this.questions().length === 0) {
+    if (this.totalCount() === 0) {
       return 0;
     }
 
-    return this.showingFrom() + this.questions().length - 1;
+    const pageEnd = this.pageIndex() * this.pageSize();
+    return pageEnd > this.totalCount() ? this.totalCount() : pageEnd;
   });
 
   readonly canGoPrevious = computed(() => this.pageIndex() > 1 && !this.loading());

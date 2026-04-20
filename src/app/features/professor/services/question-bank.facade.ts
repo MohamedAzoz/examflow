@@ -4,6 +4,7 @@ import { catchError, finalize, map, Observable, switchMap, tap, throwError } fro
 import { QuestionType } from '../../../data/enums/question-type';
 import { IGetQuestion } from '../../../data/models/question/IGetQuestion';
 import { IQuestionImport } from '../../../data/models/question/iquestion-import';
+import { IQuestionListResponse } from '../../../data/models/question/IQuestionListResponse';
 import { IQuestionRequest } from '../../../data/models/question/iquestion-request';
 import { IQuestionResponse } from '../../../data/models/question/iquestion-response';
 import { Question } from '../../../data/services/question';
@@ -23,6 +24,7 @@ export class QuestionBankFacade {
   private readonly questionService = inject(Question);
 
   readonly questions = signal<IQuestionResponse[]>([]);
+  readonly totalCount = signal(0);
 
   readonly filters = signal<QuestionBankQueryState>({
     courseId: 0,
@@ -92,15 +94,24 @@ export class QuestionBankFacade {
     this.error.set(null);
 
     return this.questionService.getAllQuestions(request).pipe(
-      tap((questions) => {
-        const safeQuestions = Array.isArray(questions) ? questions : [];
-
-        this.questions.set(safeQuestions);
-        this.hasMore.set(safeQuestions.length >= request.PageSize);
+      tap((response) => {
+        this.applyQuestionsResponse(response, request);
       }),
+      map((response) => response.data ?? []),
       catchError((error) => this.handleError(error, 'Failed to load question bank.')),
       finalize(() => this.loadingQuestions.set(false)),
     );
+  }
+
+  private applyQuestionsResponse(response: IQuestionListResponse, request: IGetQuestion): void {
+    const safeQuestions = Array.isArray(response.data) ? response.data : [];
+    const normalizedTotal = this.normalizePositiveInt(response.totalSize, safeQuestions.length);
+    const normalizedPageSize = this.normalizePositiveInt(response.pageSize, request.PageSize);
+    const normalizedPageIndex = this.normalizePositiveInt(response.pageIndex, request.PageIndex);
+
+    this.questions.set(safeQuestions);
+    this.totalCount.set(normalizedTotal);
+    this.hasMore.set(normalizedPageIndex * normalizedPageSize < normalizedTotal);
   }
 
   createQuestion(payload: IQuestionRequest): Observable<unknown> {

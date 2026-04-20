@@ -2,26 +2,8 @@ import { Injectable, inject, signal, computed } from '@angular/core';
 import { ProfessorExam } from '../../../data/services/professor-exam';
 import { finalize, tap, catchError } from 'rxjs/operators';
 import { throwError, Observable } from 'rxjs';
-
-export interface EssaySubmission {
-  id?: number;
-  questionId: number;
-  questionTitle?: string;
-  questionText: string;
-  studentAnswer: string;
-  maxScore: number;
-  score?: number;
-}
-
-export interface StudentEssayDetails {
-  studentId: number;
-  studentName?: string;
-  universityId: string;
-  examId: number;
-  examTitle: string;
-  totalPendingStudents: number;
-  essays: EssaySubmission[];
-}
+import { IEssayGradingDetailsResponse } from '../../../data/models/ProfessorExam/IEssayGradingDetailsResponse';
+import { IEssayGradingSubmit } from '../../../data/models/ProfessorExam/IEssayGradingSubmit';
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +14,7 @@ export class EssayGradingFacade {
   private readonly _loading = signal<boolean>(false);
   private readonly _error = signal<string | null>(null);
   
-  private readonly _studentEssays = signal<StudentEssayDetails | null>(null);
+  private readonly _studentEssays = signal<IEssayGradingDetailsResponse | null>(null);
   
   public readonly loading = this._loading.asReadonly();
   public readonly error = this._error.asReadonly();
@@ -49,8 +31,7 @@ export class EssayGradingFacade {
     };
 
     this.professorExam.getStudentsEssaysForGrading(data).pipe(
-      tap((res: any) => {
-        // Map response logic based on typical shape
+      tap((res: IEssayGradingDetailsResponse) => {
         this._studentEssays.set(res ?? null);
       }),
       catchError((err) => {
@@ -61,7 +42,7 @@ export class EssayGradingFacade {
     ).subscribe();
   }
 
-  submitGrades(gradingData: { examId: number; studentId: number; questionId: number; grade: number }[]): Observable<any> {
+  submitGrades(gradingData: IEssayGradingSubmit): Observable<any> {
     this._loading.set(true);
     this._error.set(null);
 

@@ -82,6 +82,7 @@ export class ProfessorQuestionBankComponent {
 
   readonly pageIndex = computed(() => this.filters().pageIndex);
   readonly pageSize = computed(() => this.filters().pageSize);
+  readonly totalCount = computed(() => this.facade.totalCount());
 
   readonly activeFilterCount = computed(() => {
     let count = 0;

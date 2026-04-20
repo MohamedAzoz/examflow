@@ -53,9 +53,11 @@ export class Main {
   );
 
   /** Is the user a student? */
-  protected readonly isStudent = computed(() => this.userRole() === ROLES.Student);
-  protected readonly isAdmin = computed(() => this.userRole() === ROLES.Admin);
-  protected readonly isProfessor = computed(() => this.userRole() === ROLES.Professor);
+  protected readonly isStudent = computed(() => this.userRole() === ROLES.Student.toLowerCase());
+  protected readonly isAdmin = computed(() => this.userRole() === ROLES.Admin.toLowerCase());
+  protected readonly isProfessor = computed(
+    () => this.userRole() === ROLES.Professor.toLowerCase(),
+  );
   protected readonly hasConfirmedEmail = this.identityService.hasConfirmedEmail;
 
   /** Derived values from role */

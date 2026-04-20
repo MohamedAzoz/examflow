@@ -6,6 +6,7 @@ import { ButtonModule } from 'primeng/button';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
+import { InputOtpModule } from 'primeng/inputotp';
 import { IReqVoTp } from '../../../data/models/auth/IReqVoTp';
 import { AUTH_ROUTES, ROUTES } from '../../../core/constants/const.route';
 import { AppMessageService } from '../../../core/services/app-message';
@@ -21,6 +22,7 @@ import { PasswordResetFlowState } from '../services/password-reset-flow-state';
     RouterModule,
     ButtonModule,
     InputTextModule,
+    InputOtpModule,
     IconFieldModule,
     InputIconModule,
     NgOptimizedImage,
@@ -42,7 +44,7 @@ export class VerifyOtp implements OnInit, OnDestroy {
     code: new FormControl('', [
       Validators.required,
       Validators.minLength(4),
-      Validators.maxLength(8),
+      Validators.maxLength(6),
     ]),
   });
 
@@ -55,7 +57,7 @@ export class VerifyOtp implements OnInit, OnDestroy {
 
     if (!this.email()) {
       this.appMessage.addInfoMessage('Please start by entering your email first.');
-      void this.router.navigate([`/${AUTH_ROUTES.FORGET_PASSWORD.path}`]);
+      void this.router.navigate([`/${ROUTES.AUTH.path}/${AUTH_ROUTES.FORGET_PASSWORD.path}`]);
     }
   }
 
@@ -90,7 +92,7 @@ export class VerifyOtp implements OnInit, OnDestroy {
       }
 
       await this.resetFlowState.setResetToken(resetToken);
-      void this.router.navigate([`/${AUTH_ROUTES.RESET_PASSWORD.path}`]);
+      void this.router.navigate([`/${ROUTES.AUTH.path}/${AUTH_ROUTES.RESET_PASSWORD.path}`]);
     });
   }
 }

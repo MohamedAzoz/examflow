@@ -8,6 +8,8 @@ import { Iexamdetails } from '../models/ProfessorExam/Iexamdetails.1';
 import { IexamByIddetails } from '../models/ProfessorExam/Iexamdetails.2';
 import { IEssayGradingDetails } from '../models/ProfessorExam/IEssayGradingDetails';
 import { SkipLoading } from '../../core/interceptors/loading-interceptor';
+import { IEssayGradingSubmit } from '../models/ProfessorExam/IEssayGradingSubmit';
+import { IEssayGradingDetailsResponse } from '../models/ProfessorExam/IEssayGradingDetailsResponse';
 
 @Injectable({
   providedIn: 'root',
@@ -64,8 +66,8 @@ export class ProfessorExam {
   }
   // /api/ProfessorExam/{id}
   public getExamById(examId: number) {
-    return this.http.get<IexamByIddetails>(`${environment.apiUrl}/ProfessorExam/${examId}`,{
-      context: new HttpContext().set(SkipLoading, true)
+    return this.http.get<IexamByIddetails>(`${environment.apiUrl}/ProfessorExam/${examId}`, {
+      context: new HttpContext().set(SkipLoading, true),
     });
   }
 
@@ -87,13 +89,12 @@ Pagesize
 
 */
   public getStudentsEssaysForGrading(data: IEssayGradingDetails) {
-    return this.http.get(`${environment.apiUrl}/ProfessorExam/students-essays-grading`, {
+    return this.http.get<IEssayGradingDetailsResponse>(`${environment.apiUrl}/ProfessorExam/students-essays-grading`, {
       params: { ExamId: data.ExamId, PageIndex: data.PageIndex, PageSize: data.PageSize },
+      context: new HttpContext().set(SkipLoading, true),
     });
   }
-  public gradeEssays(
-    gradingData: { examId: number; studentId: number; questionId: number; grade: number }[],
-  ) {
+  public gradeEssays(gradingData: IEssayGradingSubmit) {
     return this.http.post(`${environment.apiUrl}/ProfessorExam/grade-essays`, gradingData);
   }
 }
