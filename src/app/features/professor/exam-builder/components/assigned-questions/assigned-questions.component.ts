@@ -27,6 +27,7 @@ import {
 
 interface EditableAssignedQuestion {
   id: number;
+  questionId: number;
   text: string;
   imagePath: string;
   imagePreviewUrl: string | null;
@@ -111,6 +112,7 @@ export class AssignedQuestionsComponent {
     this.questionEditorDisplayMode.set('side-panel');
     this.editorInitialQuestion.set({
       id: question.id,
+      questionId: question.questionId,
       text: question.text,
       questionType: question.questionType as QuestionType,
       degree: question.degree,
@@ -390,7 +392,7 @@ export class AssignedQuestionsComponent {
   }
 
   applyBold(questionId: number, textarea: HTMLTextAreaElement): void {
-    this.applyInlineFormatting(questionId, textarea, '**', '**');
+    this.applyInlineFormatting(questionId, textarea, '<b>', '</b>');
   }
 
   applyUnderline(questionId: number, textarea: HTMLTextAreaElement): void {
@@ -491,6 +493,7 @@ export class AssignedQuestionsComponent {
   private toEditableQuestion(question: IExamQuestions): EditableAssignedQuestion {
     return {
       id: question.id,
+      questionId: question.id,
       text: question.text,
       imagePath: question.imagePath,
       imagePreviewUrl: question.imagePath || null,
@@ -519,6 +522,7 @@ export class AssignedQuestionsComponent {
 
     return {
       id,
+      questionId: id,
       text: event.text,
       imagePath: event.imagePath ?? '',
       imagePreviewUrl: event.imagePath ?? null,

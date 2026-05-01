@@ -21,6 +21,11 @@ export class AppMessageService {
   addErrorMessage(message: string): void {
     this.messageService.add({ severity: 'error', summary: 'Error', detail: message });
   }
+  addErrorMessages(messages: string[]): void {
+   this.messageService.addAll(
+      messages.map((msg) => ({ severity: 'error', summary: 'Error', detail: msg })),
+    );
+  }
 
   buildHttpErrorDetail(error: unknown, productionMessage: string): string {
     const statusCode = this.readStatusCode(error);

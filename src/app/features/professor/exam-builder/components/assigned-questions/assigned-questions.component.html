@@ -102,11 +102,11 @@
               <button
                 type="button"
                 class="btn inline-flex h-10 items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 text-xs font-semibold text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
-                [disabled]="removingQuestionId() === question.id"
-                (click)="onDeleteQuestion(question.id)"
+                [disabled]="removingQuestionId() === question.questionId"
+                (click)="onDeleteQuestion(question.questionId)"
               >
                 <i class="pi pi-trash text-xs" aria-hidden="true"></i>
-                @if (removingQuestionId() === question.id) {
+                @if (removingQuestionId() === question.questionId) {
                   Removing...
                 } @else {
                   Remove

@@ -26,6 +26,7 @@ import { ExamBuilderFacade } from '../services/exam-builder.facade';
 import { IQuestionResponse } from '../../../data/models/question/iquestion-response';
 import { FormsModule } from '@angular/forms';
 import { QuestionEditorComponent } from './components/question-editor/question-editor.component';
+import { IError } from '../../../data/models/IErrorResponse';
 
 @Component({
   selector: 'app-exam-builder',
@@ -85,6 +86,7 @@ export class ExamBuilderComponent implements OnInit, OnDestroy {
       const q = this.viewedQuestion()!;
       return {
         id: q.id,
+        questionId: q.id,
         text: q.text,
         questionType: q.questionType,
         degree: q.degree,
@@ -222,11 +224,17 @@ export class ExamBuilderComponent implements OnInit, OnDestroy {
   protected removeAssignedQuestion(questionId: number): void {
     const examId = this.examId();
     if (!examId) return;
-
-    // We can assume exam-builder-facade has unassign handling or we use updateAssignedQuestions
-    const newAssigned = this.assignedQuestions().filter((q) => q.id !== questionId);
-    this.onAssignedQuestionsChange(newAssigned);
-    this.appMessageService.addSuccessMessage('Question removed from exam.');
+    this.facade.removeAssignedQuestion(questionId, examId).subscribe({
+      next: () => {
+        const newAssigned = this.assignedQuestions().filter((q) => q.id !== questionId);
+        this.onAssignedQuestionsChange(newAssigned);
+        this.appMessageService.addSuccessMessage('Question removed from exam.');
+      },
+      error: (error: IError) => {
+        this.appMessageService.addErrorMessage(error.errorMessage);
+        this.appMessageService.addErrorMessages(error.errors);
+      },
+    });
   }
 
   protected getAssignedDegree(questionId: number): number {
@@ -332,9 +340,11 @@ export class ExamBuilderComponent implements OnInit, OnDestroy {
         next: () => {
           this.appMessageService.addSuccessMessage('Exam settings updated successfully.');
         },
-        error: () => {
+        error: (error) => {
           // Error signal is handled in facade.
-          this.appMessageService.addErrorMessage("Error on update exam settings");
+          this.appMessageService.addErrorMessage(
+            error.errors?.[0] ?? 'Failed to update exam settings.',
+          );
         },
       });
   }
@@ -352,8 +362,8 @@ export class ExamBuilderComponent implements OnInit, OnDestroy {
         next: () => {
           this.appMessageService.addSuccessMessage('Exam published successfully.');
         },
-        error: () => {
-          this.appMessageService.addErrorMessage('Failed to publish exam.');
+        error: (error) => {
+          this.appMessageService.addErrorMessage(error.errors?.[0] ?? 'Failed to publish exam.');
         },
       });
   }
@@ -375,8 +385,11 @@ export class ExamBuilderComponent implements OnInit, OnDestroy {
       .loadExamWorkspace()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        error: () => {
+        error: (error) => {
           // Error signal is handled in facade.
+          this.appMessageService.addErrorMessage(
+            error.errors?.[0] ?? 'Failed to load exam workspace.',
+          );
         },
       });
 
@@ -384,8 +397,11 @@ export class ExamBuilderComponent implements OnInit, OnDestroy {
       .loadCourseDepartments(courseId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        error: () => {
+        error: (error) => {
           // Error signal is handled in facade.
+          this.appMessageService.addErrorMessage(
+            error.errors?.[0] ?? 'Failed to load course departments.',
+          );
         },
       });
   }

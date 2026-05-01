@@ -25,7 +25,8 @@ export type QuestionEditorDisplayMode = 'modal' | 'side-panel';
 export type QuestionEditorMode = 'create' | 'edit';
 
 export interface QuestionEditorInitialValue {
-  id?: number;
+  id: number;
+  questionId: number;
   text: string;
   questionType: QuestionType;
   degree: number;

@@ -19,6 +19,7 @@ import { ExamQuestions } from '../../../data/services/exam-questions';
 import { ProfessorExam } from '../../../data/services/professor-exam';
 import { Question } from '../../../data/services/question';
 import { getExamStatusTitle } from '../../../shared/utils/exam-status-title.util';
+import { IError } from '../../../data/models/IErrorResponse';
 
 export interface ExamBuilderQuestionBankState {
   items: IQuestionResponse[];
@@ -219,7 +220,7 @@ export class ExamBuilderFacade {
         this.persistedAssignedQuestionIds.set(assignedIds);
         this.selectedQuestionIds.set(assignedIds);
       }),
-      catchError((error) => this.handleError(error, 'Failed to load exam workspace.')),
+      catchError((error) => this.handleError(error)),
       finalize(() => this.loadingExam.set(false)),
     );
   }
@@ -235,7 +236,7 @@ export class ExamBuilderFacade {
 
     return this.courseService.assignDepartments(courseId).pipe(
       tap((departments) => this.departments.set(departments ?? [])),
-      catchError((error) => this.handleError(error, 'Failed to load course departments.')),
+      catchError((error) => this.handleError(error)),
       finalize(() => this.loadingDepartments.set(false)),
     );
   }
@@ -265,7 +266,7 @@ export class ExamBuilderFacade {
           };
         });
       }),
-      catchError((error) => this.handleError(error, 'Failed to update exam settings.')),
+      catchError((error) => this.handleError(error)),
       finalize(() => this.savingExam.set(false)),
     );
   }
@@ -286,7 +287,7 @@ export class ExamBuilderFacade {
           current ? { ...current, examStatus: 'Published' } : current,
         );
       }),
-      catchError((error) => this.handleError(error, 'Failed to publish exam.')),
+      catchError((error) => this.handleError(error)),
       finalize(() => this.publishingExam.set(false)),
     );
   }
@@ -345,7 +346,7 @@ export class ExamBuilderFacade {
         });
       }),
       map((response) => (Array.isArray(response.data) ? response.data : [])),
-      catchError((error) => this.handleError(error, 'Failed to load question bank.')),
+      catchError((error) => this.handleError(error)),
       finalize(() => {
         if (requestToken === this.questionBankRequestToken) {
           this.loadingQuestionBank.set(false);
@@ -373,7 +374,7 @@ export class ExamBuilderFacade {
         this.persistedAssignedQuestionIds.set(assignedIds);
         this.selectedQuestionIds.set(assignedIds);
       }),
-      catchError((error) => this.handleError(error, 'Failed to load assigned questions.')),
+      catchError((error) => this.handleError(error)),
       finalize(() => this.loadingAssignedQuestions.set(false)),
     );
   }
@@ -402,14 +403,14 @@ export class ExamBuilderFacade {
       .assignQuestionsToExam({ examId, questions: questionsToAssign })
       .pipe(
         switchMap(() => this.loadAssignedQuestions(examId)),
-        catchError((error) => this.handleError(error, 'Failed to assign questions to exam.')),
+        catchError((error) => this.handleError(error)),
         finalize(() => this.mutatingQuestions.set(false)),
       );
   }
 
   removeAssignedQuestion(
     questionId: number,
-    examId = this.currentExamId(),
+    examId: number = this.currentExamId()!,
   ): Observable<IExamQuestions[]> {
     if (!Number.isFinite(questionId) || questionId <= 0) {
       return of(this.assignedQuestions());
@@ -436,7 +437,7 @@ export class ExamBuilderFacade {
 
     return this.examQuestionsService.deleteQuestionFromExam(examId, questionId).pipe(
       switchMap(() => this.loadAssignedQuestions(examId)),
-      catchError((error) => this.handleError(error, 'Failed to remove question from exam.')),
+      catchError((error: HttpErrorResponse) => this.handleError(error)),
       finalize(() => this.mutatingQuestions.set(false)),
     );
   }
@@ -446,7 +447,7 @@ export class ExamBuilderFacade {
     this.error.set(null);
 
     return this.questionService.createQuestions(questionData).pipe(
-      catchError((error) => this.handleError(error, 'Failed to create question.')),
+      catchError((error) => this.handleError(error)),
       finalize(() => this.mutatingQuestions.set(false)),
     );
   }
@@ -485,7 +486,7 @@ export class ExamBuilderFacade {
           ),
         }));
       }),
-      catchError((error) => this.handleError(error, 'Failed to update question.')),
+      catchError((error: HttpErrorResponse) => this.handleError(error)),
       finalize(() => this.mutatingQuestions.set(false)),
     );
   }
@@ -503,7 +504,7 @@ export class ExamBuilderFacade {
 
     return this.questionService.uploadMediaQuestions({ file, courseId }).pipe(
       map((response) => this.extractMediaPath(response)),
-      catchError((error) => this.handleError(error, 'Failed to upload media for question.')),
+      catchError((error: HttpErrorResponse) => this.handleError(error)),
       finalize(() => this.mutatingQuestions.set(false)),
     );
   }
@@ -651,9 +652,13 @@ export class ExamBuilderFacade {
     return null;
   }
 
-  private handleError(error: unknown, fallbackMessage: string): Observable<never> {
-    this.error.set(this.resolveErrorMessage(error, fallbackMessage));
-    return throwError(() => error);
+  private handleError(error: HttpErrorResponse): Observable<never> {
+    const errorResponse: IError = {
+      statusCode: error.status,
+      errorMessage: error.error?.errorMessage || 'حدث خطأ غير متوقع',
+      errors: error.error?.errors || [],
+    };
+    return throwError(() => errorResponse);
   }
 
   private resolveErrorMessage(error: unknown, fallbackMessage: string): string {
