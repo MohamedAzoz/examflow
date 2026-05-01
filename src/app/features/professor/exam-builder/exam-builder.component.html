@@ -84,16 +84,16 @@
 
     <main class="min-h-0 min-w-0 flex-1 overflow-hidden flex flex-col bg-surface relative">
       @if (activeCenterMode() === 'create' || activeCenterMode() === 'edit') {
-        <app-question-editor
-          [open]="true"
+        <app-question-form
+          [visible]="true"
           displayMode="side-panel"
           [mode]="activeCenterMode() === 'create' ? 'create' : 'edit'"
-          [courseId]="courseId()"
+          [courseId]="courseId() || 0"
           [initialQuestion]="editorInitialQuestion()"
           [header]="activeCenterMode() === 'create' ? 'Create New Question' : 'Edit Question'"
-          (closed)="closeCenterView()"
-          (saved)="onQuestionEditorSaved($event)"
-        ></app-question-editor>
+          (closeModal)="closeCenterView()"
+          (saveQuestion)="onQuestionSaved($event)"
+        ></app-question-form>
       } @else if (activeCenterMode() === 'view' && viewedQuestion()) {
         <div class="flex-1 overflow-y-auto p-6 md:p-8">
           <div class="mx-auto max-w-3xl space-y-6">

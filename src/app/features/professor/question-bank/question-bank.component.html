@@ -59,13 +59,14 @@
     (importQuestions)="onImportQuestions($event)"
   ></app-question-import-modal>
 
-  <app-question-form-modal
+  <app-question-form
     [visible]="formModalOpen()"
+    displayMode="modal"
     [mode]="formMode()"
     [saving]="mutatingQuestion()"
     [courseId]="activeCourseId()"
-    [question]="editingQuestion()"
+    [initialQuestion]="editingQuestion()"
     (closeModal)="onCloseFormModal()"
     (saveQuestion)="onQuestionSaved($event)"
-  ></app-question-form-modal>
+  ></app-question-form>
 </section>

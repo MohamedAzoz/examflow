@@ -1,0 +1,333 @@
+@if (visible()) {
+  <section
+    class="fixed inset-0 z-350"
+    [class.flex]="displayMode() === 'modal'"
+    [class.items-center]="displayMode() === 'modal'"
+    [class.justify-center]="displayMode() === 'modal'"
+    [class.bg-slate-950]="displayMode() === 'modal'"
+    [class.p-4]="displayMode() === 'modal'"
+    (click)="onBackdropClick($event)"
+  >
+    <article
+      class="relative flex flex-col bg-card-bg shadow-2xl overflow-hidden"
+      [class.rounded-3xl]="displayMode() === 'modal'"
+      [class.w-full]="true"
+      [class.max-w-4xl]="displayMode() === 'modal'"
+      [class.h-full]="displayMode() === 'side-panel'"
+      [class.absolute]="displayMode() === 'side-panel'"
+      [class.right-0]="displayMode() === 'side-panel'"
+      [class.top-0]="displayMode() === 'side-panel'"
+      [class.w-136]="displayMode() === 'side-panel'"
+      [class.border-l]="displayMode() === 'side-panel'"
+      [class.border-border]="displayMode() === 'side-panel'"
+    >
+      <header
+        class="flex items-start justify-between gap-3 border-b border-border px-5 py-2 md:px-6 shrink-0"
+      >
+        <div>
+          <h3 class="text-sm font-semibold text-text-primary md:text-lg">
+            {{ panelTitle() }}
+          </h3>
+        </div>
+
+        <button
+          type="button"
+          class="btn inline-flex h-7 w-7 items-center justify-center rounded-lg text-text-secondary transition hover:bg-surface"
+          aria-label="Close question form"
+          [disabled]="saving() || isUploading()"
+          (click)="onClose()"
+        >
+          <i class="pi pi-times text-sm" aria-hidden="true"></i>
+        </button>
+      </header>
+
+      <div class="flex-1 space-y-3 overflow-y-auto max-h-[75dvh] px-5 py-3 md:px-6">
+        @if (errorMessage()) {
+          <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-700">
+            {{ errorMessage() }}
+          </div>
+        }
+
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <label class="space-y-1">
+            <span class="text-[11px] font-bold uppercase tracking-widest text-text-secondary"
+              >Question Type</span
+            >
+            <select
+              class="h-11 w-full rounded-xl border border-border bg-surface px-3 text-sm text-text-primary outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+              [ngModel]="questionType()"
+              (ngModelChange)="onQuestionTypeChange($event)"
+            >
+              <option [ngValue]="1">Multiple Choice (MCQ)</option>
+              <option [ngValue]="2">True / False</option>
+              <option [ngValue]="3">Essay</option>
+            </select>
+          </label>
+          <label class="space-y-1">
+            <span class="text-[11px] font-bold uppercase tracking-widest text-text-secondary"
+              >Degree / Weight</span
+            >
+            <input
+              type="number"
+              min="1"
+              class="h-11 w-full rounded-xl border border-border bg-surface px-3 text-sm text-text-primary outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+              [ngModel]="degree()"
+              (ngModelChange)="degree.set(toPositiveNumber($event, 1))"
+            />
+          </label>
+        </div>
+
+        <div class="space-y-1">
+          <span class="text-[11px] font-bold uppercase tracking-widest text-text-secondary"
+            >Question Stem</span
+          >
+          <!-- <div
+            class="rounded-2xl border border-border bg-surface overflow-hidden focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
+          >
+            <div class="flex items-center gap-1 border-b border-border bg-surface px-2 py-1.5">
+              <button
+                type="button"
+                class="btn h-7 w-7 rounded text-text-secondary hover:bg-card-bg hover:text-text-primary"
+                (click)="applyBoldToStem()"
+              >
+                <b class="font-semibold text-sm">B</b>
+              </button>
+              <button
+                type="button"
+                class="btn h-7 w-7 rounded text-text-secondary hover:bg-card-bg hover:text-text-primary"
+                (click)="applyItalicToStem()"
+              >
+                <i class="italic font-semibold uppercase text-sm">I</i>
+              </button>
+              <button
+                type="button"
+                class="btn h-7 w-7 rounded text-text-secondary hover:bg-card-bg hover:text-text-primary"
+                (click)="applyUnderlineToStem()"
+              >
+                <i class="underline font-semibold uppercase text-sm">U</i>
+              </button>
+              <div class="w-px h-5 bg-border mx-1"></div>
+              <button
+                type="button"
+                class="btn h-7 w-7 rounded text-text-secondary hover:bg-card-bg hover:text-text-primary"
+                (click)="applyListToStem()"
+              >
+                <i class="pi pi-list font-semibold text-sm"></i>
+              </button>
+            </div>
+            <textarea
+              #questionStemTextarea
+              rows="4"
+              class="w-full bg-transparent px-3 py-1.5 text-sm text-text-primary outline-none resize-y"
+              [ngModel]="text()"
+              (ngModelChange)="text.set($event)"
+              placeholder="Enter the core question text here..."
+            ></textarea>
+          </div> -->
+          <div
+            class="rounded-2xl border border-border bg-surface overflow-hidden focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
+          >
+            <!-- الأزرار كما هي -->
+            <div class="flex items-center gap-1 border-b border-border bg-surface px-2 py-1.5">
+              <button type="button" class="btn h-7 w-7 rounded text-text-secondary hover:bg-card-bg hover:text-text-primary" (click)="applyBoldToStem()"><b>B</b></button>
+              <button type="button" class="btn h-7 w-7 rounded text-text-secondary hover:bg-card-bg hover:text-text-primary" (click)="applyItalicToStem()"><i>I</i></button>
+              <button type="button" class="btn h-7 w-7 rounded text-text-secondary hover:bg-card-bg hover:text-text-primary" (click)="applyUnderlineToStem()" title="Underline"><u>U</u></button>
+              <div class="w-px h-5 bg-border mx-1"></div>
+              <button type="button" class="btn h-7 w-7 rounded text-text-secondary hover:bg-red-50 hover:text-red-600 transition" (click)="deleteSelectedText()" title="Delete Selected"><i class="pi pi-eraser text-xs"></i></button>
+              <button type="button" class="btn h-7 w-7 rounded text-text-secondary hover:bg-red-50 hover:text-red-600 transition" (click)="clearAllText()" title="Clear All"><i class="pi pi-trash text-xs"></i></button>
+            </div>
+
+            <!-- استبدال الـ textarea بهذا الـ div -->
+            <div
+              #questionStemEditor
+              dir="auto"
+              contenteditable="true"
+              class="w-full min-h-[120px] bg-transparent px-3 py-1.5 text-sm text-text-primary outline-none resize-y overflow-auto"
+              (input)="onInput($event)"
+            ></div>
+          </div>
+        </div>
+
+        <div class="space-y-0.5">
+          <span class="text-[11px] font-bold uppercase tracking-widest text-text-secondary"
+            >Supporting Media</span
+          >
+
+          @if (!imagePreviewUrl()) {
+            <label
+              class="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border bg-card-bg px-4 py-8 text-center transition hover:border-primary hover:bg-surface/50"
+            >
+              <div
+                class="mb-2 flex h-10 w-10 items-center justify-center rounded-xl bg-surface shadow-sm"
+              >
+                <i class="pi pi-image text-lg text-primary" aria-hidden="true"></i>
+              </div>
+              <p class="text-sm font-semibold text-text-primary">
+                Drag & drop an image, or click to browse
+              </p>
+              <p class="mt-1 text-xs text-text-secondary">Supports JPG, PNG, or SVG (Max 5MB)</p>
+              <input
+                type="file"
+                class="hidden"
+                accept="image/*"
+                (change)="onImageSelected($event)"
+              />
+            </label>
+          } @else {
+            <div class="rounded-2xl border border-border bg-card-bg p-2 shadow-sm">
+              <div class="relative overflow-hidden rounded-xl bg-surface border border-border">
+                <img
+                  [src]="imagePreviewUrl()"
+                  alt="Question Media"
+                  class="max-h-56 w-full object-contain"
+                />
+              </div>
+
+              <div class="mt-2 flex items-center justify-between gap-1.5">
+                <div>
+                  <p class="text-sm font-semibold text-text-primary">Image Selected</p>
+                  <p class="text-xs text-text-secondary">
+                    @if (imagePath()) {
+                      Uploaded successfully
+                    } @else {
+                      <span class="text-amber-600 font-medium">Pending upload</span>
+                    }
+                  </p>
+                </div>
+
+                <div class="flex gap-2">
+                  <button
+                    type="button"
+                    class="btn inline-flex h-9 items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 text-xs font-semibold text-red-700 transition hover:bg-red-100"
+                    (click)="deleteSelectedImage()"
+                    [disabled]="isUploading()"
+                  >
+                    <i class="pi pi-trash text-[10px]" aria-hidden="true"></i>
+                    Remove
+                  </button>
+
+                  @if (hasPendingImageUpload()) {
+                    <button
+                      type="button"
+                      class="btn inline-flex h-9 items-center gap-2 rounded-lg bg-primary px-3 text-xs font-semibold text-white transition hover:brightness-95 disabled:opacity-60"
+                      (click)="uploadSelectedImage()"
+                      [disabled]="isUploading()"
+                    >
+                      <i class="pi pi-upload text-[10px]" aria-hidden="true"></i>
+                      {{ isUploading() ? 'Uploading...' : 'Upload Image' }}
+                    </button>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+
+        @if (!isEssay()) {
+          <div class="space-y-3">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-[11px] font-bold uppercase tracking-widest text-text-secondary"
+                >Answer Options</span
+              >
+              @if (isMcq()) {
+                <button
+                  type="button"
+                  class="btn inline-flex items-center gap-1 rounded-lg text-xs font-semibold text-primary transition hover:underline"
+                  (click)="addOption()"
+                >
+                  <i class="pi pi-plus text-[10px]" aria-hidden="true"></i>
+                  Add Option
+                </button>
+              }
+            </div>
+
+            <div class="space-y-3">
+              @for (choice of answerChoices(); track $index) {
+                <div
+                  class="flex items-center gap-3 rounded-xl border p-3 transition"
+                  [class.border-emerald-500]="correctOptionIndex() === $index"
+                  [class.bg-emerald-50]="correctOptionIndex() === $index"
+                  [class.border-border]="correctOptionIndex() !== $index"
+                  [class.bg-card-bg]="correctOptionIndex() !== $index"
+                >
+                  <div
+                    class="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-surface text-xs font-bold text-text-primary border border-border"
+                  >
+                    {{ String.fromCharCode(65 + $index) }}
+                  </div>
+
+                  @if (isTrueFalse()) {
+                    <div class="flex-1 text-sm font-semibold text-text-primary px-2">
+                      {{ choice }}
+                    </div>
+                  } @else {
+                    <input
+                      type="text"
+                      class="h-9 w-full flex-1 bg-transparent text-sm text-text-primary outline-none placeholder-text-secondary"
+                      [ngModel]="choice"
+                      (ngModelChange)="onMcqOptionChange($index, $event)"
+                      placeholder="Enter option text..."
+                    />
+                  }
+
+                  <button
+                    type="button"
+                    class="btn flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition"
+                    [class.border-emerald-500]="correctOptionIndex() === $index"
+                    [class.bg-emerald-500]="correctOptionIndex() === $index"
+                    [class.text-white]="correctOptionIndex() === $index"
+                    [class.border-border]="correctOptionIndex() !== $index"
+                    [class.text-transparent]="correctOptionIndex() !== $index"
+                    (click)="setCorrectOption($index)"
+                    title="Mark as correct"
+                  >
+                    <i class="pi pi-check text-[10px]" aria-hidden="true"></i>
+                  </button>
+
+                  @if (isMcq()) {
+                    <button
+                      type="button"
+                      class="btn ml-1 flex h-7 w-7 shrink-0 items-center justify-center rounded text-text-secondary hover:bg-red-50 hover:text-red-600 transition"
+                      [disabled]="answerChoices().length <= 2"
+                      (click)="removeOption($index)"
+                      title="Remove option"
+                    >
+                      <i class="pi pi-trash text-[10px]" aria-hidden="true"></i>
+                    </button>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+      <footer
+        class="flex items-center justify-end gap-3 border-t border-border px-5 py-4 shrink-0 bg-surface"
+      >
+        <button
+          type="button"
+          class="btn h-10 rounded-xl px-4 text-sm font-semibold text-text-secondary transition hover:bg-surface-container hover:text-text-primary"
+          [disabled]="saving() || isUploading()"
+          (click)="onClose()"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          class="btn h-10 inline-flex items-center gap-2 rounded-xl bg-teal-700 px-5 text-sm font-semibold text-white transition hover:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-60"
+          [disabled]="!canSave()"
+          (click)="onSave()"
+        >
+          @if (saving() || isUploading()) {
+            Processing...
+          } @else {
+            {{ saveLabel() }}
+            <i class="pi pi-arrow-right text-[10px]"></i>
+          }
+        </button>
+      </footer>
+    </article>
+  </section>
+}

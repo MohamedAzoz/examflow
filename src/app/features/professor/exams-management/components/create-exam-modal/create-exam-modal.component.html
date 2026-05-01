@@ -102,26 +102,32 @@
               [ngModel]="academicLevel()"
               (ngModelChange)="academicLevel.set(toNumber($event, 1))"
             >
-              @for (level of [1, 2, 3, 4, 5, 6]; track level) {
+              @for (level of LevelOptions; track level) {
                 <option [ngValue]="level">Level {{ level }}</option>
               }
             </select>
           </label>
 
           <label class="space-y-1">
-            <span class="text-xs font-bold uppercase tracking-[0.12em] text-text-secondary"
-              >Department</span
+            <span class="text-xs font-bold uppercase tracking-[0.12em] text-text-secondary">
+              Departments</span
             >
-            <select
-              class="h-11 w-full rounded-xl border border-border bg-surface px-3 text-sm text-text-primary outline-none"
-              [ngModel]="departmentId()"
-              (ngModelChange)="departmentId.set(toNumber($event, 0))"
-            >
-              <option [ngValue]="0">All departments (general for this level)</option>
+            <div class="max-h-20 overflow-y-auto rounded-xl border border-border bg-surface p-2 space-y-1">
               @for (department of departments(); track department.id) {
-                <option [ngValue]="department.id">{{ department.name }}</option>
+                <label class="flex cursor-pointer items-center gap-3 rounded-lg px-2 py-1.5 transition hover:bg-surface-container">
+                  <input
+                    type="checkbox"
+                    class="h-4 w-4 cursor-pointer accent-primary"
+                    [checked]="departmentIds().includes(department.id)"
+                    (change)="toggleDepartment(department.id)"
+                  />
+                  <span class="text-sm font-medium text-text-primary">{{ department.name }}</span>
+                </label>
               }
-            </select>
+              @if (departments().length === 0) {
+                <p class="p-2 text-xs text-text-secondary">No departments found.</p>
+              }
+            </div>
             <p class="text-xs text-text-secondary">Selected: {{ selectedDepartmentName() }}</p>
           </label>
         </div>

@@ -8,5 +8,5 @@ export interface IupdateExam {
   isRandomAnswers: boolean;
   totalDegree: number;
   academicLevel: number;
-  departmentId: number;
+  departmentsIds: number[];
 }

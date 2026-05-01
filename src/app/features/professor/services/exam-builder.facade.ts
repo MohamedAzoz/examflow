@@ -262,7 +262,7 @@ export class ExamBuilderFacade {
             isRandomQuestions: payload.isRandomQuestions,
             isRandomAnswers: payload.isRandomAnswers,
             academicLevel: payload.academicLevel,
-            departmentIds: [payload.departmentId],
+            departmentIds: payload.departmentsIds,
           };
         });
       }),
@@ -659,24 +659,5 @@ export class ExamBuilderFacade {
       errors: error.error?.errors || [],
     };
     return throwError(() => errorResponse);
-  }
-
-  private resolveErrorMessage(error: unknown, fallbackMessage: string): string {
-    if (error instanceof HttpErrorResponse) {
-      if (typeof error.error === 'string' && error.error.trim().length > 0) {
-        return error.error;
-      }
-
-      const message =
-        error.error?.errorMessage || error.error?.message || error.error?.title || error.message;
-
-      return typeof message === 'string' && message.trim().length > 0 ? message : fallbackMessage;
-    }
-
-    if (error instanceof Error && error.message.trim().length > 0) {
-      return error.message;
-    }
-
-    return fallbackMessage;
   }
 }

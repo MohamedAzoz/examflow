@@ -26,7 +26,10 @@ export class ProfessorExam {
   }
 
   deleteExam(examId: number) {
-    return this.http.delete(`${environment.apiUrl}/ProfessorExam/${examId}`);
+    return this.http.delete(`${environment.apiUrl}/ProfessorExam`, {
+      params: { examId: examId },
+      context: new HttpContext().set(SkipLoading, true),
+    });
   }
 
   getExamDetails(details: Iexamdetails = {}) {
@@ -71,7 +74,6 @@ export class ProfessorExam {
     });
   }
 
-  //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
   public getExamResultsReport(examId: number) {
     return this.http.get(`${environment.apiUrl}/ProfessorExam/results-report/${examId}`, {
       responseType: 'blob',
@@ -89,10 +91,13 @@ Pagesize
 
 */
   public getStudentsEssaysForGrading(data: IEssayGradingDetails) {
-    return this.http.get<IEssayGradingDetailsResponse>(`${environment.apiUrl}/ProfessorExam/students-essays-grading`, {
-      params: { ExamId: data.ExamId, PageIndex: data.PageIndex, PageSize: data.PageSize },
-      context: new HttpContext().set(SkipLoading, true),
-    });
+    return this.http.get<IEssayGradingDetailsResponse>(
+      `${environment.apiUrl}/ProfessorExam/students-essays-grading`,
+      {
+        params: { ExamId: data.ExamId, PageIndex: data.PageIndex, PageSize: data.PageSize },
+        context: new HttpContext().set(SkipLoading, true),
+      },
+    );
   }
   public gradeEssays(gradingData: IEssayGradingSubmit) {
     return this.http.post(`${environment.apiUrl}/ProfessorExam/grade-essays`, gradingData);

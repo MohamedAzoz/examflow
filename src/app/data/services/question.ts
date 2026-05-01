@@ -17,14 +17,6 @@ export class Question {
   private http = inject(HttpClient);
 
   // GET : /api/Question/get-all
-  /*
-  Name	Description
-QuestionTextSearch
-QuestionType
-CourseId
-PageIndex
-PageSize
-  */
 
   getAllQuestions(data: IGetQuestion): Observable<IQuestionListResponse> {
     let params = new HttpParams();
@@ -187,8 +179,6 @@ PageSize
     formData.append('file', data.file);
     formData.append('courseId', String(data.courseId));
 
-    return this.http.post<{
-      imagePath: 'string';
-    }>(`${environment.apiUrl}/Question/upload-media`, formData);
+    return this.http.post<{ imagePath: string }>(`${environment.apiUrl}/Question/upload-media`, formData);
   }
 }

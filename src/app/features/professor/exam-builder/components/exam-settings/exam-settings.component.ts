@@ -22,7 +22,7 @@ export interface ExamSettingsValue {
   startTime: string;
   durationMinutes: number;
   academicLevel: number;
-  departmentId: number;
+  departmentIds: number[];
   isRandomQuestions: boolean;
   isRandomAnswers: boolean;
 }
@@ -53,14 +53,14 @@ export class ExamSettingsComponent {
   readonly startTimeControl = new FormControl('', { nonNullable: true });
   readonly durationMinutesControl = new FormControl(90, [Validators.min(1)]);
   readonly academicLevelControl = new FormControl(1, [Validators.min(1)]);
-  readonly departmentIdControl = new FormControl(0);
+  readonly departmentIdsControl = new FormControl<number[]>([]);
   readonly isRandomQuestionsControl = new FormControl(true);
   readonly isRandomAnswersControl = new FormControl(false);
 
   readonly levelOptions = [1, 2, 3, 4] as const;
 
-  /** 
-   * التعديل الجوهري: 
+  /**
+   * التعديل الجوهري:
    * ننشئ Signal يراقب "تغيرات القيم" و "تغيرات الحالة" لكل الحقول.
    * بمجرد أن يتغير أي حقل، سيقوم هذا الـ Signal بإخطار الـ computed لإعادة الحساب.
    */
@@ -72,20 +72,20 @@ export class ExamSettingsComponent {
       this.startTimeControl.valueChanges,
       this.durationMinutesControl.valueChanges,
       this.academicLevelControl.valueChanges,
-      this.departmentIdControl.valueChanges,
+      this.departmentIdsControl.valueChanges,
       this.isRandomQuestionsControl.valueChanges,
       this.isRandomAnswersControl.valueChanges,
-      this.titleControl.statusChanges // نراقب الحالة أيضاً (Valid/Invalid)
-    )
+      this.titleControl.statusChanges, // نراقب الحالة أيضاً (Valid/Invalid)
+    ),
   );
 
   // الآن هذا الـ computed سيتم استدعاؤه مع كل ضغطة زر
   readonly canSave = computed(() => {
     // استدعاء الـ trigger لربط الـ computed بدورة حياة الفورم
-    this.formUpdateTrigger(); 
+    this.formUpdateTrigger();
 
     const hasRequiredFields = !!(this.titleControl.value?.trim() && this.startTimeControl.value);
-    
+
     const isFormValid =
       this.titleControl.valid &&
       this.passingScoreControl.valid &&
@@ -93,22 +93,22 @@ export class ExamSettingsComponent {
       this.startTimeControl.valid &&
       this.durationMinutesControl.valid &&
       this.academicLevelControl.valid &&
-      this.departmentIdControl.valid;
+      this.departmentIdsControl.valid;
 
     return isFormValid && hasRequiredFields && !this.saving();
   });
 
   // جعل عرض اسم القسم المختار تفاعلياً أيضاً
   readonly selectedDepartmentName = computed(() => {
-    this.formUpdateTrigger(); // لكي يتحدث النص فور اختيار قسم جديد
-    const selectedId = this.departmentIdControl.value;
-    
-    if (selectedId === 0 || !selectedId) {
+    this.formUpdateTrigger();
+    const ids = this.departmentIdsControl.value;
+    if (!ids || ids.length === 0) {
       return 'All departments (general exam for this level)';
     }
-
-    const selected = this.departments().find((d) => d.id === selectedId);
-    return selected?.name ?? 'All departments (general exam for this level)';
+    const selectedNames = ids
+      .map(id => this.departments().find(d => d.id === id)?.name)
+      .filter(name => !!name);
+    return selectedNames.join(', ');
   });
 
   constructor() {
@@ -134,6 +134,15 @@ export class ExamSettingsComponent {
     this.collapsedChange.emit(false);
   }
 
+  toggleDepartment(id: number): void {
+    const current = this.departmentIdsControl.value ?? [];
+    if (current.includes(id)) {
+      this.departmentIdsControl.setValue(current.filter(dId => dId !== id));
+    } else {
+      this.departmentIdsControl.setValue([...current, id]);
+    }
+  }
+
   onSaveUpdates(): void {
     if (!this.canSave()) return;
 
@@ -144,7 +153,7 @@ export class ExamSettingsComponent {
       startTime: this.startTimeControl.value,
       durationMinutes: this.durationMinutesControl.value!,
       academicLevel: this.academicLevelControl.value!,
-      departmentId: this.departmentIdControl.value!,
+      departmentIds: (this.departmentIdsControl.value ?? []).filter(id => id > 0),
       isRandomQuestions: this.isRandomQuestionsControl.value!,
       isRandomAnswers: this.isRandomAnswersControl.value!,
     });
@@ -157,13 +166,21 @@ export class ExamSettingsComponent {
 
   private patchFromInput(incoming: Partial<ExamSettingsValue>): void {
     if (incoming.title !== undefined) this.titleControl.setValue(incoming.title);
-    if (incoming.passingScore !== undefined) this.passingScoreControl.setValue(this.toNumber(incoming.passingScore, 50));
-    if (incoming.totalDegree !== undefined) this.totalDegreeControl.setValue(this.toNumber(incoming.totalDegree, 100));
+    if (incoming.passingScore !== undefined)
+      this.passingScoreControl.setValue(this.toNumber(incoming.passingScore, 50));
+    if (incoming.totalDegree !== undefined)
+      this.totalDegreeControl.setValue(this.toNumber(incoming.totalDegree, 100));
     if (incoming.startTime !== undefined) this.startTimeControl.setValue(incoming.startTime);
-    if (incoming.durationMinutes !== undefined) this.durationMinutesControl.setValue(this.toNumber(incoming.durationMinutes, 90));
-    if (incoming.academicLevel !== undefined) this.academicLevelControl.setValue(this.toNumber(incoming.academicLevel, 1));
-    if (incoming.departmentId !== undefined) this.departmentIdControl.setValue(this.toNumber(incoming.departmentId, 0));
-    if (incoming.isRandomQuestions !== undefined) this.isRandomQuestionsControl.setValue(!!incoming.isRandomQuestions);
-    if (incoming.isRandomAnswers !== undefined) this.isRandomAnswersControl.setValue(!!incoming.isRandomAnswers);
+    if (incoming.durationMinutes !== undefined)
+      this.durationMinutesControl.setValue(this.toNumber(incoming.durationMinutes, 90));
+    if (incoming.academicLevel !== undefined)
+      this.academicLevelControl.setValue(this.toNumber(incoming.academicLevel, 1));
+    if (incoming.departmentIds !== undefined)
+      this.departmentIdsControl.setValue(incoming.departmentIds);
+
+    if (incoming.isRandomQuestions !== undefined)
+      this.isRandomQuestionsControl.setValue(!!incoming.isRandomQuestions);
+    if (incoming.isRandomAnswers !== undefined)
+      this.isRandomAnswersControl.setValue(!!incoming.isRandomAnswers);
   }
 }

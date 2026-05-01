@@ -37,18 +37,19 @@ export class CreateExamModalComponent {
   readonly passingScore = signal(50);
   readonly totalDegree = signal(100);
   readonly academicLevel = signal(1);
-  readonly departmentId = signal(0);
+  readonly departmentIds = signal<number[]>([]);
   readonly isRandomQuestions = signal(true);
   readonly isRandomAnswers = signal(false);
 
   readonly selectedDepartmentName = computed(() => {
-    const selectedId = this.departmentId();
-    if (selectedId <= 0) {
+    const ids = this.departmentIds();
+    if (!ids || ids.length === 0) {
       return 'All departments (general exam for this level)';
     }
-
-    const selected = this.departments().find((department) => department.id === selectedId);
-    return selected?.name ?? 'All departments (general exam for this level)';
+    const selectedNames = ids
+      .map(id => this.departments().find(d => d.id === id)?.name)
+      .filter(name => !!name);
+    return selectedNames.join(', ');
   });
 
   readonly canSubmit = computed(() => {
@@ -86,14 +87,14 @@ export class CreateExamModalComponent {
         this.hasOpenedInCurrentCycle.set(true);
       }
 
-      if (
-        this.departmentId() > 0 &&
-        !departments.some((department) => department.id === this.departmentId())
-      ) {
-        this.departmentId.set(0);
+      const currentIds = this.departmentIds();
+      const validIds = currentIds.filter((id) => departments.some((d) => d.id === id));
+      if (validIds.length !== currentIds.length) {
+        this.departmentIds.set(validIds);
       }
     });
   }
+  readonly LevelOptions = [1, 2, 3, 4];
 
   onBackdropClick(event: MouseEvent): void {
     if (event.target !== event.currentTarget || this.submitting()) {
@@ -125,14 +126,22 @@ export class CreateExamModalComponent {
       isRandomQuestions: this.isRandomQuestions(),
       isRandomAnswers: this.isRandomAnswers(),
       academicLevel: this.normalizeRange(this.academicLevel(), 1, 6, 1),
-      departmentsIds:
-        this.departmentId() > 0 ? [this.normalizePositive(this.departmentId(), 0)] : [],
+      departmentsIds: this.departmentIds(),
     });
   }
 
   toNumber(value: string | number | null | undefined, fallback: number): number {
     const parsed = Number(value);
     return Number.isFinite(parsed) ? parsed : fallback;
+  }
+
+  toggleDepartment(id: number): void {
+    const current = this.departmentIds();
+    if (current.includes(id)) {
+      this.departmentIds.set(current.filter((dId) => dId !== id));
+    } else {
+      this.departmentIds.set([...current, id]);
+    }
   }
 
   private resetForm(): void {
@@ -142,7 +151,7 @@ export class CreateExamModalComponent {
     this.passingScore.set(50);
     this.totalDegree.set(100);
     this.academicLevel.set(1);
-    this.departmentId.set(0);
+    this.departmentIds.set([]);
     this.isRandomQuestions.set(true);
     this.isRandomAnswers.set(false);
   }

@@ -18,12 +18,13 @@ import { QuestionType } from '../../../../../data/enums/question-type';
 import { IExamQuestions } from '../../../../../data/models/ExamQuestions/iexam-questions';
 import { ExamBuilderFacade } from '../../../services/exam-builder.facade';
 import {
-  QuestionEditorComponent,
-  QuestionEditorDisplayMode,
-  QuestionEditorInitialValue,
-  QuestionEditorMode,
-  QuestionEditorSavedEvent,
-} from '../question-editor/question-editor.component';
+  QuestionFormComponent,
+  QuestionFormDisplayMode,
+  QuestionFormInitialValue,
+  QuestionFormMode,
+  QuestionFormSavePayload,
+} from '../../../../../shared/components/question-form/question-form.component';
+import { TextFormattingService } from '../../../services/text-formatting.service';
 
 interface EditableAssignedQuestion {
   id: number;
@@ -41,8 +42,7 @@ interface EditableAssignedQuestion {
 
 @Component({
   selector: 'app-assigned-questions',
-  standalone: true,
-  imports: [CommonModule, FormsModule, QuestionEditorComponent],
+  imports: [CommonModule, FormsModule, QuestionFormComponent ],
   templateUrl: './assigned-questions.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -68,9 +68,9 @@ export class AssignedQuestionsComponent {
   readonly errorMessage = signal<string | null>(null);
 
   readonly isQuestionEditorOpen = signal(false);
-  readonly questionEditorMode = signal<QuestionEditorMode>('create');
-  readonly questionEditorDisplayMode = signal<QuestionEditorDisplayMode>('modal');
-  readonly editorInitialQuestion = signal<QuestionEditorInitialValue | null>(null);
+  readonly questionEditorMode = signal<QuestionFormMode>('create');
+  readonly questionEditorDisplayMode = signal<QuestionFormDisplayMode>('modal');
+  readonly editorInitialQuestion = signal<QuestionFormInitialValue | null>(null);
 
   readonly hasAssignedQuestions = computed(() => this.editableQuestions().length > 0);
 
@@ -112,7 +112,6 @@ export class AssignedQuestionsComponent {
     this.questionEditorDisplayMode.set('side-panel');
     this.editorInitialQuestion.set({
       id: question.id,
-      questionId: question.questionId,
       text: question.text,
       questionType: question.questionType as QuestionType,
       degree: question.degree,
@@ -128,7 +127,14 @@ export class AssignedQuestionsComponent {
     this.editorInitialQuestion.set(null);
   }
 
-  onQuestionEditorSaved(event: QuestionEditorSavedEvent): void {
+  onQuestionEditorSaved(event: QuestionFormSavePayload): void {
+    const text = event.request.text;
+    const questionType = event.request.questionType;
+    const degree = event.request.degree;
+    const options = event.request.options ?? [];
+    const correctOptionText = event.request.correctOptionText ?? '';
+    const imagePath = event.request.imagePath ?? null;
+
     if (event.mode === 'create') {
       const createdQuestion = this.mapSavedEventToEditableQuestion(event);
 
@@ -149,14 +155,14 @@ export class AssignedQuestionsComponent {
 
     this.patchQuestion(event.id, (question) => ({
       ...question,
-      text: event.text,
-      questionType: event.questionType,
-      degree: this.normalizeDegree(event.degree),
-      optionsText: event.options.join(' | '),
-      options: event.options,
-      correctOptionText: event.correctOptionText,
-      imagePath: event.imagePath ?? question.imagePath,
-      imagePreviewUrl: event.imagePath ?? question.imagePreviewUrl,
+      text: text,
+      questionType: questionType,
+      degree: this.normalizeDegree(degree),
+      optionsText: options.join(' | '),
+      options: options,
+      correctOptionText: correctOptionText,
+      imagePath: imagePath ?? question.imagePath,
+      imagePreviewUrl: imagePath ?? question.imagePreviewUrl,
     }));
 
     this.onQuestionEditorClosed();
@@ -391,13 +397,7 @@ export class AssignedQuestionsComponent {
       });
   }
 
-  applyBold(questionId: number, textarea: HTMLTextAreaElement): void {
-    this.applyInlineFormatting(questionId, textarea, '<b>', '</b>');
-  }
-
-  applyUnderline(questionId: number, textarea: HTMLTextAreaElement): void {
-    this.applyInlineFormatting(questionId, textarea, '<u>', '</u>');
-  }
+ 
 
   onDragStart(questionId: number): void {
     this.dragSourceId.set(questionId);
@@ -507,15 +507,18 @@ export class AssignedQuestionsComponent {
   }
 
   private mapSavedEventToEditableQuestion(
-    event: QuestionEditorSavedEvent,
+    event: QuestionFormSavePayload,
   ): EditableAssignedQuestion {
     const selectedCourseId = this.courseId();
     const normalizedCourseId = selectedCourseId && selectedCourseId > 0 ? selectedCourseId : 0;
 
+    const request = event.request;
+    const options = request.options ?? [];
+
     const normalizedOptions = this.resolveOptions(
-      event.questionType,
-      event.options.join(' | '),
-      event.options,
+      request.questionType,
+      options.join(' | '),
+      options,
     );
 
     const id = event.id && event.id > 0 ? event.id : Date.now();
@@ -523,15 +526,15 @@ export class AssignedQuestionsComponent {
     return {
       id,
       questionId: id,
-      text: event.text,
-      imagePath: event.imagePath ?? '',
-      imagePreviewUrl: event.imagePath ?? null,
-      questionType: event.questionType,
-      degree: this.normalizeDegree(event.degree),
+      text: request.text,
+      imagePath: request.imagePath ?? '',
+      imagePreviewUrl: request.imagePath ?? null,
+      questionType: request.questionType,
+      degree: this.normalizeDegree(request.degree),
       courseId: normalizedCourseId,
       optionsText: normalizedOptions.join(' | '),
       options: normalizedOptions,
-      correctOptionText: event.correctOptionText,
+      correctOptionText: request.correctOptionText ?? '',
     };
   }
 
@@ -566,34 +569,6 @@ export class AssignedQuestionsComponent {
       options: normalizedOptions,
       correctOptionText: normalizedCorrectAnswer,
     };
-  }
-
-  private applyInlineFormatting(
-    questionId: number,
-    textarea: HTMLTextAreaElement,
-    prefix: string,
-    suffix: string,
-  ): void {
-    const value = textarea.value ?? '';
-    const selectionStart = textarea.selectionStart ?? value.length;
-    const selectionEnd = textarea.selectionEnd ?? selectionStart;
-
-    const selectedText = value.slice(selectionStart, selectionEnd);
-    const textToWrap = selectedText.length > 0 ? selectedText : 'text';
-
-    const nextValue =
-      value.slice(0, selectionStart) + prefix + textToWrap + suffix + value.slice(selectionEnd);
-
-    this.patchQuestion(questionId, (question) => ({
-      ...question,
-      text: nextValue,
-    }));
-
-    queueMicrotask(() => {
-      textarea.focus();
-      const cursor = selectionStart + prefix.length + textToWrap.length + suffix.length;
-      textarea.setSelectionRange(cursor, cursor);
-    });
   }
 
   private normalizeOptions(optionsText: string): string[] {

@@ -119,7 +119,7 @@
             <div
               class="flex items-center gap-1 border-b border-border bg-surface px-3 py-2 text-sm"
             >
-              <button
+              <!-- <button
                 type="button"
                 class="btn inline-flex h-8 w-8 items-center justify-center rounded-md font-bold text-text-primary transition hover:bg-surface-container"
                 (click)="applyBold(question.id, questionTextArea)"
@@ -143,8 +143,8 @@
                 (click)="imageInput.click()"
               >
                 <i class="pi pi-image" aria-hidden="true"></i>
-              </button>
-            </div>
+              </button>-->
+            </div> 
 
             <textarea
               #questionTextArea
@@ -255,14 +255,14 @@
     </div>
   }
 
-  <app-question-editor
-    [open]="isQuestionEditorOpen()"
+  <app-question-form
+    [visible]="isQuestionEditorOpen()"
     [mode]="questionEditorMode()"
     [displayMode]="questionEditorDisplayMode()"
-    [courseId]="courseId()"
+    [courseId]="courseId() || 0"
     [initialQuestion]="editorInitialQuestion()"
     header="Question Editor"
-    (closed)="onQuestionEditorClosed()"
-    (saved)="onQuestionEditorSaved($event)"
-  ></app-question-editor>
+    (closeModal)="onQuestionEditorClosed()"
+    (saveQuestion)="onQuestionEditorSaved($event)"
+  ></app-question-form>
 </section>

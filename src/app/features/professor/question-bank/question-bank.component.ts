@@ -22,10 +22,10 @@ import {
 import { QuestionBankListComponent } from './components/question-bank-list/question-bank-list.component';
 import { QuestionBankToolbarComponent } from './components/question-bank-toolbar/question-bank-toolbar.component';
 import {
-  QuestionFormModalComponent,
+  QuestionFormComponent,
   QuestionFormMode,
   QuestionFormSavePayload,
-} from './components/question-form-modal/question-form-modal.component';
+} from '../../../shared/components/question-form/question-form.component';
 import {
   QuestionImportModalComponent,
   QuestionImportPayload,
@@ -39,7 +39,7 @@ import {
     QuestionBankToolbarComponent,
     QuestionBankListComponent,
     QuestionBankFilterModalComponent,
-    QuestionFormModalComponent,
+    QuestionFormComponent,
     QuestionImportModalComponent,
   ],
   templateUrl: './question-bank.component.html',
@@ -231,10 +231,10 @@ export class ProfessorQuestionBankComponent {
   }
 
   onDeleteQuestion(question: IQuestionResponse): void {
-    const confirmed = window.confirm('Delete this question permanently?');
-    if (!confirmed) {
-      return;
-    }
+    // const confirmed = window.confirm('Delete this question permanently?');
+    // if (!confirmed) {
+    //   return;
+    // }
 
     this.facade
       .deleteQuestion(question.id)

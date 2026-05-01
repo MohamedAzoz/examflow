@@ -26,12 +26,7 @@ import { ProfessorExamStatus } from '../../../data/enums/ProfessorExamStatus';
 @Component({
   selector: 'app-exams-management',
   standalone: true,
-  imports: [
-    CommonModule,
-    ExamsTableComponent,
-    CreateExamModalComponent,
-    FilterExamsModalComponent,
-  ],
+  imports: [CommonModule, ExamsTableComponent, CreateExamModalComponent, FilterExamsModalComponent],
   templateUrl: './exams-management.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -182,12 +177,18 @@ export class ExamsManagementComponent {
 
   getStatusName(status: number | null | undefined): string {
     switch (status) {
-      case ProfessorExamStatus.Draft: return 'Draft';
-      case ProfessorExamStatus.Published: return 'Published';
-      case ProfessorExamStatus.Completed: return 'Completed';
-      case ProfessorExamStatus.PendingManualGrading: return 'Pending Manual Grading';
-      case ProfessorExamStatus.AllGraded: return 'All Graded';
-      default: return 'Unknown Status';
+      case ProfessorExamStatus.Draft:
+        return 'Draft';
+      case ProfessorExamStatus.Published:
+        return 'Published';
+      case ProfessorExamStatus.Completed:
+        return 'Completed';
+      case ProfessorExamStatus.PendingManualGrading:
+        return 'Pending Manual Grading';
+      case ProfessorExamStatus.AllGraded:
+        return 'All Graded';
+      default:
+        return 'Unknown Status';
     }
   }
 
@@ -239,17 +240,25 @@ export class ExamsManagementComponent {
   }
 
   onDeleteExam(exam: IexamDetailsData): void {
-    const confirmed = window.confirm(`Delete exam \"${exam.title}\"?`);
-    if (!confirmed) {
-      return;
-    }
+    // const confirmed = window.confirm(`Delete exam \"${exam.title}\"?`);
+    // if (!confirmed) {
+    //   return;
+    // }
     this.examFacade.deleteExam(exam.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
   }
 
   onGradeEssays(exam: IexamDetailsData): void {
     const currentCourseId = this.courseId();
     if (currentCourseId) {
-      this.router.navigate(['/main', 'professor', 'my-courses', currentCourseId, 'exams', exam.id, 'grade']);
+      this.router.navigate([
+        '/main',
+        'professor',
+        'my-courses',
+        currentCourseId,
+        'exams',
+        exam.id,
+        'grade',
+      ]);
     }
   }
 
@@ -257,7 +266,8 @@ export class ExamsManagementComponent {
     // Utilize the exam report service for the pdf download
     // Since getExamResultsReport returns an observable, we would typically handle blob conversion here
     // We are triggering the backend endpoint as requested.
-    this.examFacade['professorExamService']?.getExamResultsReport(exam.id)
+    this.examFacade['professorExamService']
+      ?.getExamResultsReport(exam.id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response: any) => {
@@ -271,7 +281,7 @@ export class ExamsManagementComponent {
         },
         error: () => {
           window.alert('Error occurred while fetching PDF report.');
-        }
+        },
       });
   }
 
@@ -370,4 +380,3 @@ export class ExamsManagementComponent {
     return 'Failed to load exams.';
   }
 }
-

@@ -25,7 +25,7 @@ import { QuestionBankComponent } from './components/question-bank/question-bank.
 import { ExamBuilderFacade } from '../services/exam-builder.facade';
 import { IQuestionResponse } from '../../../data/models/question/iquestion-response';
 import { FormsModule } from '@angular/forms';
-import { QuestionEditorComponent } from './components/question-editor/question-editor.component';
+import { QuestionFormComponent, QuestionFormSavePayload } from '../../../shared/components/question-form/question-form.component';
 import { IError } from '../../../data/models/IErrorResponse';
 
 @Component({
@@ -36,7 +36,7 @@ import { IError } from '../../../data/models/IErrorResponse';
     FormsModule,
     QuestionBankComponent,
     ExamSettingsComponent,
-    QuestionEditorComponent,
+    QuestionFormComponent,
   ],
   templateUrl: './exam-builder.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -253,7 +253,7 @@ export class ExamBuilderComponent implements OnInit, OnDestroy {
     this.onAssignedQuestionsChange(existing);
   }
 
-  protected onQuestionEditorSaved(event: unknown): void {
+  protected onQuestionSaved(event: QuestionFormSavePayload): void {
     // Re-load the workspace or course questions to reflect changes
     const courseId = this.courseId();
     if (courseId) {
@@ -330,7 +330,7 @@ export class ExamBuilderComponent implements OnInit, OnDestroy {
       isRandomAnswers: currentSettings.isRandomAnswers,
       totalDegree: this.normalizePositive(currentSettings.totalDegree, 100),
       academicLevel: this.normalizeRange(currentSettings.academicLevel, 1, 6, 1),
-      departmentId: this.normalizePositive(currentSettings.departmentId, 0),
+      departmentsIds: currentSettings.departmentIds,
     };
 
     this.facade
