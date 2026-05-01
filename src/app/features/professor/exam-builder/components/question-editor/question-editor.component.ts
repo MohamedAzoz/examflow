@@ -323,6 +323,7 @@ export class QuestionEditorComponent {
     }
   }
 
+
   onSaveQuestion(): void {
     if (!this.canSave()) {
       return;
@@ -445,6 +446,7 @@ export class QuestionEditorComponent {
       courseId,
       options: normalizedOptions,
       correctOptionText: normalizedCorrectAnswer,
+      imagePath: this.imagePath() ?? '',
     };
 
     const updatePayload: ExamBuilderUpdateQuestionData = {
@@ -453,6 +455,7 @@ export class QuestionEditorComponent {
       degree: normalizedPoints,
       options: normalizedOptions,
       correctOptionText: normalizedCorrectAnswer,
+      imagePath: this.imagePath() ?? '',
       courseId,
     };
 

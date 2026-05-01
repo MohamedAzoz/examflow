@@ -3,5 +3,6 @@ export interface IAssignCourses {
     courseId: number;
     courseName: string;
     courseCode: string;
+    academicLevel: number;
   }[];
 }

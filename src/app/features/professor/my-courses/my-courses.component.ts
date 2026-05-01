@@ -2,9 +2,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
-import { IJWT } from '../../../data/models/auth/ijwt';
-import { IdentityService } from '../../../core/services/identity-service';
-import { JWT } from '../../../core/services/jwt';
 import { ProfessorFacade } from '../services/professor-facade';
 import { CourseCardComponent } from './components/course-card/course-card.component';
 
@@ -15,8 +12,6 @@ import { CourseCardComponent } from './components/course-card/course-card.compon
   styleUrl: './my-courses.component.css',
 })
 export class MyCoursesComponent implements OnInit {
-  private readonly identityService = inject(IdentityService);
-  private readonly jwt = inject(JWT);
   private readonly professorFacade = inject(ProfessorFacade);
 
   private readonly localError = signal<string | null>(null);
@@ -27,6 +22,13 @@ export class MyCoursesComponent implements OnInit {
 
   protected readonly isLoading = computed(() => this.resource.isLoading());
 
+  ngOnInit(): void {
+    const e = this.errorMessage();
+    if (!e) {
+      this.professorFacade.GetCourses(true);
+    }
+  }
+
   protected readonly errorMessage = computed(() => {
     const localError = this.localError();
     if (localError) {
@@ -34,10 +36,6 @@ export class MyCoursesComponent implements OnInit {
     }
     return this.readHttpError(this.resource.error());
   });
-
-  ngOnInit(): void {
-    this.professorFacade.setProfessorId();
-  }
 
   protected retryLoad(): void {
     this.localError.set(null);

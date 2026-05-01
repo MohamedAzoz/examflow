@@ -185,6 +185,7 @@ export class QuestionFormModalComponent {
       courseId: this.courseId(),
       options: normalizedType === QuestionType.Essay ? [] : options,
       correctOptionText: normalizedType === QuestionType.Essay ? '' : selectedCorrect,
+      imagePath: this.mediaFileName() ?? '',
     };
 
     this.saveQuestion.emit({

@@ -43,6 +43,10 @@ export class Department {
   assignCourses(data: IReqAssignCourses) {
     return this.http.put(`${environment.apiUrl}/Department/assign-courses`, data);
   }
+  // /api/Department/deassign-courses
+  deassignCourses(data: IReqAssignCourses) {
+    return this.http.put(`${environment.apiUrl}/Department/deassign-courses`, data);
+  }
   //GET :/api/Department/assign-courses
   getAssignCourses(id: number) {
     return this.http.get<IAssignCourses>(`${environment.apiUrl}/Department/assigned-courses/${id}`);

@@ -8,6 +8,7 @@ import { IQuestionListResponse } from '../../../data/models/question/IQuestionLi
 import { IQuestionRequest } from '../../../data/models/question/iquestion-request';
 import { IQuestionResponse } from '../../../data/models/question/iquestion-response';
 import { Question } from '../../../data/services/question';
+import { AppMessageService } from '../../../core/services/app-message';
 
 export interface QuestionBankQueryState {
   courseId: number;
@@ -22,6 +23,8 @@ export interface QuestionBankQueryState {
 })
 export class QuestionBankFacade {
   private readonly questionService = inject(Question);
+  private readonly appMessageService = inject(AppMessageService);
+
 
   readonly questions = signal<IQuestionResponse[]>([]);
   readonly totalCount = signal(0);
@@ -118,6 +121,7 @@ export class QuestionBankFacade {
     this.mutatingQuestion.set(true);
     this.error.set(null);
 
+    payload.imagePath = payload.imagePath || '';
     return this.questionService.createQuestions(payload).pipe(
       switchMap((response) => this.reloadQuestions().pipe(map(() => response))),
       catchError((error) => this.handleError(error, 'Failed to create question.')),
@@ -135,6 +139,7 @@ export class QuestionBankFacade {
       questionType: payload.questionType,
       degree: payload.degree,
       courseId: payload.courseId,
+      imagePath: payload.imagePath || '',
       options: payload.options,
       correctOptionText: payload.correctOptionText,
     };
@@ -169,7 +174,7 @@ export class QuestionBankFacade {
   }
 
   private handleError(error: unknown, fallbackMessage: string): Observable<never> {
-    this.error.set(this.resolveErrorMessage(error, fallbackMessage));
+    this.appMessageService.addErrorMessage(this.resolveErrorMessage(error, fallbackMessage));
     return throwError(() => error);
   }
 

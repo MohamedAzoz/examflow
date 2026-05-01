@@ -1,8 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
-import { IAssignCourses } from '../../../../../data/models/department/iassign-courses';
-
-type AssignedCourse = IAssignCourses['assignedCourses'][number];
+import { Component, input } from '@angular/core';
+import { ICoueseResponse } from '../../../../../data/models/course/icouese-response';
 
 @Component({
   selector: 'app-course-hero',
@@ -11,16 +9,14 @@ type AssignedCourse = IAssignCourses['assignedCourses'][number];
   styleUrl: './course-hero.component.css',
 })
 export class CourseHeroComponent {
-  @Input({ required: true }) course!: AssignedCourse;
-
-  protected resolveLevelLabel(courseCode: string): string {
-    const digits = courseCode.replace(/\D/g, '');
-    if (!digits) {
+  course = input.required<ICoueseResponse>();
+  protected resolveLevelLabel(): string {
+    const level = this.course().academicLevel;
+    if (!level) {
       return 'Level 1';
     }
 
-    const level = Number(digits.charAt(0));
-    if (!Number.isFinite(level) || level < 1 || level > 6) {
+    if (!Number.isFinite(level) || level < 1 || level > 5) {
       return 'Level 1';
     }
 

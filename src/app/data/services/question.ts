@@ -187,6 +187,8 @@ PageSize
     formData.append('file', data.file);
     formData.append('courseId', String(data.courseId));
 
-    return this.http.post(`${environment.apiUrl}/Question/upload-media`, formData);
+    return this.http.post<{
+      imagePath: 'string';
+    }>(`${environment.apiUrl}/Question/upload-media`, formData);
   }
 }

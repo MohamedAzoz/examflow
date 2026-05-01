@@ -125,4 +125,13 @@ export class DepartmentFacade {
       finalize(() => this.loading.set(false)),
     );
   }
+
+  // /api/Department/deassign-courses
+  deassignCourses(payload: IReqAssignCourses): Observable<unknown> {
+    this.startRequest();
+    return this.department.deassignCourses(payload).pipe(
+      catchError((err) => this.handleRequestError(err)),
+      finalize(() => this.loading.set(false)),
+    );
+  }
 }

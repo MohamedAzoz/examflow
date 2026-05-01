@@ -35,7 +35,7 @@
         description="Create, schedule, and grade exams. Access student performance metrics and manage active assessment sessions."
         buttonLabel="Manage Exams"
         buttonVariant="primary"
-        (action)="openExams(selectedCourse.courseId)"
+        (action)="openExams(selectedCourse.id)"
       ></app-feature-action-card>
 
       <app-feature-action-card
@@ -44,7 +44,7 @@
         description="Add, edit, and organize the question pool. Categorize by difficulty, topic, and track usage statistics across terms."
         buttonLabel="Open Question Bank"
         buttonVariant="outline"
-        (action)="openQuestionBank(selectedCourse.courseId)"
+        (action)="openQuestionBank(selectedCourse.id)"
       ></app-feature-action-card>
     </section>
 
@@ -63,6 +63,20 @@
           [value]="activeExams()"
         ></app-overview-stat-card>
       </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <app-overview-stat-card
+          icon="pi-file-edit"
+          label="Completed Exams"
+          [value]="completedExams()"
+        ></app-overview-stat-card>
+
+        <app-overview-stat-card
+          icon="pi-users"
+          label="Pending Grading"
+          [value]="pendingGradingExams()"
+        ></app-overview-stat-card>
+      </div>
     </section>
   }
 
@@ -76,7 +90,7 @@
       <div class="space-y-1.5">
         <h2 class="text-lg font-bold text-text-primary">Course not found</h2>
         <p class="text-sm text-text-secondary">
-          The requested course does not exist in your assigned list.
+          The requested course does not exist in assigned list.
         </p>
       </div>
       <a

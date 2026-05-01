@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, effect, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ROUTES, ROUTESPROFESSOR } from '../../../core/constants/const.route';
@@ -30,7 +30,17 @@ export class CourseDetailsComponent {
   protected readonly routes = ROUTES;
   protected readonly professorRoutes = ROUTESPROFESSOR;
 
-  protected readonly resource = this.professorFacade.getAssignedCourses;
+  protected readonly resource = this.professorFacade.getCourseOverview;
+  protected readonly resourceDetails = this.professorFacade.getCourseOverviewDetails;
+
+  constructor() {
+    effect(() => {
+      const courseId = this.courseId();
+      if (courseId !== null) {
+        this.professorFacade.setCourseId(courseId);
+      }
+    });
+  }
 
   private readonly params = toSignal(this.route.paramMap, {
     initialValue: this.route.snapshot.paramMap,
@@ -48,7 +58,7 @@ export class CourseDetailsComponent {
       return null;
     }
 
-    return this.resource.value()?.assignedCourses.find((item) => item.courseId === id) ?? null;
+    return this.resource.value() ?? null;
   });
 
   protected readonly isLoading = computed(() => this.resource.isLoading());
@@ -62,28 +72,47 @@ export class CourseDetailsComponent {
     return this.readHttpError(this.resource.error());
   });
 
+  //#region resourceDetails
+
   protected readonly totalQuestions = computed(() => {
-    const currentCourse = this.course();
+    const currentCourse = this.resourceDetails.value();
     if (!currentCourse) {
       return 0;
     }
 
-    return 120 + (Math.abs(currentCourse.courseId) % 40);
+    return currentCourse.totalQuestions;
   });
 
   protected readonly activeExams = computed(() => {
-    const currentCourse = this.course();
+    const currentCourse = this.resourceDetails.value();
     if (!currentCourse) {
       return 0;
     }
 
-    return 1 + (Math.abs(currentCourse.courseId) % 3);
+    return currentCourse.activeExams;
   });
 
-  constructor() {
-    this.professorFacade.setProfessorId();
-  }
+  protected readonly pendingGradingExams = computed(() => {
+    const currentCourse = this.resourceDetails.value();
+    if (!currentCourse) {
+      return 0;
+    }
 
+    return currentCourse.pendingGradingExams;
+  });
+
+  protected readonly completedExams = computed(() => {
+    const currentCourse = this.resourceDetails.value();
+    if (!currentCourse) {
+      return 0;
+    }
+
+    return currentCourse.completedExams;
+  });
+
+  //#endregion
+
+  
   protected openExams(courseId: number): void {
     this.router.navigate([
       '/',

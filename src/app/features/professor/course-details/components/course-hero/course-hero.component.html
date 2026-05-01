@@ -4,11 +4,11 @@
   <div class="space-y-1.5">
     <div class="flex items-center gap-2 text-sm text-text-secondary">
       <i class="pi pi-book" aria-hidden="true"></i>
-      <span>{{ course.courseCode }}</span>
+      <span>{{ course().code }}</span>
     </div>
 
     <h1 class="text-3xl md:text-4xl font-black text-text-primary tracking-tight leading-tight">
-      {{ course.courseName }}
+      {{ course().name }}
     </h1>
 
     <p class="text-text-secondary text-sm md:text-base">
@@ -20,7 +20,7 @@
     <span
       class="inline-flex items-center rounded-full border border-border/70 bg-surface-container px-4 py-1.5 text-xs font-bold uppercase tracking-[0.12em] text-text-secondary"
     >
-      {{ resolveLevelLabel(course.courseCode) }}
+      {{ resolveLevelLabel() }}
     </span>
 
     <span

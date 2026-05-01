@@ -18,7 +18,7 @@
         <span class="text-sm font-medium"
           ><i class="pi pi-exclamation-triangle mr-2"></i>{{ facade.error() }}</span
         >
-        <button class="hover:text-red-900" (click)="facade.clear()">
+        <button class="btn hover:text-red-900" (click)="facade.clear()">
           <i class="pi pi-times"></i>
         </button>
       </div>
@@ -32,7 +32,7 @@
     <div class="flex items-center gap-6">
       <button
         type="button"
-        class="group flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-gray-900 transition"
+        class="group btn flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-gray-900 transition"
         (click)="onBackToExams()"
       >
         <i
@@ -164,14 +164,14 @@
     >
       <button
         type="button"
-        class="text-sm font-bold text-gray-500 hover:text-gray-900 transition"
+        class="text-sm btn font-bold text-gray-500 hover:text-gray-900 transition"
         (click)="onSkip()"
       >
         Skip for now
       </button>
       <button
         type="button"
-        class="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-emerald-600 px-6 text-sm font-bold text-white shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+        class="inline-flex btn h-12 items-center justify-center gap-2 rounded-xl bg-emerald-600 px-6 text-sm font-bold text-white shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
         (click)="onSubmit()"
         [disabled]="!canSubmit()"
       >

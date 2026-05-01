@@ -4,6 +4,7 @@ import { ICoueseResponse } from '../models/course/icouese-response';
 import { environment } from '../../../environments/environment';
 import { ICoueseRequest } from '../models/course/icouese-request';
 import { IassignDepartments } from '../models/course/IassignDepartments';
+import { ICoueseResponseDetails } from '../models/course/ICoueseResponseDetails';
 
 @Injectable({
   providedIn: 'root',
@@ -12,8 +13,39 @@ export class Course {
   private http = inject(HttpClient);
 
   // GET /api/Course/courses
-  getAllCourses() {
-    return this.http.get<ICoueseResponse[]>(`${environment.apiUrl}/Course`);
+  /*
+AcademicLevel
+HasProfessor
+boolean
+HasDepartment
+boolean
+PageIndex
+PageSize
+  */
+  getAllCourses(
+    AcademicLevel: number | null,
+    HasProfessor: boolean | null = null,
+    HasDepartment: boolean | null = null,
+    PageIndex: number = 1,
+    PageSize: number = 10,
+  ) {
+    let query = '?';
+    if(AcademicLevel){
+      query += `AcademicLevel=${AcademicLevel}&`;
+    }
+    if(HasProfessor){
+      query += `HasProfessor=${HasProfessor}&`;
+    }
+    if(HasDepartment){
+      query += `HasDepartment=${HasDepartment}&`;
+    }
+    if(PageIndex){
+      query += `PageIndex=${PageIndex}&`;
+    }
+    if(PageSize){
+      query += `PageSize=${PageSize}`;
+    }
+    return this.http.get<ICoueseResponse[]>(`${environment.apiUrl}/Course${query}`);
   }
   // GET /api/Course/course
   getCourse(id: number) {
@@ -38,5 +70,13 @@ export class Course {
     return this.http.get<IassignDepartments[]>(
       `${environment.apiUrl}/Course/${courseId}/assign-departments`,
     );
+  }
+  // /api/Course/{id}
+  getCourseById(id: number) {
+    return this.http.get<ICoueseResponse>(`${environment.apiUrl}/Course/${id}`);
+  }
+  // /api/Course/overview/{id}
+  getCourseOverview(id: number) {
+    return this.http.get<ICoueseResponseDetails>(`${environment.apiUrl}/Course/overview/${id}`);
   }
 }

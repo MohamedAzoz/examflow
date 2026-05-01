@@ -61,7 +61,8 @@ export interface ExamBuilderUpdateQuestionData {
   degree: number;
   options: string[];
   correctOptionText: string;
-  courseId?: number;
+  courseId: number;
+  imagePath: string;
 }
 
 @Injectable({
@@ -472,6 +473,7 @@ export class ExamBuilderFacade {
       courseId,
       options: questionData.options ?? [],
       correctOptionText: questionData.correctOptionText ?? '',
+      imagePath: questionData.imagePath ?? '',
     };
 
     return this.questionService.putQuestions(payload).pipe(

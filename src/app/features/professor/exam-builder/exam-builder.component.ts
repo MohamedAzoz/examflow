@@ -334,6 +334,7 @@ export class ExamBuilderComponent implements OnInit, OnDestroy {
         },
         error: () => {
           // Error signal is handled in facade.
+          this.appMessageService.addErrorMessage("Error on update exam settings");
         },
       });
   }
@@ -352,7 +353,7 @@ export class ExamBuilderComponent implements OnInit, OnDestroy {
           this.appMessageService.addSuccessMessage('Exam published successfully.');
         },
         error: () => {
-          // Error signal is handled in facade.
+          this.appMessageService.addErrorMessage('Failed to publish exam.');
         },
       });
   }

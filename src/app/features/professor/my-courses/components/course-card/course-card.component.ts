@@ -18,14 +18,13 @@ export class CourseCardComponent {
   protected readonly routes = ROUTES;
   protected readonly professorRoutes = ROUTESPROFESSOR;
 
-  protected resolveLevelLabel(courseCode: string): string {
-    const digits = courseCode.replace(/\D/g, '');
-    if (!digits) {
+  protected resolveLevelLabel(): string {
+    const level = this.course.academicLevel;
+    if (!level) {
       return 'Level 1';
     }
 
-    const level = Number(digits.charAt(0));
-    if (!Number.isFinite(level) || level < 1 || level > 6) {
+    if (!Number.isFinite(level) || level < 1 || level > 5) {
       return 'Level 1';
     }
 
@@ -33,14 +32,7 @@ export class CourseCardComponent {
   }
 
   protected resolveIcon(courseId: number): string {
-    const icons = [
-      'pi-code',
-      'pi-desktop',
-      'pi-sitemap',
-      'pi-shield',
-      'pi-sparkles',
-      'pi-share-alt',
-    ];
+    const icons = ['pi-code', 'pi-desktop', 'pi-sitemap', 'pi-shield', 'pi-sparkles'];
 
     return icons[Math.abs(courseId) % icons.length];
   }

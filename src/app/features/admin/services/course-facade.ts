@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
-import { catchError, finalize, Observable, throwError } from 'rxjs';
+import { catchError, finalize, Observable, of, throwError } from 'rxjs';
 import { ICoueseResponse } from '../../../data/models/course/icouese-response';
 import { Course } from '../../../data/services/course';
 import { IassignDepartments } from '../../../data/models/course/IassignDepartments';
@@ -45,48 +45,48 @@ export class CourseFacade {
 
   //#region Get All Course
 
-  public readonly allCourses = rxResource<ICoueseResponse[], unknown>({
-    stream: () => this.courseService.getAllCourses(),
+  private readonly AcademicLevel = signal<number | null>(null);
+  private readonly HasProfessor = signal<boolean | null>(null);
+  private readonly HasDepartment = signal<boolean | null>(null);
+  private readonly PageIndex = signal(1);
+  private readonly PageSize = signal(10);
+  public readonly allCourses = rxResource<
+    ICoueseResponse[],
+    {
+      AcademicLevel: number | null;
+      HasProfessor: boolean | null;
+      HasDepartment: boolean | null;
+      PageIndex: number;
+      PageSize: number;
+    }
+  >({
+    params: () => ({
+      AcademicLevel: this.AcademicLevel(),
+      HasProfessor: this.HasProfessor(),
+      HasDepartment: this.HasDepartment(),
+      PageIndex: this.PageIndex(),
+      PageSize: this.PageSize(),
+    }),
+    stream: ({ params }) => {
+      return this.courseService.getAllCourses(
+        params.AcademicLevel,
+        params.HasProfessor,
+        params.HasDepartment,
+        params.PageIndex,
+        params.PageSize,
+      );
+    },
   });
 
-  /**
-   * @deprecated Use allCourses resource value directly.
-   * Call refreshCourses() or allCourses.reload() if needed.
-   */
-  // getAllCourses(): void {
-  //   this.allCourses.reload();
-  // }
-
   //#endregion
-
-  // refreshCourses(): Observable<ICoueseResponse[]> {
-  //   this.startRequest();
-  //   return this.courseService.getAllCourses().pipe(
-  //     catchError((err) => this.handleRequestError(err)),
-  //     finalize(() => this.loading.set(false)),
-  //   );
-  // }
-
-  // assignCourseDepartments(courseId: number): void {
-  //   this.startRequest();
-  //   this.courseService
-  //     .assignDepartments(courseId)
-  //     .pipe(
-  //       catchError((err) => this.handleRequestError(err)),
-  //       finalize(() => this.loading.set(false)),
-  //     )
-  //     .subscribe((departments) => {
-  //       this.assignToDepartment.set(departments);
-  //     });
-  // }
 
   createCourse(course: ICoueseRequest): Observable<any> {
     this.startRequest();
     return this.courseService.postCourse(course).pipe(
       catchError((err) => this.handleRequestError(err)),
-      finalize(() => {         
+      finalize(() => {
         this.allCourses.reload();
-      })
+      }),
     );
   }
 
@@ -96,7 +96,7 @@ export class CourseFacade {
       catchError((err) => this.handleRequestError(err)),
       finalize(() => {
         this.allCourses.reload();
-      })
+      }),
     );
   }
 
@@ -106,7 +106,7 @@ export class CourseFacade {
       catchError((err) => this.handleRequestError(err)),
       finalize(() => {
         this.allCourses.reload();
-      })
+      }),
     );
   }
 }

@@ -7,8 +7,12 @@ import {
   input,
   output,
   signal,
+  inject,
+  DestroyRef,
 } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { toSignal } from '@angular/core/rxjs-interop'; // مهم جداً للربط بين الفورم والـ Signals
+import { merge } from 'rxjs'; // لدمج مراقبة كل الحقول معاً
 import { IassignDepartments } from '../../../../../data/models/course/IassignDepartments';
 
 export interface ExamSettingsValue {
@@ -26,7 +30,7 @@ export interface ExamSettingsValue {
 @Component({
   selector: 'app-exam-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './exam-settings.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -42,48 +46,70 @@ export class ExamSettingsComponent {
 
   readonly isCollapsed = signal(false);
 
-  readonly title = signal('');
-  readonly passingScore = signal(50);
-  readonly totalDegree = signal(100);
-  readonly startTime = signal('');
-  readonly durationMinutes = signal(90);
-  readonly academicLevel = signal(1);
-  readonly departmentId = signal(0);
-  readonly isRandomQuestions = signal(true);
-  readonly isRandomAnswers = signal(false);
+  // تعريف الحقول
+  readonly titleControl = new FormControl('', { nonNullable: true });
+  readonly passingScoreControl = new FormControl(50, [Validators.min(1), Validators.max(100)]);
+  readonly totalDegreeControl = new FormControl(100, [Validators.min(1)]);
+  readonly startTimeControl = new FormControl('', { nonNullable: true });
+  readonly durationMinutesControl = new FormControl(90, [Validators.min(1)]);
+  readonly academicLevelControl = new FormControl(1, [Validators.min(1)]);
+  readonly departmentIdControl = new FormControl(0);
+  readonly isRandomQuestionsControl = new FormControl(true);
+  readonly isRandomAnswersControl = new FormControl(false);
 
   readonly levelOptions = [1, 2, 3, 4] as const;
 
+  /** 
+   * التعديل الجوهري: 
+   * ننشئ Signal يراقب "تغيرات القيم" و "تغيرات الحالة" لكل الحقول.
+   * بمجرد أن يتغير أي حقل، سيقوم هذا الـ Signal بإخطار الـ computed لإعادة الحساب.
+   */
+  private readonly formUpdateTrigger = toSignal(
+    merge(
+      this.titleControl.valueChanges,
+      this.passingScoreControl.valueChanges,
+      this.totalDegreeControl.valueChanges,
+      this.startTimeControl.valueChanges,
+      this.durationMinutesControl.valueChanges,
+      this.academicLevelControl.valueChanges,
+      this.departmentIdControl.valueChanges,
+      this.isRandomQuestionsControl.valueChanges,
+      this.isRandomAnswersControl.valueChanges,
+      this.titleControl.statusChanges // نراقب الحالة أيضاً (Valid/Invalid)
+    )
+  );
+
+  // الآن هذا الـ computed سيتم استدعاؤه مع كل ضغطة زر
+  readonly canSave = computed(() => {
+    // استدعاء الـ trigger لربط الـ computed بدورة حياة الفورم
+    this.formUpdateTrigger(); 
+
+    const hasRequiredFields = !!(this.titleControl.value?.trim() && this.startTimeControl.value);
+    
+    const isFormValid =
+      this.titleControl.valid &&
+      this.passingScoreControl.valid &&
+      this.totalDegreeControl.valid &&
+      this.startTimeControl.valid &&
+      this.durationMinutesControl.valid &&
+      this.academicLevelControl.valid &&
+      this.departmentIdControl.valid;
+
+    return isFormValid && hasRequiredFields && !this.saving();
+  });
+
+  // جعل عرض اسم القسم المختار تفاعلياً أيضاً
   readonly selectedDepartmentName = computed(() => {
-    const selectedId = this.departmentId();
-    if (selectedId <= 0) {
+    this.formUpdateTrigger(); // لكي يتحدث النص فور اختيار قسم جديد
+    const selectedId = this.departmentIdControl.value;
+    
+    if (selectedId === 0 || !selectedId) {
       return 'All departments (general exam for this level)';
     }
 
-    const selected = this.departments().find((department) => department.id === selectedId);
+    const selected = this.departments().find((d) => d.id === selectedId);
     return selected?.name ?? 'All departments (general exam for this level)';
   });
-
-  readonly canSave = computed(() => {
-    const hasTitle = this.title().trim().length > 0;
-    const hasStartTime = this.startTime().trim().length > 0;
-
-    const isScoreValid = this.passingScore() >= 1 && this.passingScore() <= 100;
-    const isTotalDegreeValid = this.totalDegree() >= 1;
-    const isDurationValid = this.durationMinutes() >= 1;
-    const isLevelValid = this.academicLevel() >= 1;
-
-    return (
-      hasTitle &&
-      hasStartTime &&
-      isScoreValid &&
-      isTotalDegreeValid &&
-      isDurationValid &&
-      isLevelValid &&
-      !this.saving()
-    );
-  });
-
 
   constructor() {
     effect(() => {
@@ -92,11 +118,9 @@ export class ExamSettingsComponent {
 
     effect(() => {
       const incoming = this.initialSettings();
-      if (!incoming) {
-        return;
+      if (incoming) {
+        this.patchFromInput(incoming);
       }
-
-      this.patchFromInput(incoming);
     });
   }
 
@@ -111,64 +135,35 @@ export class ExamSettingsComponent {
   }
 
   onSaveUpdates(): void {
-    if (!this.canSave()) {
-      return;
-    }
+    if (!this.canSave()) return;
 
     this.saveUpdates.emit({
-      title: this.title().trim(),
-      passingScore: this.passingScore(),
-      totalDegree: this.totalDegree(),
-      startTime: this.startTime(),
-      durationMinutes: this.durationMinutes(),
-      academicLevel: this.academicLevel(),
-      departmentId: this.departmentId(),
-      isRandomQuestions: this.isRandomQuestions(),
-      isRandomAnswers: this.isRandomAnswers(),
+      title: this.titleControl.value.trim(),
+      passingScore: this.passingScoreControl.value!,
+      totalDegree: this.totalDegreeControl.value!,
+      startTime: this.startTimeControl.value,
+      durationMinutes: this.durationMinutesControl.value!,
+      academicLevel: this.academicLevelControl.value!,
+      departmentId: this.departmentIdControl.value!,
+      isRandomQuestions: this.isRandomQuestionsControl.value!,
+      isRandomAnswers: this.isRandomAnswersControl.value!,
     });
   }
 
-
-  toNumber(value: string | number | null | undefined, fallback: number): number {
+  private toNumber(value: any, fallback: number): number {
     const parsed = Number(value);
     return Number.isFinite(parsed) ? parsed : fallback;
   }
 
   private patchFromInput(incoming: Partial<ExamSettingsValue>): void {
-    if (typeof incoming.title === 'string') {
-      this.title.set(incoming.title);
-    }
-
-    if (incoming.passingScore !== undefined) {
-      this.passingScore.set(this.toNumber(incoming.passingScore, this.passingScore()));
-    }
-
-    if (incoming.totalDegree !== undefined) {
-      this.totalDegree.set(this.toNumber(incoming.totalDegree, this.totalDegree()));
-    }
-
-    if (typeof incoming.startTime === 'string') {
-      this.startTime.set(incoming.startTime);
-    }
-
-    if (incoming.durationMinutes !== undefined) {
-      this.durationMinutes.set(this.toNumber(incoming.durationMinutes, this.durationMinutes()));
-    }
-
-    if (incoming.academicLevel !== undefined) {
-      this.academicLevel.set(this.toNumber(incoming.academicLevel, this.academicLevel()));
-    }
-
-    if (incoming.departmentId !== undefined) {
-      this.departmentId.set(this.toNumber(incoming.departmentId, this.departmentId()));
-    }
-
-    if (incoming.isRandomQuestions !== undefined) {
-      this.isRandomQuestions.set(!!incoming.isRandomQuestions);
-    }
-
-    if (incoming.isRandomAnswers !== undefined) {
-      this.isRandomAnswers.set(!!incoming.isRandomAnswers);
-    }
+    if (incoming.title !== undefined) this.titleControl.setValue(incoming.title);
+    if (incoming.passingScore !== undefined) this.passingScoreControl.setValue(this.toNumber(incoming.passingScore, 50));
+    if (incoming.totalDegree !== undefined) this.totalDegreeControl.setValue(this.toNumber(incoming.totalDegree, 100));
+    if (incoming.startTime !== undefined) this.startTimeControl.setValue(incoming.startTime);
+    if (incoming.durationMinutes !== undefined) this.durationMinutesControl.setValue(this.toNumber(incoming.durationMinutes, 90));
+    if (incoming.academicLevel !== undefined) this.academicLevelControl.setValue(this.toNumber(incoming.academicLevel, 1));
+    if (incoming.departmentId !== undefined) this.departmentIdControl.setValue(this.toNumber(incoming.departmentId, 0));
+    if (incoming.isRandomQuestions !== undefined) this.isRandomQuestionsControl.setValue(!!incoming.isRandomQuestions);
+    if (incoming.isRandomAnswers !== undefined) this.isRandomAnswersControl.setValue(!!incoming.isRandomAnswers);
   }
 }
