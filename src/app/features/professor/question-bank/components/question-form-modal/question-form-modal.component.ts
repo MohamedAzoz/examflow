@@ -43,11 +43,11 @@ export class QuestionFormModalComponent {
   readonly mcqOptions = signal<string[]>(['Option 1', 'Option 2']);
   readonly correctOptionIndex = signal(0);
   readonly mediaFileName = signal<string | null>(null);
+  readonly mediaFile = signal<File | null>(null);
 
   readonly isMcq = computed(() => this.questionType() === QuestionType.MultipleChoice);
   readonly isTrueFalse = computed(() => this.questionType() === QuestionType.TrueFalse);
   readonly isEssay = computed(() => this.questionType() === QuestionType.Essay);
- 
 
   readonly answerChoices = computed(() => {
     if (this.isEssay()) {
@@ -82,6 +82,14 @@ export class QuestionFormModalComponent {
     const currentIndex = this.correctOptionIndex();
 
     return choices.length > 0 && currentIndex >= 0 && currentIndex < choices.length;
+  });
+
+  readonly mediaUrl = computed(() => {
+    const file = this.mediaFile();
+    if (file) {
+      return URL.createObjectURL(file);
+    }
+    return null;
   });
 
   constructor() {
@@ -205,6 +213,7 @@ export class QuestionFormModalComponent {
     const file = input?.files?.[0] ?? null;
 
     this.mediaFileName.set(file?.name ?? null);
+    this.mediaFile.set(file ?? null);
 
     if (input) {
       input.value = '';

@@ -99,94 +99,99 @@
             </div>
 
             <input type="file" class="hidden" accept="image/*" (change)="onMediaSelected($event)" />
+            <!-- view image -->
           </label>
-          
-        </div>
-
-        <div class="rounded-2xl border border-border bg-surface p-4">
-          <div class="mb-3 flex items-center justify-between gap-2">
-            <p class="text-xs font-bold uppercase tracking-widest text-text-secondary">
-              Answer To This Question
-            </p>
-
-            @if (isMcq()) {
-              <button
-                type="button"
-                class="btn inline-flex items-center gap-1 rounded-lg border border-primary/35 bg-primary-light px-2.5 py-1 text-xs font-semibold text-primary transition hover:brightness-95"
-                (click)="addOption()"
-              >
-                <i class="pi pi-plus text-[10px]" aria-hidden="true"></i>
-                Add Option
-              </button>
-            }
-          </div>
-
-          @if (isEssay()) {
-            <p
-              class="rounded-xl border border-dashed border-border bg-card-bg px-3 py-3 text-sm text-text-secondary"
-            >
-              Essay question does not require predefined options or a fixed correct answer.
-            </p>
-          } @else if (isTrueFalse()) {
-            <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
-              @for (choice of answerChoices(); track choice) {
-                <button
-                  type="button"
-                  class="btn flex h-11 items-center justify-center rounded-xl border text-sm font-semibold transition"
-                  [class.border-primary]="correctOptionIndex() === $index"
-                  [class.bg-primary-light]="correctOptionIndex() === $index"
-                  [class.text-primary]="correctOptionIndex() === $index"
-                  [class.border-border]="correctOptionIndex() !== $index"
-                  [class.bg-card-bg]="correctOptionIndex() !== $index"
-                  [class.text-text-secondary]="correctOptionIndex() !== $index"
-                  (click)="setCorrectOption($index)"
-                >
-                  {{ choice }}
-                </button>
-              }
-            </div>
-          } @else {
-            <div class="space-y-2">
-              @for (choice of answerChoices(); track $index) {
-                <div class="flex items-center gap-2">
-                  <button
-                    type="button"
-                    class="btn inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition"
-                    [class.border-primary]="correctOptionIndex() === $index"
-                    [class.bg-primary]="correctOptionIndex() === $index"
-                    [class.text-white]="correctOptionIndex() === $index"
-                    [class.border-border]="correctOptionIndex() !== $index"
-                    [class.text-transparent]="correctOptionIndex() !== $index"
-                    (click)="setCorrectOption($index)"
-                    [attr.aria-label]="'Mark option ' + ($index + 1) + ' as correct answer'"
-                  >
-                    <i class="pi pi-check text-[9px]" aria-hidden="true"></i>
-                  </button>
-
-                  <input
-                    type="text"
-                    class="h-10 w-full rounded-xl border border-border bg-card-bg px-3 text-sm text-text-primary outline-none"
-                    [ngModel]="choice"
-                    (ngModelChange)="onMcqOptionChange($index, $event)"
-                    [placeholder]="'Option ' + ($index + 1)"
-                  />
-
-                  <button
-                    type="button"
-                    class="btn inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-red-600 transition hover:bg-red-50"
-                    [disabled]="answerChoices().length <= 2"
-                    (click)="removeOption($index)"
-                    aria-label="Remove option"
-                  >
-                    <i class="pi pi-trash text-xs" aria-hidden="true"></i>
-                  </button>
-                </div>
-              }
+          @if (mediaUrl()) {
+            <div class="mt-4">
+              <p class="text-xs font-bold uppercase tracking-widest text-text-secondary">
+                Image Preview
+              </p>
+              <img
+                [src]="mediaUrl()"
+                alt="Question Media"
+                class="mt-2 max-h-48 w-full rounded-lg object-contain"
+              />
             </div>
           }
         </div>
-
         @if (!isEssay()) {
+          <div class="rounded-2xl border border-border bg-surface p-4">
+            <div class="mb-3 flex items-center justify-between gap-2">
+              <p class="text-xs font-bold uppercase tracking-widest text-text-secondary">
+                Answer To This Question
+              </p>
+
+              @if (isMcq()) {
+                <button
+                  type="button"
+                  class="btn inline-flex items-center gap-1 rounded-lg border border-primary/35 bg-primary-light px-2.5 py-1 text-xs font-semibold text-primary transition hover:brightness-95"
+                  (click)="addOption()"
+                >
+                  <i class="pi pi-plus text-[10px]" aria-hidden="true"></i>
+                  Add Option
+                </button>
+              }
+            </div>
+
+            @if (isTrueFalse()) {
+              <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                @for (choice of answerChoices(); track choice) {
+                  <button
+                    type="button"
+                    class="btn flex h-11 items-center justify-center rounded-xl border text-sm font-semibold transition"
+                    [class.border-primary]="correctOptionIndex() === $index"
+                    [class.bg-primary-light]="correctOptionIndex() === $index"
+                    [class.text-primary]="correctOptionIndex() === $index"
+                    [class.border-border]="correctOptionIndex() !== $index"
+                    [class.bg-card-bg]="correctOptionIndex() !== $index"
+                    [class.text-text-secondary]="correctOptionIndex() !== $index"
+                    (click)="setCorrectOption($index)"
+                  >
+                    {{ choice }}
+                  </button>
+                }
+              </div>
+            } @else {
+              <div class="space-y-2">
+                @for (choice of answerChoices(); track $index) {
+                  <div class="flex items-center gap-2">
+                    <button
+                      type="button"
+                      class="btn inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition"
+                      [class.border-primary]="correctOptionIndex() === $index"
+                      [class.bg-primary]="correctOptionIndex() === $index"
+                      [class.text-white]="correctOptionIndex() === $index"
+                      [class.border-border]="correctOptionIndex() !== $index"
+                      [class.text-transparent]="correctOptionIndex() !== $index"
+                      (click)="setCorrectOption($index)"
+                      [attr.aria-label]="'Mark option ' + ($index + 1) + ' as correct answer'"
+                    >
+                      <i class="pi pi-check text-[9px]" aria-hidden="true"></i>
+                    </button>
+
+                    <input
+                      type="text"
+                      class="h-10 w-full rounded-xl border border-border bg-card-bg px-3 text-sm text-text-primary outline-none"
+                      [ngModel]="choice"
+                      (ngModelChange)="onMcqOptionChange($index, $event)"
+                      [placeholder]="'Option ' + ($index + 1)"
+                    />
+
+                    <button
+                      type="button"
+                      class="btn inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-red-600 transition hover:bg-red-50"
+                      [disabled]="answerChoices().length <= 2"
+                      (click)="removeOption($index)"
+                      aria-label="Remove option"
+                    >
+                      <i class="pi pi-trash text-xs" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+
           <div class="rounded-xl border border-border bg-card-bg px-3 py-2">
             <p class="text-[11px] font-bold uppercase tracking-widest text-text-secondary">
               Correct Answer Preview
