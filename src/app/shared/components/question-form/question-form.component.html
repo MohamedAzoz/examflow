@@ -1,26 +1,21 @@
 @if (visible()) {
   <section
-    class="fixed inset-0 z-350"
-    [class.flex]="displayMode() === 'modal'"
-    [class.items-center]="displayMode() === 'modal'"
-    [class.justify-center]="displayMode() === 'modal'"
-    [class.bg-slate-950]="displayMode() === 'modal'"
-    [class.p-4]="displayMode() === 'modal'"
+    class="fixed inset-0 z-350 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm"
     (click)="onBackdropClick($event)"
   >
     <article
       class="relative flex flex-col bg-card-bg shadow-2xl overflow-hidden"
-      [class.rounded-3xl]="displayMode() === 'modal'"
+      [class.rounded-3xl]="true"
       [class.w-full]="true"
-      [class.max-w-4xl]="displayMode() === 'modal'"
-      [class.h-full]="displayMode() === 'side-panel'"
+      [class.max-w-4xl]="true"
+      >
+      <!-- [class.h-full]="displayMode() === 'side-panel'"
       [class.absolute]="displayMode() === 'side-panel'"
       [class.right-0]="displayMode() === 'side-panel'"
       [class.top-0]="displayMode() === 'side-panel'"
       [class.w-136]="displayMode() === 'side-panel'"
       [class.border-l]="displayMode() === 'side-panel'"
-      [class.border-border]="displayMode() === 'side-panel'"
-    >
+      [class.border-border]="displayMode() === 'side-panel'" -->
       <header
         class="flex items-start justify-between gap-3 border-b border-border px-5 py-2 md:px-6 shrink-0"
       >
@@ -81,41 +76,28 @@
           <span class="text-[11px] font-bold uppercase tracking-widest text-text-secondary"
             >Question Stem</span
           >
-          <!-- <div
+         <div
             class="rounded-2xl border border-border bg-surface overflow-hidden focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
           >
-            <div class="flex items-center gap-1 border-b border-border bg-surface px-2 py-1.5">
-              <button
-                type="button"
-                class="btn h-7 w-7 rounded text-text-secondary hover:bg-card-bg hover:text-text-primary"
-                (click)="applyBoldToStem()"
-              >
-                <b class="font-semibold text-sm">B</b>
-              </button>
-              <button
-                type="button"
-                class="btn h-7 w-7 rounded text-text-secondary hover:bg-card-bg hover:text-text-primary"
-                (click)="applyItalicToStem()"
-              >
-                <i class="italic font-semibold uppercase text-sm">I</i>
-              </button>
-              <button
-                type="button"
-                class="btn h-7 w-7 rounded text-text-secondary hover:bg-card-bg hover:text-text-primary"
-                (click)="applyUnderlineToStem()"
-              >
-                <i class="underline font-semibold uppercase text-sm">U</i>
-              </button>
+            <!-- الأزرار كما هي -->
+            <!-- <div class="flex items-center gap-1 border-b border-border bg-surface px-2 py-1.5">
+              <button type="button" class="btn h-7 w-7 rounded text-text-secondary hover:bg-card-bg hover:text-text-primary" (click)="applyBoldToStem()"><b>B</b></button>
+              <button type="button" class="btn h-7 w-7 rounded text-text-secondary hover:bg-card-bg hover:text-text-primary" (click)="applyItalicToStem()"><i>I</i></button>
+              <button type="button" class="btn h-7 w-7 rounded text-text-secondary hover:bg-card-bg hover:text-text-primary" (click)="applyUnderlineToStem()" title="Underline"><u>U</u></button>
               <div class="w-px h-5 bg-border mx-1"></div>
-              <button
-                type="button"
-                class="btn h-7 w-7 rounded text-text-secondary hover:bg-card-bg hover:text-text-primary"
-                (click)="applyListToStem()"
-              >
-                <i class="pi pi-list font-semibold text-sm"></i>
-              </button>
-            </div>
-            <textarea
+              <button type="button" class="btn h-7 w-7 rounded text-text-secondary hover:bg-red-50 hover:text-red-600 transition" (click)="deleteSelectedText()" title="Delete Selected"><i class="pi pi-eraser text-xs"></i></button>
+              <button type="button" class="btn h-7 w-7 rounded text-text-secondary hover:bg-red-50 hover:text-red-600 transition" (click)="clearAllText()" title="Clear All"><i class="pi pi-trash text-xs"></i></button>
+            </div> -->
+
+            <!-- استبدال الـ textarea بهذا الـ div -->
+            <!-- <div
+              #questionStemEditor
+              dir="auto"
+              contenteditable="true"
+              class="w-full min-h-[120px] bg-transparent px-3 py-1.5 text-sm text-text-primary outline-none resize-y overflow-auto"
+              (input)="onInput($event)"
+            ></div> -->
+              <textarea
               #questionStemTextarea
               rows="4"
               class="w-full bg-transparent px-3 py-1.5 text-sm text-text-primary outline-none resize-y"
@@ -123,28 +105,6 @@
               (ngModelChange)="text.set($event)"
               placeholder="Enter the core question text here..."
             ></textarea>
-          </div> -->
-          <div
-            class="rounded-2xl border border-border bg-surface overflow-hidden focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
-          >
-            <!-- الأزرار كما هي -->
-            <div class="flex items-center gap-1 border-b border-border bg-surface px-2 py-1.5">
-              <button type="button" class="btn h-7 w-7 rounded text-text-secondary hover:bg-card-bg hover:text-text-primary" (click)="applyBoldToStem()"><b>B</b></button>
-              <button type="button" class="btn h-7 w-7 rounded text-text-secondary hover:bg-card-bg hover:text-text-primary" (click)="applyItalicToStem()"><i>I</i></button>
-              <button type="button" class="btn h-7 w-7 rounded text-text-secondary hover:bg-card-bg hover:text-text-primary" (click)="applyUnderlineToStem()" title="Underline"><u>U</u></button>
-              <div class="w-px h-5 bg-border mx-1"></div>
-              <button type="button" class="btn h-7 w-7 rounded text-text-secondary hover:bg-red-50 hover:text-red-600 transition" (click)="deleteSelectedText()" title="Delete Selected"><i class="pi pi-eraser text-xs"></i></button>
-              <button type="button" class="btn h-7 w-7 rounded text-text-secondary hover:bg-red-50 hover:text-red-600 transition" (click)="clearAllText()" title="Clear All"><i class="pi pi-trash text-xs"></i></button>
-            </div>
-
-            <!-- استبدال الـ textarea بهذا الـ div -->
-            <div
-              #questionStemEditor
-              dir="auto"
-              contenteditable="true"
-              class="w-full min-h-[120px] bg-transparent px-3 py-1.5 text-sm text-text-primary outline-none resize-y overflow-auto"
-              (input)="onInput($event)"
-            ></div>
           </div>
         </div>
 

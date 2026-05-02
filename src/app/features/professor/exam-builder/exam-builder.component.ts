@@ -25,8 +25,13 @@ import { QuestionBankComponent } from './components/question-bank/question-bank.
 import { ExamBuilderFacade } from '../services/exam-builder.facade';
 import { IQuestionResponse } from '../../../data/models/question/iquestion-response';
 import { FormsModule } from '@angular/forms';
-import { QuestionFormComponent, QuestionFormSavePayload } from '../../../shared/components/question-form/question-form.component';
+import {
+  QuestionFormComponent,
+  QuestionFormSavePayload,
+} from '../../../shared/components/question-form/question-form.component';
 import { IError } from '../../../data/models/IErrorResponse';
+import { IQuestionRequest } from '../../../data/models/question/iquestion-request';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-exam-builder',
@@ -55,6 +60,8 @@ export class ExamBuilderComponent implements OnInit, OnDestroy {
   });
 
   private readonly initializedContextKey = signal('');
+
+  // readonly formModalOpen = signal(false);
   private readonly pendingSettings = signal<ExamSettingsValue | null>(null);
 
   protected readonly isQuestionBankCollapsed = signal(false);
@@ -80,6 +87,24 @@ export class ExamBuilderComponent implements OnInit, OnDestroy {
   // Main UI Center Workspace State
   protected readonly activeCenterMode = signal<'empty' | 'create' | 'edit' | 'view'>('empty');
   protected readonly viewedQuestion = signal<IQuestionResponse | null>(null);
+
+  protected readonly viewedQuestionImage = computed(() => {
+    const q = this.viewedQuestion();
+    const imagePath = q ? (q as any).imagePath : null;
+    if (!imagePath) return null;
+
+    let path = imagePath;
+    if (
+      path &&
+      !path.startsWith('http') &&
+      !path.startsWith('blob:') &&
+      !path.startsWith('data:')
+    ) {
+      const baseUrl = environment.baseUrl.replace(/\/$/, '');
+      path = path.startsWith('/') ? `${baseUrl}${path}` : `${baseUrl}/${path}`;
+    }
+    return path;
+  });
 
   protected readonly editorInitialQuestion = computed(() => {
     if (this.activeCenterMode() === 'edit' && this.viewedQuestion()) {
@@ -201,6 +226,7 @@ export class ExamBuilderComponent implements OnInit, OnDestroy {
   protected editViewedQuestion(): void {
     if (this.viewedQuestion()) {
       this.activeCenterMode.set('edit');
+      // this.formModalOpen.set(true);
     }
   }
 
@@ -253,13 +279,31 @@ export class ExamBuilderComponent implements OnInit, OnDestroy {
     this.onAssignedQuestionsChange(existing);
   }
 
-  protected onQuestionSaved(event: QuestionFormSavePayload): void {
-    // Re-load the workspace or course questions to reflect changes
-    const courseId = this.courseId();
-    if (courseId) {
-      // Ideally we could append it to our question bank cache.
-      // The facade handles refreshing when re-mounting question list.
-    }
+  protected onQuestionSaved(payload: QuestionFormSavePayload): void {
+    const requestPayload: IQuestionRequest = payload.request;
+
+    const request$ =
+      payload.mode === 'edit' && payload.id
+        ? this.facade.updateQuestion(payload.id, requestPayload)
+        : this.facade.createQuestion(requestPayload);
+
+    request$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.closeCenterView();
+        this.appMessageService.addSuccessMessage(
+          payload.mode === 'edit'
+            ? 'Question updated successfully.'
+            : 'Question created successfully.',
+        );
+      },
+      error: (error) => {
+        this.appMessageService.showHttpError(
+          error,
+          payload.mode === 'edit' ? 'Failed to update question.' : 'Failed to create question.',
+        );
+      },
+    });
+
     this.closeCenterView();
   }
 

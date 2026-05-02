@@ -66,7 +66,7 @@ export class QuestionFormComponent {
 
   readonly visible = input(false);
   readonly mode = input<QuestionFormMode>('create');
-  readonly displayMode = input<QuestionFormDisplayMode>('modal');
+  // readonly displayMode = input<QuestionFormDisplayMode>('modal');
   readonly courseId = input<number>(0);
   readonly saving = input(false);
   readonly header = input('Create Question');
@@ -171,9 +171,9 @@ export class QuestionFormComponent {
   }
 
   onBackdropClick(event: MouseEvent): void {
-    if (this.displayMode() !== 'modal') {
-      return;
-    }
+    // if (this.displayMode() !== 'modal') {
+    //   return;
+    // }
     if (event.target !== event.currentTarget) {
       return;
     }

@@ -10,6 +10,7 @@ export const ROUTES = {
   AUTH: { path: 'auth', title: 'Authentication' },
   PROFESSOR: { path: 'professor', title: 'Professor' },
   STUDENT: { path: 'student', title: 'Student' },
+  REPORT_ISSUE: { path: 'contact-us', title: 'Contact us' },
   ACCESS_DENIED: { path: 'access-denied', title: 'Access Denied' },
   NOT_FOUND: { path: '**', title: 'Not Found' },
 };

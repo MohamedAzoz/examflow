@@ -231,11 +231,6 @@ export class ProfessorQuestionBankComponent {
   }
 
   onDeleteQuestion(question: IQuestionResponse): void {
-    // const confirmed = window.confirm('Delete this question permanently?');
-    // if (!confirmed) {
-    //   return;
-    // }
-
     this.facade
       .deleteQuestion(question.id)
       .pipe(takeUntilDestroyed(this.destroyRef))

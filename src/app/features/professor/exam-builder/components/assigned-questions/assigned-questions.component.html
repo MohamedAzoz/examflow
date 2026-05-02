@@ -144,7 +144,7 @@
               >
                 <i class="pi pi-image" aria-hidden="true"></i>
               </button>-->
-            </div> 
+            </div>
 
             <textarea
               #questionTextArea
@@ -255,10 +255,10 @@
     </div>
   }
 
+  <!-- [displayMode]="questionEditorDisplayMode()" -->
   <app-question-form
     [visible]="isQuestionEditorOpen()"
     [mode]="questionEditorMode()"
-    [displayMode]="questionEditorDisplayMode()"
     [courseId]="courseId() || 0"
     [initialQuestion]="editorInitialQuestion()"
     header="Question Editor"

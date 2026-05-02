@@ -73,6 +73,15 @@ export const routes: Routes = [
     loadChildren: () => import('./features/auth/auth.routes').then((m) => m.authRoutes),
   },
   {
+    path: ROUTES.REPORT_ISSUE.path,
+    title: ROUTES.REPORT_ISSUE.title,
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/report-issue-component/report-issue-component').then(
+        (m) => m.ReportIssueComponent,
+      ),
+  },
+  {
     path: ROUTES.ACCESS_DENIED.path,
     title: ROUTES.ACCESS_DENIED.title,
     canActivate: [authGuard],

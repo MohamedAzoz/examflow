@@ -182,10 +182,10 @@
                 <p class="text-lg font-medium leading-relaxed">{{ viewedQuestion()!.text }}</p>
               </div>
 
-              @if (viewedQuestion()!.imagePath) {
+              @if (viewedQuestionImage()) {
                 <div class="mt-6 overflow-hidden rounded-xl border border-border">
                   <img
-                    [src]="viewedQuestion()!.imagePath"
+                    [src]="viewedQuestionImage()"
                     alt="Question visual"
                     class="max-h-80 w-full object-contain bg-surface"
                   />

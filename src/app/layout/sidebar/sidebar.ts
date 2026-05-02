@@ -13,6 +13,7 @@ import { Toggle } from '../../core/services/toggle';
 import { NavItem } from '../nav-item';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { IdentityService } from '../../core/services/identity-service';
+import { ROUTES } from '../../core/constants/const.route';
 
 @Component({
   selector: 'app-sidebar',
@@ -54,6 +55,9 @@ export class SidebarComponent {
     }
   }
   protected url(route: string): string {
+    if (route === ROUTES.REPORT_ISSUE.path) {
+      return '/' + route;
+    }
     return '/main/' + this.userRole().toLowerCase() + '/' + route;
   }
 

@@ -1,0 +1,98 @@
+<div class="max-w-md mx-auto mt-10 p-6 bg-white rounded-xl shadow-md border border-gray-100">
+  <!-- translat to english -->
+  <h2 class="text-xl font-bold mb-4 text-center">Submit Technical Issue</h2>
+
+  <!-- Step 1: Enter Data -->
+  @if (step() === 1) {
+    <div class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium mb-1 text-gray-700">Issue Priority:</label>
+        <div class="flex gap-2">
+          @for (p of ['Normal', 'High', 'Urgent']; track p) {
+            <button
+              (click)="priority.set(p)"
+              [class]="
+                priority() === p && p === 'Normal'
+                  ? 'bg-yellow-500 text-white'
+                  : priority() === p && p === 'High'
+                    ? 'bg-orange-500 text-white'
+                    : priority() === p && p === 'Urgent'
+                      ? 'bg-red-500 text-white'
+                      : 'bg-gray-100 text-gray-600'
+              "
+              class="flex-1 btn py-2 rounded-lg text-xs font-bold transition-all border border-transparent"
+            >
+              {{ p }}
+            </button>
+          }
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-1">Describe the issue:</label>
+        <textarea
+          [(ngModel)]="issueText"
+          class="w-full border rounded-lg p-2 h-32 outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="What are you facing?"
+        ></textarea>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium mb-1"
+          ><i class="pi pi-telegram"></i> Telegram:</label
+        >
+        <input
+          type="tel"
+          [(ngModel)]="phoneNumber"
+          maxlength="11"
+          pattern="^[0-9]{11}$"
+          class="w-full border rounded-lg p-2 outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="01xxxxxxxxx"
+        />
+      </div>
+
+      <button
+        (click)="goToConfirm()"
+        [disabled]="!issueText() || !phoneNumber()"
+        class="w-full btn bg-blue-600 text-white py-2 rounded-lg font-bold hover:bg-blue-700 disabled:opacity-50"
+      >
+        Next
+      </button>
+      <button
+        (click)="back()"
+        class="w-full btn mt-2 border border-red-600 text-red-600 py-2 rounded-lg font-bold hover:bg-red-600 hover:text-white"
+      >
+        Cancel
+      </button>
+    </div>
+  }
+
+  <!-- Step 2: Confirmation (your idea to verify) -->
+  @if (step() === 2) {
+    <div class="space-y-4 text-center">
+      <div class="bg-blue-50 p-4 rounded-lg">
+        <p class="text-sm text-gray-600">Confirm the number is correct:</p>
+        <p class="text-lg font-bold text-blue-700">{{ phoneNumber() }}</p>
+        <p class="text-xs text-red-500 mt-2 italic">
+          Note: This number will be used to contact you.
+        </p>
+      </div>
+
+      <div class="flex gap-2">
+        <button
+          btn
+          (click)="step.set(1)"
+          class="flex-1 btn mt-2 border border-gray-600 text-gray-600 py-2 rounded-lg font-bold hover:bg-gray-600 hover:text-white"
+        >
+          Edit
+        </button>
+        <button
+          (click)="sendToTelegram()"
+          [disabled]="isSending()"
+          class="flex-1 btn bg-green-600 text-white py-2 rounded-lg font-bold shadow-lg"
+        >
+          {{ isSending() ? 'Submitting...' : 'Confirm & Send' }}
+        </button>
+      </div>
+    </div>
+  }
+</div>

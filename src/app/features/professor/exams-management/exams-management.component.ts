@@ -240,10 +240,6 @@ export class ExamsManagementComponent {
   }
 
   onDeleteExam(exam: IexamDetailsData): void {
-    // const confirmed = window.confirm(`Delete exam \"${exam.title}\"?`);
-    // if (!confirmed) {
-    //   return;
-    // }
     this.examFacade.deleteExam(exam.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
   }
 

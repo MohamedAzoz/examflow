@@ -1,4 +1,4 @@
-import { AUTH_ROUTES, ROUTESADMIN, ROUTESPROFESSOR, ROUTESSTUDENT } from '../constants/const.route';
+import { AUTH_ROUTES, ROUTES, ROUTESADMIN, ROUTESPROFESSOR, ROUTESSTUDENT } from '../constants/const.route';
 import { NavItem } from '../../layout/nav-item';
 
 export const ADMIN_NAV_ITEMS: readonly NavItem[] = [
@@ -36,6 +36,11 @@ export const ADMIN_NAV_ITEMS: readonly NavItem[] = [
     icon: 'pi-cog',
     route: ROUTESADMIN.SYSTEM_SETTINGS.path,
   },
+  {
+    label: ROUTES.REPORT_ISSUE.title,
+    icon: 'pi-comment',
+    route: ROUTES.REPORT_ISSUE.path,
+  },
 ] as const;
 
 export const STUDENT_NAV_ITEMS: readonly NavItem[] = [
@@ -51,6 +56,11 @@ export const STUDENT_NAV_ITEMS: readonly NavItem[] = [
     route: ROUTESSTUDENT.PAST_RESULTS.path,
   },
   { label: ROUTESSTUDENT.SETTINGS.title, icon: 'pi-cog', route: ROUTESSTUDENT.SETTINGS.path },
+  {
+    label: ROUTES.REPORT_ISSUE.title,
+    icon: 'pi-send',
+    route: ROUTES.REPORT_ISSUE.path,
+  },
 ] as const;
 
 export const PROFESSOR_NAV_ITEMS: readonly NavItem[] = [
@@ -73,5 +83,10 @@ export const PROFESSOR_NAV_ITEMS: readonly NavItem[] = [
     label: ROUTESPROFESSOR.SETTINGS.title,
     icon: 'pi-cog',
     route: ROUTESPROFESSOR.SETTINGS.path,
+  },
+  {
+    label: ROUTES.REPORT_ISSUE.title,
+    icon: 'pi-comment',
+    route: ROUTES.REPORT_ISSUE.path,
   },
 ] as const;
