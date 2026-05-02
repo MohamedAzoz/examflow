@@ -1,12 +1,11 @@
 <div class="max-w-md mx-auto mt-10 p-6 bg-white rounded-xl shadow-md border border-gray-100">
-  <!-- translat to english -->
   <h2 class="text-xl font-bold mb-4 text-center">Submit Technical Issue</h2>
 
   <!-- Step 1: Enter Data -->
   @if (step() === 1) {
     <div class="space-y-4">
       <div>
-        <label class="block text-sm font-medium mb-1 text-gray-700">Issue Priority:</label>
+        <label class="block text-sm font-medium mb-1 text-gray-700">Issue Priority <span class="text-red-500">*</span>:</label>
         <div class="flex gap-2">
           @for (p of ['Normal', 'High', 'Urgent']; track p) {
             <button
@@ -20,7 +19,7 @@
                       ? 'bg-red-500 text-white'
                       : 'bg-gray-100 text-gray-600'
               "
-              class="flex-1 btn py-2 rounded-lg text-xs font-bold transition-all border border-transparent"
+              class="flex-1 btn py-2 rounded-lg text-xs font-bold transition-all border border-transparent cursor-pointer"
             >
               {{ p }}
             </button>
@@ -28,7 +27,7 @@
         </div>
       </div>
       <div>
-        <label class="block text-sm font-medium mb-1">Describe the issue:</label>
+        <label class="block text-sm font-medium mb-1">Describe the issue <span class="text-red-500">*</span>:</label>
         <textarea
           [(ngModel)]="issueText"
           class="w-full border rounded-lg p-2 h-32 outline-none focus:ring-2 focus:ring-blue-500"
@@ -37,9 +36,7 @@
       </div>
 
       <div>
-        <label class="block text-sm font-medium mb-1"
-          ><i class="pi pi-telegram"></i> Telegram:</label
-        >
+        <label class="block text-sm font-medium mb-1">Contact Number <span class="text-red-500">*</span>:</label>
         <input
           type="tel"
           [(ngModel)]="phoneNumber"
@@ -50,47 +47,71 @@
         />
       </div>
 
+      <div>
+        <label class="block text-sm font-medium mb-1">Attach Image (Optional):</label>
+        <div class="flex items-center justify-center w-full">
+          <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
+            @if (!previewUrl()) {
+              <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                <i class="pi pi-image text-gray-400 text-3xl mb-2"></i>
+                <p class="text-xs text-gray-500">Click to upload screenshot</p>
+              </div>
+            } @else {
+              <img [src]="previewUrl()" class="h-full w-full object-contain p-2" />
+            }
+            <input type="file" class="hidden" (change)="onFileSelected($event)" accept="image/*" />
+          </label>
+        </div>
+      </div>
+
       <button
         (click)="goToConfirm()"
         [disabled]="!issueText() || !phoneNumber()"
-        class="w-full btn bg-blue-600 text-white py-2 rounded-lg font-bold hover:bg-blue-700 disabled:opacity-50"
+        class="w-full btn bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 disabled:opacity-50 cursor-pointer shadow-md"
       >
-        Next
+        Next Step
       </button>
       <button
         (click)="back()"
-        class="w-full btn mt-2 border border-red-600 text-red-600 py-2 rounded-lg font-bold hover:bg-red-600 hover:text-white"
+        class="w-full btn mt-2 border border-red-600 text-red-600 py-2 rounded-lg font-bold hover:bg-red-600 hover:text-white cursor-pointer"
       >
         Cancel
       </button>
     </div>
   }
 
-  <!-- Step 2: Confirmation (your idea to verify) -->
+  <!-- Step 2: Confirmation -->
   @if (step() === 2) {
     <div class="space-y-4 text-center">
       <div class="bg-blue-50 p-4 rounded-lg">
-        <p class="text-sm text-gray-600">Confirm the number is correct:</p>
+        <p class="text-sm text-gray-600">Review your contact information:</p>
         <p class="text-lg font-bold text-blue-700">{{ phoneNumber() }}</p>
         <p class="text-xs text-red-500 mt-2 italic">
-          Note: This number will be used to contact you.
+          We will use this number to contact you regarding the issue.
         </p>
       </div>
 
-      <div class="flex gap-2">
+      <div class="text-left bg-gray-50 p-4 rounded-lg">
+        <p class="text-xs font-bold text-gray-400 uppercase mb-1">Priority</p>
+        <p class="text-sm font-semibold mb-3">{{ priority() }}</p>
+        
+        <p class="text-xs font-bold text-gray-400 uppercase mb-1">Issue Description</p>
+        <p class="text-sm line-clamp-3">{{ issueText() }}</p>
+      </div>
+
+      <div class="flex gap-2 pt-2">
         <button
-          btn
           (click)="step.set(1)"
-          class="flex-1 btn mt-2 border border-gray-600 text-gray-600 py-2 rounded-lg font-bold hover:bg-gray-600 hover:text-white"
+          class="flex-1 btn border border-gray-600 text-gray-600 py-3 rounded-lg font-bold hover:bg-gray-600 hover:text-white cursor-pointer"
         >
-          Edit
+          Back
         </button>
         <button
-          (click)="sendToTelegram()"
+          (click)="submitIssue()"
           [disabled]="isSending()"
-          class="flex-1 btn bg-green-600 text-white py-2 rounded-lg font-bold shadow-lg"
+          class="flex-1 btn bg-green-600 text-white py-3 rounded-lg font-bold shadow-lg hover:bg-green-700 disabled:opacity-50 cursor-pointer"
         >
-          {{ isSending() ? 'Submitting...' : 'Confirm & Send' }}
+          {{ isSending() ? 'Submitting...' : 'Confirm & Submit' }}
         </button>
       </div>
     </div>

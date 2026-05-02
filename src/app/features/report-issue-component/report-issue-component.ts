@@ -1,10 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { CommonModule, Location } from '@angular/common';
-import { environment } from '../../../environments/environment';
 import { AppMessageService } from '../../core/services/app-message';
-import { IdentityService } from '../../core/services/identity-service';
+import { Support } from '../../data/services/support';
 
 @Component({
   selector: 'app-report-issue-component',
@@ -13,14 +11,9 @@ import { IdentityService } from '../../core/services/identity-service';
   styleUrl: './report-issue-component.css',
 })
 export class ReportIssueComponent {
-  private http = inject(HttpClient);
+  private supportService = inject(Support);
   private messageService = inject(AppMessageService);
   private location = inject(Location);
-  private identityService = inject(IdentityService);
-
-  // بيانات البوت (يفضل وضعها في environment.ts)
-  private readonly BOT_TOKEN = environment.telegramBotToken;
-  private readonly CHAT_ID = environment.telegramChatId;
 
   // Signals لإدارة حالة الفورم
   step = signal(1); // 1: إدخال البيانات، 2: التأكيد
@@ -28,6 +21,20 @@ export class ReportIssueComponent {
   phoneNumber = signal('');
   isSending = signal(false);
   priority = signal('Normal');
+  selectedFile = signal<File | null>(null);
+  previewUrl = signal<string | null>(null);
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile.set(file);
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.previewUrl.set(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
 
   // دالة الانتقال لمرحلة التأكيد
   goToConfirm() {
@@ -36,33 +43,17 @@ export class ReportIssueComponent {
     }
   }
 
-  // إرسال الرسالة إلى تلجرام
-  sendToTelegram() {
+  // إرسال المشكلة للباك إند
+  submitIssue() {
     this.isSending.set(true);
 
-    const priorityEmoji =
-      this.priority() === 'Urgent' ? '🔴' : this.priority() === 'High' ? '🟠' : '🔵';
-
-    const message = `
-          ${priorityEmoji} <b>New Technical Issue Reported</b>
-          ــــــــــــــــــــــــ
-          <b>Name:</b> ${this.identityService.userName()}
-          <b>Role:</b> ${this.identityService.userRole()}
-          <b>📍 Priority:</b> ${this.priority()}
-          <b>📝 Description:</b> ${this.issueText()}
-          <b>📱 Phone:</b> ${this.phoneNumber()}
-          ــــــــــــــــــــــــ
-          <i>Sent via Web Assistant</i>
-            `;
-
-    const url = `https://api.telegram.org/bot${this.BOT_TOKEN}/sendMessage`;
-
-    this.http
-      .post(url, {
-        chat_id: this.CHAT_ID,
-        text: message,
-        parse_mode: 'HTML',
-      })
+    this.supportService
+      .reportIssue(
+        this.priority(),
+        this.issueText(),
+        this.phoneNumber(),
+        this.selectedFile() || undefined
+      )
       .subscribe({
         next: () => {
           this.messageService.addSuccessMessage('Issue reported successfully.');
@@ -72,7 +63,7 @@ export class ReportIssueComponent {
           }, 1000);
         },
         error: (err) => {
-          this.messageService.addErrorMessage('Failed to send the issue, please try again later.');
+          this.messageService.addErrorMessage(err);
           this.isSending.set(false);
         },
       });
@@ -86,6 +77,8 @@ export class ReportIssueComponent {
     this.step.set(1);
     this.issueText.set('');
     this.phoneNumber.set('');
+    this.selectedFile.set(null);
+    this.previewUrl.set(null);
     this.isSending.set(false);
   }
 }
