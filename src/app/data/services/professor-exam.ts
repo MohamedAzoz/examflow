@@ -67,7 +67,7 @@ export class ProfessorExam {
 
     return params.set(key, String(value));
   }
-  // /api/ProfessorExam/{id}
+
   public getExamById(examId: number) {
     return this.http.get<IexamByIddetails>(`${environment.apiUrl}/ProfessorExam/${examId}`, {
       context: new HttpContext().set(SkipLoading, true),
@@ -77,6 +77,7 @@ export class ProfessorExam {
   public getExamResultsReport(examId: number) {
     return this.http.get(`${environment.apiUrl}/ProfessorExam/results-report/${examId}`, {
       responseType: 'blob',
+      context: new HttpContext().set(SkipLoading, true),
     });
   }
   public getExamCheatingReport(examId: number) {
@@ -84,12 +85,13 @@ export class ProfessorExam {
       responseType: 'blob',
     });
   }
-  /*
-ExamId
-PageIndex
-Pagesize
 
-*/
+  public getExamQuestionsReport(examId: number) {
+    return this.http.get(`${environment.apiUrl}/ProfessorExam/questions-report/${examId}`, {
+      responseType: 'blob',
+    });
+  }
+
   public getStudentsEssaysForGrading(data: IEssayGradingDetails) {
     return this.http.get<IEssayGradingDetailsResponse>(
       `${environment.apiUrl}/ProfessorExam/students-essays-grading`,

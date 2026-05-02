@@ -6,9 +6,7 @@ import { IcreateExam } from '../../../data/models/ProfessorExam/icreate-exam';
 import { Iexamdetails } from '../../../data/models/ProfessorExam/Iexamdetails.1';
 import { IexamDetails, IexamDetailsData } from '../../../data/models/ProfessorExam/IexamDetails';
 import { IupdateExam } from '../../../data/models/ProfessorExam/IupdateExam';
-import { Department } from '../../../data/services/department';
 import { ProfessorExam } from '../../../data/services/professor-exam';
-import { IAssignCourses } from '../../../data/models/department/iassign-courses';
 import { Course } from '../../../data/services/course';
 import { IassignDepartments } from '../../../data/models/course/IassignDepartments';
 

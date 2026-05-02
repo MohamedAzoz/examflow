@@ -1,4 +1,4 @@
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { CommonModule, Location, NgOptimizedImage } from '@angular/common';
 import { Component, inject, OnDestroy, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -28,6 +28,7 @@ import { AuthFacade } from '../services/auth-facade';
 export class RequestEmail implements OnDestroy {
   readonly authFacade = inject(AuthFacade);
   private readonly theme = inject(Theme);
+  private readonly location = inject(Location);
 
   readonly isSubmitted = signal(false);
   readonly submittedEmail = signal('');
@@ -60,5 +61,8 @@ export class RequestEmail implements OnDestroy {
       this.submittedEmail.set(newEmail);
       this.isSubmitted.set(true);
     });
+  }
+  back() {
+    this.location.back();
   }
 }

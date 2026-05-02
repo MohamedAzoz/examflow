@@ -7,7 +7,7 @@ export const professorRoutes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: ROUTESPROFESSOR.COURSES.path,
+        redirectTo: ROUTESPROFESSOR.DASHBOARD.path,
         pathMatch: 'full',
       },
       {

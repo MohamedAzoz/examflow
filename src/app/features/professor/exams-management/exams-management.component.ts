@@ -259,9 +259,6 @@ export class ExamsManagementComponent {
   }
 
   onDownloadPdf(exam: IexamDetailsData): void {
-    // Utilize the exam report service for the pdf download
-    // Since getExamResultsReport returns an observable, we would typically handle blob conversion here
-    // We are triggering the backend endpoint as requested.
     this.examFacade['professorExamService']
       ?.getExamResultsReport(exam.id)
       .pipe(takeUntilDestroyed(this.destroyRef))

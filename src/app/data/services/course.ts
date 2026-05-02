@@ -30,19 +30,19 @@ PageSize
     PageSize: number = 10,
   ) {
     let query = '?';
-    if(AcademicLevel){
+    if (AcademicLevel) {
       query += `AcademicLevel=${AcademicLevel}&`;
     }
-    if(HasProfessor){
+    if (HasProfessor) {
       query += `HasProfessor=${HasProfessor}&`;
     }
-    if(HasDepartment){
+    if (HasDepartment) {
       query += `HasDepartment=${HasDepartment}&`;
     }
-    if(PageIndex){
+    if (PageIndex) {
       query += `PageIndex=${PageIndex}&`;
     }
-    if(PageSize){
+    if (PageSize) {
       query += `PageSize=${PageSize}`;
     }
     return this.http.get<ICoueseResponse[]>(`${environment.apiUrl}/Course${query}`);

@@ -157,7 +157,7 @@ export class ExamBuilderComponent implements OnInit, OnDestroy {
       startTime: this.toLocalDateTimeInput(currentExam.startTime),
       durationMinutes: currentExam.durationMinutes,
       academicLevel: currentExam.academicLevel,
-      departmentId: currentExam.departmentIds[0] ?? 0,
+      departmentIds: currentExam.departmentIds || [],
       isRandomQuestions: currentExam.isRandomQuestions,
       isRandomAnswers: currentExam.isRandomAnswers,
     };
