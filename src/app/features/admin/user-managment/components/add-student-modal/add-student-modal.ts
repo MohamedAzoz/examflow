@@ -11,9 +11,9 @@ import {
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Student } from '../../../../../data/services/student';
-import { IStudentRequest } from '../../../../../data/services/student';
 import { FilterConfig } from '../filter-modal/filter-modal';
 import { DepartmentFacade } from '../../../services/department-facade';
+import { IStudentRequest } from '../../../../../data/models/Student/IStudentRequest';
 
 @Component({
   selector: 'app-add-student-modal',

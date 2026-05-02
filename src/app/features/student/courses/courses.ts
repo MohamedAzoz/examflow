@@ -1,12 +1,21 @@
-import { Component } from '@angular/core';
-import { ComingSoon } from "../../../shared/components/coming-soon/coming-soon";
+import { Component, inject, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { StudentFacade } from '../services/student-facade';
+import { CourseCard } from './components/course-card/course-card';
 
 @Component({
   selector: 'app-courses',
-  imports: [ComingSoon],
+  standalone: true,
+  imports: [CommonModule, CourseCard], 
   templateUrl: './courses.html',
   styleUrl: './courses.css',
 })
-export class Courses {
+export class Courses implements OnInit {
+  private readonly studentFacade = inject(StudentFacade);
 
+  readonly coursesResource = this.studentFacade.enrolledCoursesResource;
+
+  ngOnInit(): void {
+    this.studentFacade.loadEnrolledCourses();
+  }
 }

@@ -8,7 +8,7 @@ import {
   DestroyRef,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { IStudentSearch, IStudentResponse, Student } from '../../../../../data/services/student';
+import {  Student } from '../../../../../data/services/student';
 import {
   getInitials,
   getAvatarColor,
@@ -21,6 +21,8 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
+import { IStudentResponse } from '../../../../../data/models/Student/IStudentResponse';
+import { IStudentSearch } from '../../../../../data/models/Student/IStudentSearch';
 
 interface StudentRow {
   id: string;

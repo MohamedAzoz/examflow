@@ -8,6 +8,7 @@ import { IVoTp } from '../models/auth/IVoTp';
 import { IReqVoTp } from '../models/auth/IReqVoTp';
 import { IresetPassword } from '../models/auth/IresetPassword';
 import { IconfirmEmail } from '../models/auth/IconfirmEmail';
+import { IChangePassword } from '../models/auth/IChangePassword';
 
 @Injectable({
   providedIn: 'root',
@@ -48,5 +49,11 @@ export class Auth {
   //api/Authentication/reset-password
   public resetPassword(data: IresetPassword) {
     return this.http.post(`${environment.apiUrl}/Authentication/reset-password`, data);
+  }
+
+  // POST
+  // /api/Authentication/change-password
+  public changePassword(data: IChangePassword) {
+    return this.http.post(`${environment.apiUrl}/Authentication/change-password`, data);
   }
 }

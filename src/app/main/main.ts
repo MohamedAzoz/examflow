@@ -106,7 +106,7 @@ export class Main {
 
       // Student Features
       stdashboard: 'Student Dashboard',
-      courses: 'Courses',
+      courses: 'Enrolled Courses',
       'past-results': 'My Results',
       settings: 'Settings',
       exam: 'Exam Session',

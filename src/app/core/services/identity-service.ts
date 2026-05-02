@@ -21,6 +21,7 @@ export class IdentityService {
   private readonly _role = signal<string | null>(null);
   private readonly _name = signal<string | null>(null);
   private readonly _exp = signal<number | null>(null);
+  private readonly _email = signal<string | null>(null);
   private readonly _hasConfirmedEmail = signal<boolean>(true); // default true for safety
 
   async init(): Promise<void> {
@@ -36,6 +37,7 @@ export class IdentityService {
   readonly userRole = this._role.asReadonly();
   readonly userName = this._name.asReadonly();
   readonly tokenExpiration = this._exp.asReadonly();
+  readonly userEmail = this._email.asReadonly();
   readonly hasConfirmedEmail = this._hasConfirmedEmail.asReadonly();
   readonly isAuthenticated = computed(() => {
     const token = this._token();
@@ -99,6 +101,7 @@ export class IdentityService {
     this._role.set(state.role);
     this._name.set(state.userName);
     this._exp.set(state.expiresAt);
+    this._email.set(state.email ?? null);
     this._hasConfirmedEmail.set(state.hasConfirmedEmail ?? true);
   }
 
@@ -111,7 +114,7 @@ export class IdentityService {
    * Updates the authentication state reactively.
    * Called by AuthFacade after successful login/register.
    */
-  setAuth(token: string, hasConfirmedEmail: boolean = true): void {
+  setAuth(token: string,email:string | null): void {
     const decoded = this.jwt.decodeToken(token) as IJWT;
     const authState: PersistedAuthState = {
       token,
@@ -121,7 +124,8 @@ export class IdentityService {
       issuedAt: this.toNumberOrNull(decoded.iat),
       notBefore: this.toNumberOrNull(decoded.nbf),
       expiresAt: this.toNumberOrNull(decoded.exp),
-      hasConfirmedEmail,
+      email:email,
+      hasConfirmedEmail:  email  === null ? false : true,
     };
 
     this.applyAuthState(authState);
@@ -134,11 +138,12 @@ export class IdentityService {
   clearAuth(): void {
     void this.appDb.clearAuthState();
     void this.theme.resetToDefaultTheme();
-
+ 
     this._token.set(null);
     this._role.set(null);
     this._name.set(null);
     this._exp.set(null);
+    this._email.set(null);
     this._hasConfirmedEmail.set(true);
   }
 }

@@ -1,0 +1,142 @@
+<div class="p-6 max-w-4xl mx-auto mt-4">
+  @if (!showChangePassword()) {
+    <div class="space-y-6">
+      <h2 class="text-lg font-black text-text-dark">Account Security</h2>
+
+      <div class="bg-card-bg rounded-md shadow-sm border border-slate-100 overflow-hidden">
+        <!-- Email Section -->
+        <div class="p-6 py-10 flex flex-col sm:flex-row sm:items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-primary/10 border border-slate-100 flex items-center justify-center shrink-0">
+            <i class="pi pi-envelope text-text-dark text-xl"></i>
+          </div>
+          <div class="grow">
+            <p class="text-xs font-medium text-text-gray uppercase tracking-wider mb-1">
+              Email Address
+            </p>
+            <p class="text-text-dark font-semibold">{{ userEmail() || 'Not Available' }}</p>
+          </div>
+          <button
+            (click)="updateEmail()"
+            class="px-6 py-2 btn rounded-xl border border-slate-200 text-teal-600 font-semibold hover:bg-slate-50 transition-colors text-sm self-start sm:self-center"
+          >
+            Update Email
+          </button>
+        </div>
+
+        <div class="px-0">
+          <div class="w-full h-px bg-text-dark/15"></div>
+        </div>
+
+        <!-- Password Section -->
+        <div class="p-6 py-10 flex flex-col sm:flex-row sm:items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-primary/10 border border-slate-100 flex items-center justify-center shrink-0">
+            <i class="pi pi-lock text-text-dark text-xl"></i>
+          </div>
+          <div class="grow">
+            <p class="text-xs font-medium text-text-gray uppercase tracking-wider mb-1">Password</p>
+            <p class="text-text-dark font-semibold">••••••••••••</p>
+            <!-- <p class="text-xs text-slate-400 mt-1">Last changed 45 days ago</p> -->
+          </div>
+          <button
+            (click)="toggleChangePassword()"
+            class="px-6 py-2 btn rounded-xl border border-slate-200 text-teal-600 font-semibold hover:bg-slate-50 transition-colors text-sm self-start sm:self-center"
+          >
+            Change Password
+          </button>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <!-- Change Password Form -->
+    <div class="flex justify-center py-2">
+      <div class="bg-card-bg rounded-2xl shadow-sm border border-slate-100 p-8 w-full max-w-xl">
+        <div class="mb-8">
+          <h2 class="text-3xl font-bold text-text-dark mb-2">Change Password</h2>
+          <p class="text-text-gray">
+            Ensure your account is using a long, random password to stay secure.
+          </p>
+        </div>
+
+        <form
+          [formGroup]="changePasswordForm"
+          (ngSubmit)="onSubmitChangePassword()"
+          class="space-y-6"
+        >
+          <div class="space-y-2">
+            <label class="text-sm font-semibold text-text-gray block">Current Password</label>
+            <span class="p-input-icon-right w-full">
+              <p-password
+                formControlName="oldPassword"
+                [feedback]="false"
+                [toggleMask]="true"
+                class="w-full"
+                inputStyleClass="w-full p-3 bg-card-bg border border-slate-100 rounded-xl"
+                placeholder="••••••••"
+              ></p-password>
+            </span>
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-sm font-semibold text-text-gray block">New Password</label>
+            <span class="p-input-icon-right w-full">
+              <p-password
+                formControlName="newPassword"
+                [feedback]="true"
+                [toggleMask]="true"
+                class="w-full"
+                inputStyleClass="w-full p-3 bg-card-bg border border-slate-100 rounded-xl"
+                placeholder="••••••••"
+              ></p-password>
+            </span>
+            @if (
+              changePasswordForm.get('newPassword')?.touched &&
+              changePasswordForm.get('newPassword')?.errors?.['minlength']
+            ) {
+              <small class="text-red-500">Password must be at least 6 characters.</small>
+            }
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-sm font-semibold text-text-gray block">Confirm New Password</label>
+            <span class="p-input-icon-right w-full">
+              <p-password
+                formControlName="confirmPassword"
+                [feedback]="false"
+                [toggleMask]="true"
+                class="w-full"
+                inputStyleClass="w-full p-3 bg-card-bg border border-slate-100 rounded-xl"
+                placeholder="••••••••"
+              ></p-password>
+            </span>
+            @if (
+              changePasswordForm.get('confirmPassword')?.touched &&
+              changePasswordForm.errors?.['mismatch']
+            ) {
+              <small class="text-red-500">Passwords do not match.</small>
+            }
+          </div>
+
+          <div class="flex justify-between items-center pt-4">
+            <button
+              type="button"
+              (click)="toggleChangePassword()"
+              class="px-6 py-2 btn rounded-xl border border-slate-200 text-teal-600 font-semibold hover:bg-slate-50 transition-colors text-sm self-start sm:self-center"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              [disabled]="changePasswordForm.invalid || isLoading()"
+              class="bg-teal-700 btn hover:bg-teal-800 disabled:bg-slate-300 text-white px-8 py-3 rounded-xl font-bold transition-all shadow-lg shadow-teal-700/20"
+            >
+              @if (isLoading()) {
+                <i class="pi pi-spin pi-spinner mr-2"></i>
+              }
+              Update Password
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>

@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-import { ComingSoon } from "../../../shared/components/coming-soon/coming-soon";
+import { SettingsPageComponent } from '../../../shared/components/settings-page/settings-page.component';
 
 @Component({
   selector: 'app-settings',
-  imports: [ComingSoon],
+  standalone: true,
+  imports: [SettingsPageComponent],
   templateUrl: './settings.html',
   styleUrl: './settings.css',
 })

@@ -8,6 +8,7 @@ export interface PersistedAuthState {
   issuedAt: number | null;
   notBefore: number | null;
   expiresAt: number | null;
+  email?: string | null;
   hasConfirmedEmail?: boolean;
 }
 

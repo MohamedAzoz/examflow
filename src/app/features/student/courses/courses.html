@@ -1,1 +1,26 @@
-<app-coming-soon></app-coming-soon>
+<div class="p-6 max-w-7xl mx-auto">
+ 
+ 
+  <!-- Content -->
+  @if (coursesResource.isLoading()) {
+    <div class="flex justify-center items-center py-20">
+      <i class="pi pi-spin pi-spinner text-4xl text-teal-600"></i>
+    </div>
+  } @else if (coursesResource.error()) {
+    <div class="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 flex items-center gap-3">
+      <i class="pi pi-exclamation-circle text-xl"></i>
+      <p>Failed to load courses. Please try again later.</p>
+    </div>
+  } @else if (coursesResource.value() && coursesResource.value()?.length === 0) {
+    <div class="text-center py-20 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+      <i class="pi pi-info-circle text-4xl text-slate-300 mb-4"></i>
+      <p class="text-slate-500 font-medium">You are not enrolled in any courses yet.</p>
+    </div>
+  } @else {
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      @for (course of coursesResource.value(); track course.id) {
+        <app-course-card [course]="course"></app-course-card>
+      }
+    </div>
+  }
+</div>

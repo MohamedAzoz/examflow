@@ -29,7 +29,7 @@ export class AuthFacade {
     this.errorMessage.set(null);
     this.authService.login(body).subscribe({
       next: (response) => {
-        this.identityService.setAuth(response.token, response.hasConfirmedEmail);
+        this.identityService.setAuth(response.token, response.email);
         this.isLoading.set(false);
         this.appMessage.addSuccessMessage('You are logged in successfully.');
         this.router.navigate([this.identityService.dashboardPath()]);

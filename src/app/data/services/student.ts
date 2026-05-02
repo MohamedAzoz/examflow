@@ -2,41 +2,12 @@ import { HttpClient, HttpContext } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { SkipLoading } from '../../core/interceptors/loading-interceptor';
-
-export interface IStudentSearch {
-  nameSearch: string;
-  departmentId: number;
-  academicLevel: number;
-  studentSortingOption: number;
-  pageSize: number;
-  pageIndex: number;
-}
-export interface IStudentResponse {
-  pageSize: number;
-  pageIndex: number;
-  totalSize: number;
-  data: [
-    {
-      id: string;
-      nationalId: string;
-      fullName: string;
-      universityCode: string;
-      academicLevel: number;
-      departmentCode: string;
-      email: string;
-      phoneNumber: string;
-    },
-  ];
-}
-export interface IStudentRequest {
-  nationalId: string;
-  fullName: string;
-  universityCode: string;
-  academicLevel: number;
-  departmentId: number;
-  email: string;
-  phoneNumber: string;
-}
+import {  IStudentRequest } from '../models/Student/IStudentRequest';
+import { IStudentResponse } from '../models/Student/IStudentResponse';
+import { IStudentSearch } from '../models/Student/IStudentSearch';
+import { IEnrollCoursesResponse } from '../models/Student/IEnrollCoursesResponse';
+import { IEnrollCoursesRequest } from '../models/Student/IEnrollCoursesRequest.1';
+import { IMyCourse } from '../models/Student/IMyCourse';
 
 @Injectable({
   providedIn: 'root',
@@ -84,5 +55,25 @@ export class Student {
       params: search,
       context: new HttpContext().set(SkipLoading, true),
     });
+  }
+  //   GET
+  // /api/Student/assigned-courses
+  getAssignedCourses(id: string) {
+    return this.http.get<IEnrollCoursesResponse>(
+      `${environment.apiUrl}/Student/assigned-courses?id=${id}`,
+    );
+  }
+
+  // PUT
+  // /api/Student/enroll-courses
+  enrollCourses(enrollCourses: IEnrollCoursesRequest) {
+    return this.http.put(`${environment.apiUrl}/Student/assigned-courses`, enrollCourses);
+  }
+
+  // GET
+  // /api/Student/enrolled-courses
+
+  getEnrolledCourses() {
+    return this.http.get<IMyCourse[]>(`${environment.apiUrl}/Student/enrolled-courses`);
   }
 }
