@@ -288,10 +288,27 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
 
   @HostListener('document:keydown', ['$event'])
   onKeyDown(event: KeyboardEvent): void {
-    if (!(event.ctrlKey || event.metaKey)) return;
+    const keyLower = event.key.toLowerCase();
+    const isCtrlOrMeta = event.ctrlKey || event.metaKey;
 
-    const key = event.key.toLowerCase();
-    if (key !== 'x' && key !== 'c' && key !== 'v') return;
+    let isSuspiciousShortcut = false;
+
+    // 1. Copy/Cut/Paste: Ctrl/Cmd + C/X/V
+    if (isCtrlOrMeta && (keyLower === 'c' || keyLower === 'x' || keyLower === 'v')) {
+      isSuspiciousShortcut = true;
+    }
+
+    // 2. Screenshots Snipping Tool: Windows/Cmd + Shift + S OR Ctrl + Shift + S
+    if (isCtrlOrMeta && event.shiftKey && keyLower === 's') {
+      isSuspiciousShortcut = true;
+    }
+
+    // 3. Print Screen (PrtScn, Alt + PrtScn, Win + PrtScn)
+    if (event.key === 'PrintScreen') {
+      isSuspiciousShortcut = true;
+    }
+
+    if (!isSuspiciousShortcut) return;
 
     const now = Date.now();
     if (now - this.lastShortcutTimestamp < 150) return;
