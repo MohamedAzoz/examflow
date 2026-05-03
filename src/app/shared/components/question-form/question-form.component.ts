@@ -78,7 +78,7 @@ export class QuestionFormComponent {
   readonly text = signal('');
   readonly questionType = signal<QuestionType>(QuestionType.MultipleChoice);
   readonly degree = signal(QuestionFormComponent.DEFAULT_POINTS);
-  readonly mcqOptions = signal<string[]>(['Option 1', 'Option 2']);
+  readonly mcqOptions = signal<string[]>(['Option 1', 'Option 2', 'Option 3', 'Option 4']);
   readonly correctOptionIndex = signal(0);
 
   readonly mediaFile = signal<File | null>(null);
@@ -433,7 +433,7 @@ export class QuestionFormComponent {
     this.text.set('');
     this.questionType.set(QuestionType.MultipleChoice);
     this.degree.set(1);
-    this.mcqOptions.set(['Option 1', 'Option 2']);
+    this.mcqOptions.set(['Option 1', 'Option 2', 'Option 3', 'Option 4']);
     this.correctOptionIndex.set(0);
     this.imagePath.set(null);
     this.imagePreviewUrl.set(null);
@@ -471,9 +471,9 @@ export class QuestionFormComponent {
         return true;
       });
 
-    if (normalized.length >= 2) return normalized;
+    if (normalized.length >= 4) return normalized;
     const next = [...normalized];
-    while (next.length < 2) {
+    while (next.length < 4) {
       next.push(`Option ${next.length + 1}`);
     }
     return next;

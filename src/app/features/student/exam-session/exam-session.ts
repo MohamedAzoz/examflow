@@ -65,7 +65,9 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
   readonly totalServerResponses = signal(0);
   readonly serverResponses = signal<Record<number, number>>({});
   readonly sessionId = signal<Record<number, number>>({});
-  readonly totalSuspiciousActions = computed(() => this.totalSessionId() + this.totalServerResponses());
+  readonly totalSuspiciousActions = computed(
+    () => this.totalSessionId() + this.totalServerResponses(),
+  );
 
   readonly showNavigationWarning = signal<boolean>(false);
   readonly isSubmitting = signal<boolean>(false);
@@ -91,9 +93,12 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
   readonly questions = computed(() => this.currentExam()?.exam.liveExamQuestios ?? []);
   readonly currentQuestion = computed(() => this.questions()[this.questionIndex()] ?? null);
   readonly questionIds = computed(() => this.questions().map((q) => q.questionId));
+
   readonly currentQuestionImage = computed(() => {
     const path = this.currentQuestion()?.imagePath;
-    return path ? `${environment.baseUrl}${path}` : '';
+    if (!path) return '';
+
+    return path.startsWith('http') ? path : `${environment.baseUrl}${path}`;
   });
 
   readonly allAnsweredIds = computed(() => {
@@ -449,14 +454,14 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
     try {
       await this.measureAsync('exam.send-answer-flow', async () => {
         await firstValueFrom(this.facade.sendAnswer(payload));
-        
+
         this.serverResponses.update((state) => ({
           ...state,
-          [questionId]: Math.max(0, (state[questionId] ?? 0) - currentServerResponses)
+          [questionId]: Math.max(0, (state[questionId] ?? 0) - currentServerResponses),
         }));
         this.sessionId.update((state) => ({
           ...state,
-          [questionId]: Math.max(0, (state[questionId] ?? 0) - currentSessionId)
+          [questionId]: Math.max(0, (state[questionId] ?? 0) - currentSessionId),
         }));
 
         this.updateSyncedAnsweredState(questionId);
@@ -476,21 +481,21 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
     this.totalServerResponses.update((value) => value + 1);
     this.serverResponses.update((state) => ({
       ...state,
-      [q.questionId]: (state[q.questionId] ?? 0) + 1
+      [q.questionId]: (state[q.questionId] ?? 0) + 1,
     }));
     this.persistExamSessionStateInBackground();
   }
 
   private forceIncrementTabSwitch(): void {
     if (this.isSessionFinalized) return;
-    
+
     const q = this.currentQuestion();
     if (!q) return;
 
     this.totalSessionId.update((value) => value + 1);
     this.sessionId.update((state) => ({
       ...state,
-      [q.questionId]: (state[q.questionId] ?? 0) + 1
+      [q.questionId]: (state[q.questionId] ?? 0) + 1,
     }));
     this.persistExamSessionStateInBackground();
   }
@@ -601,7 +606,8 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
     if (document.hidden || document.visibilityState === 'hidden') return true;
     if (!document.hasFocus()) return true;
     if (!document.fullscreenElement) return true;
-    if (window.innerWidth < screen.availWidth || window.innerHeight < screen.availHeight) return true;
+    if (window.innerWidth < screen.availWidth || window.innerHeight < screen.availHeight)
+      return true;
 
     return false;
   }
