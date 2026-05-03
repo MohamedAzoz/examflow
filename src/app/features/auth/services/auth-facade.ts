@@ -10,6 +10,7 @@ import { IresetPassword } from '../../../data/models/auth/IresetPassword';
 import { IReqVoTp } from '../../../data/models/auth/IReqVoTp';
 import { IconfirmEmail } from '../../../data/models/auth/IconfirmEmail';
 import { IVoTp } from '../../../data/models/auth/IVoTp';
+import { UpdateService } from '../../../core/services/update-service';
 
 @Injectable({
   providedIn: 'root',
@@ -19,6 +20,7 @@ export class AuthFacade {
   private readonly router = inject(Router);
   private readonly identityService = inject(IdentityService);
   private readonly appMessage = inject(AppMessageService);
+  private readonly updateService = inject(UpdateService);
   private readonly timer = inject(Timer);
 
   readonly isLoading = signal<boolean>(false);
@@ -31,6 +33,7 @@ export class AuthFacade {
       next: (response) => {
         this.identityService.setAuth(response.token, response.email);
         this.isLoading.set(false);
+        this.updateService.init();
         this.appMessage.addSuccessMessage('You are logged in successfully.');
         this.router.navigate([this.identityService.dashboardPath()]);
       },

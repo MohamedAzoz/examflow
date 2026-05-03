@@ -1,0 +1,54 @@
+<div class="flex flex-col gap-4">
+  <div class="flex flex-col gap-2">
+    <p-iconfield>
+      <p-inputicon styleClass="pi pi-search text-text-secondary" />
+      <input
+        pInputText
+        type="text"
+        class="w-full bg-white text-text-dark border border-black/10 rounded-xl"
+        placeholder="Search by Name, National ID, or University Code."
+        [ngModel]="query()"
+        (ngModelChange)="onSearch($event)"
+      />
+    </p-iconfield>
+    <div class="flex items-center gap-1 text-text-secondary text-xs mt-1 px-1">
+      <i class="pi pi-info-circle"></i>
+      <span>Examples: 20261017, Ahmed Ali</span>
+    </div>
+  </div>
+
+  @if (isSearching()) {
+    <div class="flex justify-center p-4">
+      <i class="pi pi-spin pi-spinner text-primary text-2xl"></i>
+    </div>
+  } @else if (query().length >= 2 && results().length === 0) {
+    <div class="text-center p-4 text-text-secondary text-sm bg-black/5 rounded-xl border border-black/5">
+      No users found matching your search.
+    </div>
+  } @else if (results().length > 0) {
+    <div class="flex flex-col gap-3 mt-4">
+      <h3 class="text-sm font-bold text-text-secondary m-0">Search Results</h3>
+      <div class="flex flex-col gap-2 max-h-80 overflow-y-auto pr-1 custom-scrollbar">
+        @for (user of results(); track user.id) {
+          <div
+            class="flex items-center justify-between p-3 rounded-xl border border-black/5 hover:bg-black/5 cursor-pointer transition-colors"
+            (click)="facade.selectUser(user)"
+          >
+            <div class="flex items-center gap-3">
+              <div
+                class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0"
+              >
+                <i class="pi pi-user text-lg"></i>
+              </div>
+              <div class="flex flex-col min-w-0">
+                <span class="font-bold text-text-dark text-sm truncate">{{ user.fullName }}</span>
+                <span class="text-text-secondary text-xs truncate">ID: {{ user.nationalId }}</span>
+              </div>
+            </div>
+            <i class="pi pi-angle-right text-text-secondary"></i>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

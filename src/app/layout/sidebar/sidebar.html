@@ -19,7 +19,7 @@
     </div>
   }
   @if (isAdmin() || isProfessor()) {
-    <div class="flex justify-start px-4 pt-3 mb-2">
+    <div class="flex justify-start px-4 lg:pt-3 pt-2 lg:mb-2 mb-1">
       <button
         type="button"
         class="bg-transparent border-none text-primary cursor-pointer p-1 rounded-md hover:bg-[#13626c10]"
@@ -29,8 +29,9 @@
       </button>
     </div>
     <!-- Brand -->
-    <div class="px-4 pb-2 mb-1">
-      <span class="text-xl font-extrabold text-primary tracking-wider uppercase select-none"
+    <div class="px-4 pb-2 lg:mb-1 mb-0.5">
+      <span
+        class="lg:text-xl text-lg lg:font-extrabold font-bold text-primary tracking-wider uppercase select-none"
         >EXAMFLOW</span
       >
     </div>
@@ -38,7 +39,7 @@
 
   <!-- User Profile Section -->
   @if (isAdmin() || isProfessor()) {
-    <div class="flex items-center gap-3 px-4 py-3 mb-2">
+    <div class="flex items-center gap-3 px-4 lg:py-3 py-2 lg:mb-2 mb-1">
       <div
         class="w-14 h-14 shrink-0 rounded-full bg-primary-light text-primary flex items-center justify-center shadow-sm"
       >
@@ -49,14 +50,14 @@
           {{ userName() }}
         </h3>
         <p class="m-0 text-base font-medium text-text-secondary truncate mt-0.5">
-          {{ isAdmin() ? 'System Administrator' : 'Professor Portal' }}
+          {{ userRole() }}
         </p>
       </div>
     </div>
   } @else {
-    <div class="flex flex-col items-center justify-center px-4 lg:py-12 py-6 lg:mb-4 mb-2">
+    <div class="flex flex-col items-center justify-center px-4 lg:py-8 py-4 lg:mb-3 mb-1.5">
       <!-- Big Avatar -->
-      <div class="mb-6 p-1 border border-text-secondary rounded-full">
+      <div class="mb-4 p-1 border border-text-secondary rounded-full">
         <div
           class="w-14 h-14 lg:w-20 lg:h-20 p-3 rounded-full text-white bg-text-secondary shadow-sm flex items-center justify-center"
         >
@@ -79,10 +80,17 @@
   }
 
   <!-- Navigation -->
-  <nav class="flex-1 min-h-0 overflow-y-auto px-3 py-1" role="navigation">
+  <nav
+    class="flex-1 min-h-0 overflow-y-auto px-3 py-1"
+    [ngClass]="[isProfessor() ? 'lg:mt-3 mt-0.5' : 'mt-0']"
+    role="navigation"
+  >
+    <!-- if student gap-0.5 and lg:gap-1.5  , if professor gap-1 and lg:gap-2 ,if admin gap-0.5 -->
     <ul
       class="list-none flex flex-col"
-      [ngClass]="[isStudent() || isProfessor() ? 'gap-2' : 'gap-0.5']"
+      [ngClass]="[
+        isStudent() ? 'lg:gap-1.5 gap-0.5' : isProfessor() ? 'lg:gap-2 gap-1' : 'gap-0.5',
+      ]"
     >
       @for (item of navItems(); track $index) {
         <li class="w-full">
@@ -110,13 +118,13 @@
   </nav>
 
   <!-- Logout Footer -->
-  <div class="mt-auto shrink-0 border-t border-black/10 p-3 bg-sidebar-bg">
+  <div class="mt-auto shrink-0 border-t border-black/10 lg:p-3 p-2 bg-sidebar-bg">
     <button
       type="button"
       (click)="onLogout()"
-      class="flex items-center justify-center gap-3 w-full px-1 py-3 rounded-lg bg-text-dark/5 dark:bg-text-dark/40 border border-danger/40 text-danger dark:text-white text-sm font-bold cursor-pointer no-underline transition-all duration-200 hover:bg-white-red hover:border-danger/80 hover:shadow-sm"
+      class="flex items-center justify-center gap-3 w-full px-1 lg:py-3 py-1.5 rounded-lg bg-text-dark/5 dark:bg-text-dark/40 border border-danger/40 text-danger dark:text-white lg:text-sm text-xs font-bold cursor-pointer no-underline transition-all duration-200 hover:bg-white-red hover:border-danger/80 hover:shadow-sm"
     >
-      <i class="pi pi-sign-out text-lg"></i>
+      <i class="pi pi-sign-out lg:text-lg text-base"></i>
       <span>Logout</span>
     </button>
   </div>

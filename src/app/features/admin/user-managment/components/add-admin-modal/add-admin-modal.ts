@@ -8,7 +8,8 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Admin, IAdmin } from '../../../../../data/services/admin';
+import { Admin } from '../../../../../data/services/admin';
+import { IAdmin } from '../../../../../data/models/admin/IAdmin';
 
 @Component({
   selector: 'app-add-admin-modal',

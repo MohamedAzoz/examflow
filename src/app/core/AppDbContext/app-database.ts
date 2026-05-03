@@ -1,5 +1,6 @@
 import { inject, Injectable } from '@angular/core';
-import Dexie, { Table } from 'dexie';
+import { CatbeeIndexedDBService } from '@ng-catbee/indexed-db';
+import { firstValueFrom, catchError, of } from 'rxjs';
 import { EncryptionService } from '../services/encryption-service';
 import {
   PersistedAuthState,
@@ -17,7 +18,7 @@ interface EncryptedEntry {
 @Injectable({
   providedIn: 'root',
 })
-export class AppDatabase extends Dexie {
+export class AppDatabase {
   private readonly AUTH_STATE_KEY = 'auth:state';
   private readonly PASSWORD_RESET_FLOW_KEY = 'auth:password-reset-flow';
   private readonly THEME_KEY = 'setting:theme';
@@ -26,166 +27,178 @@ export class AppDatabase extends Dexie {
   private readonly LEGACY_PREFIX = 'legacy:';
 
   private readonly encryption = inject(EncryptionService);
+  private readonly db = inject(CatbeeIndexedDBService);
 
-  authStore!: Table<EncryptedEntry, string>;
-  settingsStore!: Table<EncryptedEntry, string>;
-  examSessionStore!: Table<EncryptedEntry, string>;
-
-  constructor() {
-    super('ExamFlowDB');
-    this.version(1).stores({
-      authStore: 'id, updatedAt',
-      settingsStore: 'id, updatedAt',
-    });
-
-    this.version(2).stores({
-      authStore: 'id, updatedAt',
-      settingsStore: 'id, updatedAt',
-      examSessionStore: 'id, updatedAt',
-    });
-
-    this.authStore = this.table('authStore');
-    this.settingsStore = this.table('settingsStore');
-    this.examSessionStore = this.table('examSessionStore');
-  }
-
+  // --- Auth State ---
   async saveAuthState(state: PersistedAuthState): Promise<void> {
-    await this.writeEncrypted(this.authStore, this.AUTH_STATE_KEY, state);
+    await this.writeEncrypted('authStore', this.AUTH_STATE_KEY, state);
   }
 
   async getAuthState(): Promise<PersistedAuthState | null> {
-    return this.readEncrypted<PersistedAuthState>(this.authStore, this.AUTH_STATE_KEY);
+    return this.readEncrypted<PersistedAuthState>('authStore', this.AUTH_STATE_KEY);
   }
 
   async clearAuthState(): Promise<void> {
-    await this.authStore.delete(this.AUTH_STATE_KEY);
+    await firstValueFrom(this.db.deleteByKey('authStore', this.AUTH_STATE_KEY));
   }
-
+  // PASSWORD_RESET_FLOW_KEY
   async savePasswordResetFlowState(state: PersistedPasswordResetFlowState): Promise<void> {
-    await this.writeEncrypted(this.settingsStore, this.PASSWORD_RESET_FLOW_KEY, {
-      ...state,
-      updatedAt: Date.now(),
-    });
+    await this.writeEncrypted('authStore', this.PASSWORD_RESET_FLOW_KEY, state);
   }
 
   async getPasswordResetFlowState(): Promise<PersistedPasswordResetFlowState | null> {
     return this.readEncrypted<PersistedPasswordResetFlowState>(
-      this.settingsStore,
+      'authStore',
       this.PASSWORD_RESET_FLOW_KEY,
     );
   }
 
   async clearPasswordResetFlowState(): Promise<void> {
-    await this.settingsStore.delete(this.PASSWORD_RESET_FLOW_KEY);
+    await firstValueFrom(this.db.deleteByKey('authStore', this.PASSWORD_RESET_FLOW_KEY)).catch(
+      () => {},
+    );
   }
 
+  // --- Theme ---
   async saveThemePreference(theme: ThemePreference): Promise<void> {
-    await this.writeEncrypted(this.settingsStore, this.THEME_KEY, theme);
+    await this.writeEncrypted('settingsStore', this.THEME_KEY, theme);
   }
 
   async getThemePreference(): Promise<ThemePreference | null> {
-    return this.readEncrypted<ThemePreference>(this.settingsStore, this.THEME_KEY);
+    return this.readEncrypted<ThemePreference>('settingsStore', this.THEME_KEY);
   }
-
   async clearThemePreference(): Promise<void> {
-    await this.settingsStore.delete(this.THEME_KEY);
+    await firstValueFrom(this.db.deleteByKey('settingsStore', this.THEME_KEY)).catch(() => {});
   }
 
+  // --- Exam Session (الأكثر حرجاً في السرعة) ---
   async saveExamSessionState(state: PersistedExamSessionState): Promise<void> {
     const sessionKey = this.getExamSessionKey(state.examId);
-    await this.writeEncrypted(this.examSessionStore, sessionKey, {
+    await this.writeEncrypted('examSessionStore', sessionKey, {
       ...state,
       updatedAt: Date.now(),
     });
   }
+  async clearExamSessionState(examId: number): Promise<void> {
+    await firstValueFrom(this.db.deleteByKey('examSessionStore', this.getExamSessionKey(examId)));
+  }
 
   async getExamSessionState(examId: number): Promise<PersistedExamSessionState | null> {
     return this.readEncrypted<PersistedExamSessionState>(
-      this.examSessionStore,
+      'examSessionStore',
       this.getExamSessionKey(examId),
     );
   }
 
-  async clearExamSessionState(examId: number): Promise<void> {
-    await this.examSessionStore.delete(this.getExamSessionKey(examId));
-  }
-
+  // --- Migration Helpers ---
   async isLegacyMigrationDone(): Promise<boolean> {
-    return (
-      (await this.readEncrypted<boolean>(this.settingsStore, this.LEGACY_MIGRATION_KEY)) === true
-    );
+    const done = await this.readEncrypted<boolean>('settingsStore', this.LEGACY_MIGRATION_KEY);
+    return done === true;
   }
 
   async markLegacyMigrationDone(): Promise<void> {
-    await this.writeEncrypted(this.settingsStore, this.LEGACY_MIGRATION_KEY, true);
+    await this.writeEncrypted('settingsStore', this.LEGACY_MIGRATION_KEY, true);
   }
 
-  async setLegacyValue(key: string, value: string): Promise<void> {
-    const storageKey = this.getLegacyStorageKey(key);
-    await this.writeEncrypted(this.settingsStore, storageKey, value);
+  // --- Core Operations (The Fix) ---
+
+  /**
+   * دالة الكتابة المحسنة:
+   * تستخدم 'update' مباشرة لأنها تقوم بـ IDB put (إضافة أو تحديث تلقائي)
+   */
+  private async writeEncrypted<T>(storeName: string, id: string, value: T): Promise<void> {
+    const payload = await this.encryption.encrypt(value);
+    const entry: EncryptedEntry = {
+      id,
+      payload,
+      updatedAt: Date.now(),
+    };
+
+    // نستخدم firstValueFrom لمرة واحدة فقط لضمان انتهاء الـ Transaction
+    await firstValueFrom(this.db.update(storeName, entry));
   }
 
-  async getLegacyValue(key: string): Promise<string | null> {
-    const storageKey = this.getLegacyStorageKey(key);
-    return this.readEncrypted<string>(this.settingsStore, storageKey);
+  /**
+   * دالة القراءة المحسنة:
+   * تتعامل مع الأخطاء داخلياً لضمان عدم توقف التطبيق
+   */
+  private async readEncrypted<T>(storeName: string, id: string): Promise<T | null> {
+    try {
+      // استخدام getByID المباشر
+      const entry = await firstValueFrom(
+        this.db.getByID<EncryptedEntry>(storeName, id).pipe(
+          catchError(() => of(null)), // منع الـ Observable من رمي خطأ يكسر الـ Promise
+        ),
+      );
+
+      if (!entry || !entry.payload) return null;
+
+      return await this.encryption.decrypt<T>(entry.payload);
+    } catch (error) {
+      console.error(`DB Read Error [${storeName}:${id}]:`, error);
+      return null;
+    }
   }
 
-  async deleteLegacyValue(key: string): Promise<void> {
-    const storageKey = this.getLegacyStorageKey(key);
-    await this.settingsStore.delete(storageKey);
-  }
-
-  async deleteLegacyByPrefix(prefix: string): Promise<void> {
-    const keyPrefix = this.getLegacyStorageKey(prefix);
-    await this.settingsStore.where('id').startsWith(keyPrefix).delete();
-  }
-
+  // دالة حذف جماعي محسنة باستخدام RxJS
   async clearAllLegacyValues(): Promise<void> {
-    await this.settingsStore.where('id').startsWith(this.LEGACY_PREFIX).delete();
-  }
+    const all = await firstValueFrom(this.db.getAll<EncryptedEntry>('settingsStore'));
+    if (!all) return;
 
-  async hasLegacyValue(key: string): Promise<boolean> {
-    const storageKey = this.getLegacyStorageKey(key);
-    const value = await this.settingsStore.get(storageKey);
-    return !!value;
-  }
+    const legacyKeys = all.filter((e) => e.id.startsWith(this.LEGACY_PREFIX)).map((e) => e.id);
 
-  private getLegacyStorageKey(key: string): string {
-    return `${this.LEGACY_PREFIX}${key}`;
+    // تنفيذ الحذف بشكل متوازي لسرعة أكبر
+    await Promise.all(
+      legacyKeys.map((key) => firstValueFrom(this.db.deleteByKey('settingsStore', key))),
+    );
   }
 
   private getExamSessionKey(examId: number): string {
     return `${this.EXAM_SESSION_PREFIX}${examId}`;
   }
 
-  private async writeEncrypted<T>(
-    table: Table<EncryptedEntry, string>,
-    id: string,
-    value: T,
-  ): Promise<void> {
-    const payload = await this.encryption.encrypt(value);
-    await table.put({
-      id,
-      payload,
-      updatedAt: Date.now(),
-    });
+  // --- Legacy Value Helpers ---
+  /**
+   * حفظ قيمة قديمة مع إضافة البادئة legacy:
+   */
+  async setLegacyValue(key: string, value: string): Promise<void> {
+    const storageKey = this.getLegacyStorageKey(key);
+    await this.writeEncrypted('settingsStore', storageKey, value);
   }
 
-  private async readEncrypted<T>(
-    table: Table<EncryptedEntry, string>,
-    id: string,
-  ): Promise<T | null> {
-    const entry = await table.get(id);
+  /**
+   * جلب قيمة قديمة باستخدام البادئة legacy:
+   */
+  async getLegacyValue(key: string): Promise<string | null> {
+    const storageKey = this.getLegacyStorageKey(key);
+    return this.readEncrypted<string>('settingsStore', storageKey);
+  }
 
-    if (!entry?.payload) {
-      return null;
-    }
+  /**
+   * حذف قيمة قديمة معينة
+   */
+  async deleteLegacyValue(key: string): Promise<void> {
+    const storageKey = this.getLegacyStorageKey(key);
+    await firstValueFrom(this.db.deleteByKey('settingsStore', storageKey)).catch(() => {});
+  }
 
+  /**
+   * التحقق من وجود قيمة قديمة
+   */
+  async hasLegacyValue(key: string): Promise<boolean> {
+    const storageKey = this.getLegacyStorageKey(key);
     try {
-      return await this.encryption.decrypt<T>(entry.payload);
+      const value = await firstValueFrom(this.db.getByID('settingsStore', storageKey));
+      return !!value; // إرجاع true إذا وجدت القيمة
     } catch {
-      await table.delete(id);
-      return null;
+      return false;
     }
+  }
+
+  /**
+   * الدالة التي استفسرت عنها: هي المحرك الأساسي لضمان عدم اختلاط المفاتيح الجديدة بالقديمة
+   */
+  private getLegacyStorageKey(key: string): string {
+    return `${this.LEGACY_PREFIX}${key}`;
   }
 }

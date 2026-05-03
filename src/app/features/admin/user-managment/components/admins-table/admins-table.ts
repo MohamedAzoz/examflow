@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FilterConfig, FilterModal, FilterResult } from '../filter-modal/filter-modal';
-import { Admin, IAdminResponse, IAdminSearch } from '../../../../../data/services/admin';
+import { Admin } from '../../../../../data/services/admin';
 import {
   getInitials,
   getAvatarColor,
@@ -22,6 +22,8 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
+import { IAdminResponse } from '../../../../../data/models/admin/IAdminResponse';
+import { IAdminSearch } from '../../../../../data/models/admin/IAdminSearch';
 
 interface AdminRow {
   id: string;

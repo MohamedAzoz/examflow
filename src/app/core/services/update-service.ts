@@ -5,6 +5,13 @@ import { ConfirmationService } from 'primeng/api';
 
 @Injectable({ providedIn: 'root' })
 export class UpdateService {
+  init() {
+    if (!this.isEnabled || !('requestIdleCallback' in window)) return;
+
+    requestIdleCallback(() => {
+      this.checkForUpdate();
+    });
+  }
   private swUpdate = inject(SwUpdate);
   private confirmationService = inject(ConfirmationService);
 

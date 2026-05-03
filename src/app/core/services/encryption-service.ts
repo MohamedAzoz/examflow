@@ -1,23 +1,12 @@
 // src/app/core/services/encryption.service.ts
-import { Injectable } from '@angular/core';
-import Dexie, { Table } from 'dexie';
+import { inject, Injectable } from '@angular/core';
+import { CatbeeIndexedDBService } from '@ng-catbee/indexed-db';
+import { firstValueFrom } from 'rxjs';
 
 interface EncryptionKeyEntity {
   id: string;
   key: CryptoKey;
   createdAt: number;
-}
-
-class EncryptionKeyDatabase extends Dexie {
-  encryptionKeys!: Table<EncryptionKeyEntity, string>;
-
-  constructor() {
-    super('SecureKeysDB');
-    this.version(1).stores({
-      encryptionKeys: 'id, createdAt',
-    });
-    this.encryptionKeys = this.table('encryptionKeys');
-  }
 }
 
 @Injectable({ providedIn: 'root' })
@@ -26,7 +15,7 @@ export class EncryptionService {
   private readonly IV_LENGTH = 12;
 
   private key: CryptoKey | null = null;
-  private readonly db = new EncryptionKeyDatabase();
+  private readonly db = inject(CatbeeIndexedDBService);
 
   private readonly encoder = new TextEncoder();
   private readonly decoder = new TextDecoder();
@@ -36,11 +25,14 @@ export class EncryptionService {
       return this.key;
     }
 
-    const stored = await this.db.encryptionKeys.get(this.KEY_ID);
-
-    if (stored?.key) {
-      this.key = stored.key;
-      return this.key;
+    try {
+      const stored = await firstValueFrom(this.db.getByID<EncryptionKeyEntity>('encryptionKeys', this.KEY_ID));
+      if (stored?.key) {
+        this.key = stored.key;
+        return this.key;
+      }
+    } catch {
+      // Not found or error
     }
 
     const generatedKey = await crypto.subtle.generateKey(
@@ -54,10 +46,21 @@ export class EncryptionService {
 
     this.key = generatedKey;
 
-    await this.db.encryptionKeys.put({
-      id: this.KEY_ID,
-      key: generatedKey,
-      createdAt: Date.now(),
+    await firstValueFrom(
+      this.db.update('encryptionKeys', {
+        id: this.KEY_ID,
+        key: generatedKey,
+        createdAt: Date.now(),
+      })
+    ).catch(async () => {
+      // Fallback to add if update fails
+      await firstValueFrom(
+        this.db.add('encryptionKeys', {
+          id: this.KEY_ID,
+          key: generatedKey,
+          createdAt: Date.now(),
+        })
+      ).catch(() => {});
     });
 
     return generatedKey;
@@ -126,7 +129,7 @@ export class EncryptionService {
   }
 
   async resetKey(): Promise<void> {
-    await this.db.encryptionKeys.delete(this.KEY_ID);
+    await firstValueFrom(this.db.deleteByKey('encryptionKeys', this.KEY_ID)).catch(() => {});
     this.key = null;
     await this.getKey();
   }

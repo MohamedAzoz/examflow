@@ -3,27 +3,12 @@ import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment.development';
 import { Observable } from 'rxjs';
 import { SkipLoading } from '../../core/interceptors/loading-interceptor';
-
-export interface IAdmin {
-  nationalId: string;
-  fullName: string;
-  universityCode: string;
-  jobTitle: string;
-  email: string;
-  phoneNumber: string;
-}
-export interface IAdminSearch {
-  nameSearch: string;
-  adminSortingOption: number;
-  pageIndex: number;
-  pageSize: number;
-}
-export interface IAdminResponse {
-  data: IAdmin[];
-  pageSize: number;
-  pageIndex: number;
-  totalSize: number;
-}
+import { IAdmin } from '../models/admin/IAdmin';
+import { IAdminResponse } from '../models/admin/IAdminResponse';
+import { IAdminSearch } from '../models/admin/IAdminSearch';
+import { IUserSearch } from '../models/admin/IUserSearch';
+import { IUserFoundResponse } from '../models/admin/IUserFoundResponse';
+import { IUserResetPassword } from '../models/admin/IUserResetPassword';
 
 @Injectable({
   providedIn: 'root',
@@ -45,7 +30,7 @@ export class Admin {
         pageIndex: admin.pageIndex,
         pageSize: admin.pageSize,
       },
-      context: new HttpContext().set(SkipLoading, true)
+      context: new HttpContext().set(SkipLoading, true),
     });
   }
   // /api/Admin/import-admins
@@ -53,5 +38,21 @@ export class Admin {
     const formData = new FormData();
     formData.append('excelFile', file);
     return this.http.post(`${environment.apiUrl}/Admin/import-admins`, formData);
+  }
+  // POST
+  // /api/Admin/user-reset-password
+  resetPassword(data: IUserResetPassword) {
+    return this.http.post(`${environment.apiUrl}/Admin/user-reset-password`, data);
+  }
+
+  // /api/Admin/user-search
+  userSearch(userSearch: IUserSearch) {
+    return this.http.post<IUserFoundResponse[]>(
+      `${environment.apiUrl}/Admin/user-search`,
+      userSearch,
+      {
+        context: new HttpContext().set(SkipLoading, true),
+      },
+    );
   }
 }

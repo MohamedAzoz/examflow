@@ -6,6 +6,9 @@ import { PersistedAuthState, ThemePreference } from './storage.models';
 
 @Injectable({ providedIn: 'root' })
 export class StorageMigrationService {
+  async init() {
+    await this.migrateLegacyLocalStorageOnce();
+  }
   private readonly appDb = inject(AppDatabase);
   private readonly jwt = inject(JWT);
 

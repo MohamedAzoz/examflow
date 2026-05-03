@@ -1,0 +1,62 @@
+<div class="flex flex-col gap-6">
+  <div class="flex items-center gap-3">
+    <button
+      type="button"
+      class="p-2 w-10 h-10 rounded-full hover:bg-black/5 text-text-secondary cursor-pointer border-none bg-transparent flex items-center justify-center transition-colors shrink-0"
+      (click)="onBack()"
+    >
+      <i class="pi pi-arrow-left"></i>
+    </button>
+    <div class="flex flex-col min-w-0">
+      <h3 class="m-0 text-lg font-bold text-text-dark truncate">
+        Reset Password for {{ user()?.fullName }}
+      </h3>
+      <span class="text-sm text-text-secondary truncate">ID: {{ user()?.nationalId }}</span>
+    </div>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-4">
+    <div class="flex flex-col gap-1.5">
+      <label class="text-sm font-semibold text-text-dark">New Password</label>
+      <p-password
+        formControlName="password"
+        [toggleMask]="true"
+        [feedback]="false"
+        styleClass="w-full"
+        [inputStyle]="{ width: '100%' }"
+        placeholder="Enter new password"
+      ></p-password>
+      @if (form.get('password')?.invalid && form.get('password')?.touched) {
+        <small class="text-danger">Password is required (min 6 characters).</small>
+      }
+    </div>
+
+    <div class="flex flex-col gap-1.5">
+      <label class="text-sm font-semibold text-text-dark">Confirm Password</label>
+      <p-password
+        formControlName="confirmPassword"
+        [toggleMask]="true"
+        [feedback]="false"
+        styleClass="w-full"
+        [inputStyle]="{ width: '100%' }"
+        placeholder="Confirm new password"
+      ></p-password>
+      @if (form.hasError('mismatch') && form.get('confirmPassword')?.touched) {
+        <small class="text-danger">Passwords do not match.</small>
+      }
+    </div>
+
+    <div class="flex justify-end mt-4">
+      <button
+        type="submit"
+        class="bg-primary hover:bg-primary-dark text-white font-bold py-2.5 px-6 rounded-lg border-none cursor-pointer transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        [disabled]="form.invalid || isResetting()"
+      >
+        @if (isResetting()) {
+          <i class="pi pi-spin pi-spinner"></i>
+        }
+        Reset Password
+      </button>
+    </div>
+  </form>
+</div>

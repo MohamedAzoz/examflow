@@ -8,22 +8,23 @@ import {
   isDevMode,
 } from '@angular/core';
 import { providePrimeNG } from 'primeng/config';
-import { NoPreloading, provideRouter, Router, withPreloading } from '@angular/router';
-import * as Sentry from '@sentry/angular';
+import { PreloadAllModules, provideRouter, withPreloading } from '@angular/router';
 import { routes } from './app.routes';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './core/interceptors/auth-interceptor';
 import { loadingInterceptor } from './core/interceptors/loading-interceptor';
-import { definePreset } from '@primeuix/themes';
 import Aura from '@primeuix/themes/aura';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { IdentityService } from './core/services/identity-service';
 import { Theme } from './core/services/theme';
 import { StorageMigrationService } from './core/AppDbContext/storage-migration.service';
-import { provideCloudinaryLoader } from '@angular/common';
 import { provideServiceWorker } from '@angular/service-worker';
-import { UpdateService } from './core/services/update-service';
+import { LazySentryErrorHandler } from './core/services/lazy-sentry-error-handler';
+import { MonitoringService } from './core/services/monitoring-service';
+import { provideCatbeeIndexedDB } from '@ng-catbee/indexed-db';
+import { dbConfig } from './core/AppDbContext/dbconfig';
+
 // const MyCustomPreset = definePreset(Aura, {
 //   semantic: {
 //     primary: {
@@ -48,41 +49,22 @@ export const appConfig: ApplicationConfig = {
           darkModeSelector: '.dark',
           cssLayer: {
             name: 'primeng',
-            order: 'theme, base, primeng, utilities',
+            order: 'base, primeng, theme, utilities',
           },
         },
       },
     }),
+    provideCatbeeIndexedDB(dbConfig),
     MessageService,
-    ConfirmationService, // ← الحل هنا: أضف ConfirmationService هنا
-    UpdateService,
+    ConfirmationService,
     provideAnimations(),
-    {
-      provide: ErrorHandler,
-      useValue: Sentry.createErrorHandler({
-        showDialog: false,
-      }),
-    },
-    {
-      provide: Sentry.TraceService,
-      deps: [Router],
-    },
-    // provideCloudinaryLoader('https://cloudinary.com'),
-    provideAppInitializer(() => {
-      inject(Sentry.TraceService);
-      inject(UpdateService);
-    }),
+    { provide: ErrorHandler, useClass: LazySentryErrorHandler },
+    provideAppInitializer(() => inject(MonitoringService).init()),
+    provideAppInitializer(() => inject(StorageMigrationService).init()),
+    provideAppInitializer(() => inject(IdentityService).init()),
+    provideAppInitializer(() => inject(Theme).init()),
 
-    provideAppInitializer(async () => {
-      const migration = inject(StorageMigrationService);
-      const identity = inject(IdentityService);
-      const theme = inject(Theme);
-
-      await migration.migrateLegacyLocalStorageOnce();
-      await Promise.all([identity.init(), theme.init()]);
-    }),
-
-    provideRouter(routes, withPreloading(NoPreloading)),
+    provideRouter(routes, withPreloading(PreloadAllModules)),
     provideHttpClient(withFetch(), withInterceptors([authInterceptor, loadingInterceptor])),
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),
