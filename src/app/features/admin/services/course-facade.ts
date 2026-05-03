@@ -100,15 +100,12 @@ export class CourseFacade {
   }
 
   //#endregion
-  
+
   //#region Get Available Courses
 
   private readonly ForProfessors = signal<boolean>(false);
 
-  public readonly availableCourses = rxResource<
-    ICoueseResponse[],
-    { ForProfessors: boolean }
-  >({
+  public readonly availableCourses = rxResource<ICoueseResponse[], { ForProfessors: boolean }>({
     params: () => ({
       ForProfessors: this.ForProfessors(),
     }),

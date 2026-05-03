@@ -450,6 +450,15 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
       await this.measureAsync('exam.send-answer-flow', async () => {
         await firstValueFrom(this.facade.sendAnswer(payload));
         
+        this.serverResponses.update((state) => ({
+          ...state,
+          [questionId]: Math.max(0, (state[questionId] ?? 0) - currentServerResponses)
+        }));
+        this.sessionId.update((state) => ({
+          ...state,
+          [questionId]: Math.max(0, (state[questionId] ?? 0) - currentSessionId)
+        }));
+
         this.updateSyncedAnsweredState(questionId);
         this.enqueuePersistExamSessionState();
         await this.flushPersistQueue();
