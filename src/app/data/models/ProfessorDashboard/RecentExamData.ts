@@ -1,5 +1,5 @@
 export interface RecentExamData {
-  examId: number;
+  id: number;
   courseName: string;
   examTitle: string;
   startTime: Date;

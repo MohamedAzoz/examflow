@@ -1,5 +1,6 @@
 import {
   Component,
+  DestroyRef,
   HostListener,
   OnDestroy,
   OnInit,
@@ -8,8 +9,9 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, interval } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { QuestionType } from '../../../data/enums/question-type';
 import { IsubmitExam } from '../../../data/models/StudentExam/IsubmitExam';
@@ -43,6 +45,7 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
   private readonly appDb = inject(AppDatabase);
   private readonly toggleService = inject(Toggle);
   private readonly timerService = inject(Timer);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly isOnline = connectivitySignal();
   readonly currentExam = computed(() => this.facade.currentExam());
@@ -54,13 +57,15 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
   readonly essayAnswers = signal<Record<number, string>>({});
   readonly markedQuestions = signal<Record<number, boolean>>({});
   readonly syncedAnsweredIds = signal<Record<number, boolean>>({});
+  readonly studentSession = signal<Record<number, boolean>>({});
   readonly essayDirtyMap = signal<Record<number, boolean>>({});
 
   // Anti-cheat counters are split into dedicated signals for predictable updates.
-  readonly tabSwitches = signal(0);
-  readonly copyPasteAttempts = signal(0);
-  readonly sessionId = signal(0);
-  readonly totalSuspiciousActions = computed(() => this.tabSwitches() + this.copyPasteAttempts());
+  readonly totalSessionId = signal(0);
+  readonly totalServerResponses = signal(0);
+  readonly serverResponses = signal<Record<number, number>>({});
+  readonly sessionId = signal<Record<number, number>>({});
+  readonly totalSuspiciousActions = computed(() => this.totalSessionId() + this.totalServerResponses());
 
   readonly showNavigationWarning = signal<boolean>(false);
   readonly isSubmitting = signal<boolean>(false);
@@ -71,6 +76,8 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
   private lastShortcutTimestamp = 0;
   private lastTabSwitchTimestamp = 0;
   private resizeTimeout: ReturnType<typeof setTimeout> | null = null;
+  private violationAccumulatedMs = 0;
+  private lastViolationCheckTime = Date.now();
   private readonly persistDebounceMs = 350;
   private persistTimeoutId: ReturnType<typeof setTimeout> | null = null;
   private persistQueue: Promise<void> = Promise.resolve();
@@ -112,6 +119,7 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
 
   constructor() {
     this.setupExamInitialization();
+    this.setupViolationTimer();
   }
 
   async ngOnInit(): Promise<void> {
@@ -198,9 +206,20 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
     this.persistExamSessionStateInBackground();
   }
 
+  private markCurrentAsSkippedIfNotAnswered(): void {
+    const q = this.currentQuestion();
+    if (!q) return;
+
+    const isAnswered = this.syncedAnsweredIds()[q.questionId];
+    if (!isAnswered) {
+      this.studentSession.update((state) => ({ ...state, [q.questionId]: true }));
+    }
+  }
+
   previous(): void {
     if (this.blockNavigationWhileDirty()) return;
 
+    this.markCurrentAsSkippedIfNotAnswered();
     this.facade.setCurrentQuestionIndex(Math.max(0, this.questionIndex() - 1));
     this.persistExamSessionStateInBackground();
   }
@@ -208,6 +227,7 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
   next(): void {
     if (this.blockNavigationWhileDirty()) return;
 
+    this.markCurrentAsSkippedIfNotAnswered();
     this.facade.setCurrentQuestionIndex(
       Math.min(this.questions().length - 1, this.questionIndex() + 1),
     );
@@ -217,6 +237,7 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
   jumpTo(index: number): void {
     if (this.blockNavigationWhileDirty()) return;
 
+    this.markCurrentAsSkippedIfNotAnswered();
     this.facade.setCurrentQuestionIndex(index);
     this.persistExamSessionStateInBackground();
   }
@@ -229,8 +250,8 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
 
     const payload: IsubmitExam = {
       examId,
-      serverResponses: this.copyPasteAttempts(),
-      sessionId: this.sessionId(),
+      serverResponses: this.totalServerResponses(),
+      sessionId: this.totalSessionId(),
     };
 
     this.isSubmitting.set(true);
@@ -391,19 +412,27 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
     const exam = this.currentExam();
     if (!exam) return false;
 
+    const currentServerResponses = this.serverResponses()[questionId] ?? 0;
+    const currentSessionId = this.sessionId()[questionId] ?? 0;
+
     const payload: IsendAnswer = {
       examId: exam.exam.examId,
       studentExamId: exam.studentExamId,
       questionId,
       selectedOptionId: this.selectedOptions()[questionId] ?? 0,
       eassayAnswer: this.essayAnswers()[questionId] ?? '',
-      serverResponses: this.copyPasteAttempts(),
-      sessionId: this.sessionId(),
+      serverResponses: currentServerResponses,
+      sessionId: currentSessionId,
     };
+
+    if (this.studentSession()[questionId]) {
+      payload.studentSession = true;
+    }
 
     try {
       await this.measureAsync('exam.send-answer-flow', async () => {
         await firstValueFrom(this.facade.sendAnswer(payload));
+        
         this.updateSyncedAnsweredState(questionId);
         this.enqueuePersistExamSessionState();
         await this.flushPersistQueue();
@@ -415,7 +444,28 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
   }
 
   private incrementCopyPaste(): void {
-    this.copyPasteAttempts.update((value) => value + 1);
+    const q = this.currentQuestion();
+    if (!q) return;
+
+    this.totalServerResponses.update((value) => value + 1);
+    this.serverResponses.update((state) => ({
+      ...state,
+      [q.questionId]: (state[q.questionId] ?? 0) + 1
+    }));
+    this.persistExamSessionStateInBackground();
+  }
+
+  private forceIncrementTabSwitch(): void {
+    if (this.isSessionFinalized) return;
+    
+    const q = this.currentQuestion();
+    if (!q) return;
+
+    this.totalSessionId.update((value) => value + 1);
+    this.sessionId.update((state) => ({
+      ...state,
+      [q.questionId]: (state[q.questionId] ?? 0) + 1
+    }));
     this.persistExamSessionStateInBackground();
   }
 
@@ -427,9 +477,7 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
     void reason;
 
     this.lastTabSwitchTimestamp = now;
-    this.tabSwitches.update((value) => value + 1);
-    this.sessionId.update((value) => value + 1);
-    this.persistExamSessionStateInBackground();
+    this.forceIncrementTabSwitch();
   }
 
   private async restoreExamSessionState(examId: number): Promise<boolean> {
@@ -444,9 +492,11 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
     this.essayAnswers.set(cachedState.essayAnswers ?? {});
     this.markedQuestions.set(cachedState.markedQuestions ?? {});
     this.syncedAnsweredIds.set(cachedState.syncedAnsweredIds ?? {});
-    this.copyPasteAttempts.set(cachedState.serverResponses ?? 0);
-    this.sessionId.set(cachedState.sessionId ?? 0);
-    this.tabSwitches.set(cachedState.sessionId ?? 0);
+    this.studentSession.set(cachedState.studentSession ?? {});
+    this.totalServerResponses.set(cachedState.totalServerResponses ?? 0);
+    this.totalSessionId.set(cachedState.totalSessionId ?? 0);
+    this.serverResponses.set(cachedState.serverResponses ?? {});
+    this.sessionId.set(cachedState.sessionId ?? {});
 
     const restoredIndex = this.resolveQuestionIndex(
       cachedState.examSnapshot,
@@ -492,6 +542,42 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
     }
 
     void this.flushPersistQueue();
+  }
+
+  private setupViolationTimer(): void {
+    if (typeof window === 'undefined') return;
+
+    this.lastViolationCheckTime = Date.now();
+
+    interval(5000)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        if (this.isSessionFinalized) return;
+
+        const now = Date.now();
+        const deltaMs = now - this.lastViolationCheckTime;
+        this.lastViolationCheckTime = now;
+
+        if (this.isViolating()) {
+          this.violationAccumulatedMs += deltaMs;
+
+          while (this.violationAccumulatedMs >= 60000) {
+            this.violationAccumulatedMs -= 60000;
+            this.forceIncrementTabSwitch();
+          }
+        }
+      });
+  }
+
+  private isViolating(): boolean {
+    if (typeof document === 'undefined' || typeof window === 'undefined') return false;
+
+    if (document.hidden || document.visibilityState === 'hidden') return true;
+    if (!document.hasFocus()) return true;
+    if (!document.fullscreenElement) return true;
+    if (window.innerWidth < screen.availWidth || window.innerHeight < screen.availHeight) return true;
+
+    return false;
   }
 
   private queuePersistExamSessionState(): void {
@@ -612,10 +698,13 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
       essayAnswers: this.getPersistableEssayAnswers(),
       markedQuestions: { ...this.markedQuestions() },
       syncedAnsweredIds: { ...this.syncedAnsweredIds() },
+      studentSession: { ...this.studentSession() },
       currentQuestionId: this.currentQuestion()?.questionId ?? null,
       currentQuestionIndex: this.questionIndex(),
-      serverResponses: this.copyPasteAttempts(),
-      sessionId: this.sessionId(),
+      totalServerResponses: this.totalServerResponses(),
+      totalSessionId: this.totalSessionId(),
+      serverResponses: { ...this.serverResponses() },
+      sessionId: { ...this.sessionId() },
       updatedAt: Date.now(),
     };
   }
@@ -627,8 +716,11 @@ export class ExamSessionComponent implements OnInit, OnDestroy {
       essayAnswers: state.essayAnswers,
       markedQuestions: state.markedQuestions,
       syncedAnsweredIds: state.syncedAnsweredIds,
+      studentSession: state.studentSession,
       currentQuestionId: state.currentQuestionId,
       currentQuestionIndex: state.currentQuestionIndex,
+      totalServerResponses: state.totalServerResponses,
+      totalSessionId: state.totalSessionId,
       serverResponses: state.serverResponses,
       sessionId: state.sessionId,
     });

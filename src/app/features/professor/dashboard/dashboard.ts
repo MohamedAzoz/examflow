@@ -52,9 +52,8 @@ export class Dashboard {
   }
 
   onDownloadReport(exam: RecentExamData): void {
-    const id = exam.examId;
     this.examService
-      .getExamResultsReport(id)
+      .getExamResultsReport(exam.id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response: Blob) => {

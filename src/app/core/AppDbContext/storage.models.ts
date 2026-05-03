@@ -27,9 +27,12 @@ export interface PersistedExamSessionState {
   essayAnswers: Record<number, string>;
   markedQuestions: Record<number, boolean>;
   syncedAnsweredIds: Record<number, boolean>;
+  studentSession?: Record<number, boolean>;
   currentQuestionId: number | null;
   currentQuestionIndex: number;
-  serverResponses: number;
-  sessionId: number;
+  totalServerResponses: number;
+  totalSessionId: number;
+  serverResponses: Record<number, number>;
+  sessionId: Record<number, number>;
   updatedAt: number;
 }
