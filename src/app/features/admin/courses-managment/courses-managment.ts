@@ -30,10 +30,7 @@ export class CoursesManagment {
   }
 
   protected onSearchChanges(query: string): void {
-    const filteredCourses = this.courseFacade.allCourses
-      .value()
-      ?.filter((course) => course.name.toLowerCase().includes(query.toLowerCase()));
-    this.courseFacade.allCourses.set(filteredCourses);
+    this.courseFacade.setSearchQuery(query);
   }
 
   protected onModalClosed(): void {

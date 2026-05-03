@@ -5,6 +5,7 @@ import { environment } from '../../../environments/environment';
 import { ICoueseRequest } from '../models/course/icouese-request';
 import { IassignDepartments } from '../models/course/IassignDepartments';
 import { ICoueseResponseDetails } from '../models/course/ICoueseResponseDetails';
+import { IPaginatedResponse } from '../models/IPaginatedResponse';
 
 @Injectable({
   providedIn: 'root',
@@ -45,7 +46,7 @@ PageSize
     if (PageSize) {
       query += `PageSize=${PageSize}`;
     }
-    return this.http.get<ICoueseResponse[]>(`${environment.apiUrl}/Course${query}`);
+    return this.http.get<IPaginatedResponse<ICoueseResponse>>(`${environment.apiUrl}/Course${query}`);
   }
   // GET /api/Course/course
   getCourse(id: number) {
@@ -78,5 +79,12 @@ PageSize
   // /api/Course/overview/{id}
   getCourseOverview(id: number) {
     return this.http.get<ICoueseResponseDetails>(`${environment.apiUrl}/Course/overview/${id}`);
+  }
+  // GET
+  // /api/Course/available
+  getAvailableCourses(ForProfessors: boolean = false) {
+    return this.http.get<ICoueseResponse[]>(
+      `${environment.apiUrl}/Course/available?ForProfessors=${ForProfessors}`,
+    );
   }
 }

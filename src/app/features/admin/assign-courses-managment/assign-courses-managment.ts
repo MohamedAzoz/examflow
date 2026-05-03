@@ -53,7 +53,7 @@ export class AssignCoursesManagment {
   protected readonly departments = computed(
     () => this.departmentFacade.allDepartments.value() || [],
   );
-  protected readonly allCourses = computed(() => this.courseFacade.allCourses.value() || []);
+  protected readonly allCourses = computed(() => this.courseFacade.availableCourses.value() || []);
 
   protected readonly isBusy = computed(
     () =>
@@ -61,7 +61,7 @@ export class AssignCoursesManagment {
       this.loadingAssignments() ||
       this.professorFacade.allProfessors.isLoading() ||
       this.departmentFacade.allDepartments.isLoading() ||
-      this.courseFacade.allCourses.isLoading(),
+      this.courseFacade.availableCourses.isLoading(),
   );
 
   protected readonly hasTargetSelected = computed(() =>
@@ -106,7 +106,7 @@ export class AssignCoursesManagment {
   });
 
   constructor() {
-    this.courseFacade.allCourses.reload();
+    this.courseFacade.availableCourses.reload();
     this.professorFacade.allProfessors.reload();
     this.departmentFacade.allDepartments.reload();
   }
@@ -116,6 +116,7 @@ export class AssignCoursesManagment {
     this.selectedProfessorId.set(null);
     this.selectedDepartmentId.set(null);
     this.resetSelectionState();
+    this.courseFacade.setForProfessors(mode === 'professor');
   }
 
   protected onProfessorChanged(id: string): void {

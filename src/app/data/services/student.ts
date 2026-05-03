@@ -67,7 +67,7 @@ export class Student {
   // PUT
   // /api/Student/enroll-courses
   enrollCourses(enrollCourses: IEnrollCoursesRequest) {
-    return this.http.put(`${environment.apiUrl}/Student/assigned-courses`, enrollCourses);
+    return this.http.put(`${environment.apiUrl}/Student/enroll-courses`, enrollCourses);
   }
 
   // GET

@@ -6,6 +6,7 @@ import { Course } from '../../../data/services/course';
 import { IassignDepartments } from '../../../data/models/course/IassignDepartments';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { ICoueseRequest } from '../../../data/models/course/icouese-request';
+import { IPaginatedResponse } from '../../../data/models/IPaginatedResponse';
 
 @Injectable({
   providedIn: 'root',
@@ -17,6 +18,11 @@ export class CourseFacade {
   public readonly loading = signal<boolean>(false);
   public readonly error = signal<string | null>(null);
   public readonly selectedCourse = signal<ICoueseResponse | null>(null);
+  public readonly searchQuery = signal<string>('');
+
+  setSearchQuery(query: string): void {
+    this.searchQuery.set(query);
+  }
 
   private startRequest(): void {
     this.loading.set(true);
@@ -51,7 +57,7 @@ export class CourseFacade {
   private readonly PageIndex = signal(1);
   private readonly PageSize = signal(10);
   public readonly allCourses = rxResource<
-    ICoueseResponse[],
+    IPaginatedResponse<ICoueseResponse>,
     {
       AcademicLevel: number | null;
       HasProfessor: boolean | null;
@@ -77,6 +83,43 @@ export class CourseFacade {
       );
     },
   });
+
+  setPageIndex(index: number): void {
+    this.PageIndex.set(index);
+  }
+
+  setSearchFilters(filters: {
+    academicLevel?: number | null;
+    hasProfessor?: boolean | null;
+    hasDepartment?: boolean | null;
+  }): void {
+    if (filters.academicLevel !== undefined) this.AcademicLevel.set(filters.academicLevel);
+    if (filters.hasProfessor !== undefined) this.HasProfessor.set(filters.hasProfessor);
+    if (filters.hasDepartment !== undefined) this.HasDepartment.set(filters.hasDepartment);
+    this.PageIndex.set(1);
+  }
+
+  //#endregion
+  
+  //#region Get Available Courses
+
+  private readonly ForProfessors = signal<boolean>(false);
+
+  public readonly availableCourses = rxResource<
+    ICoueseResponse[],
+    { ForProfessors: boolean }
+  >({
+    params: () => ({
+      ForProfessors: this.ForProfessors(),
+    }),
+    stream: ({ params }) => {
+      return this.courseService.getAvailableCourses(params.ForProfessors);
+    },
+  });
+
+  setForProfessors(value: boolean): void {
+    this.ForProfessors.set(value);
+  }
 
   //#endregion
 

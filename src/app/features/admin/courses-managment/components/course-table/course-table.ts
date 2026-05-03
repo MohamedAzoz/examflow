@@ -17,31 +17,46 @@ import { ButtonModule } from 'primeng/button';
 export class CourseTable {
   public readonly courseFacade = inject(CourseFacade);
 
-  protected readonly pageSize = 5;
-  protected readonly currentPage = signal(1);
-
   // Computed courses for pagination and search
   protected readonly filteredCourses = computed(() => {
-    const all = this.courseFacade.allCourses.value() || [];
-    // You can add local filtering here if needed,
-    // but usually search is handled at the facade level.
-    return all;
+    const all = this.courseFacade.allCourses.value()?.data || [];
+    const query = this.courseFacade.searchQuery().trim().toLowerCase();
+
+    if (!query) {
+      return all;
+    }
+
+    return all.filter(
+      (course) =>
+        course.name.toLowerCase().includes(query) || course.code.toLowerCase().includes(query),
+    );
   });
 
   protected readonly paginatedCourses = computed(() => {
-    const start = (this.currentPage() - 1) * this.pageSize;
-    return this.filteredCourses().slice(start, start + this.pageSize);
+    // The backend is already returning the current page's slice
+    return this.filteredCourses();
   });
 
-  protected readonly totalCount = computed(() => this.filteredCourses().length);
-  protected readonly totalPages = computed(() => Math.ceil(this.totalCount() / this.pageSize) || 1);
+  protected readonly totalCount = computed(
+    () => this.courseFacade.allCourses.value()?.totalSize || 0,
+  );
+  protected readonly pageSize = computed(
+    () => this.courseFacade.allCourses.value()?.pageSize || 10,
+  );
+  protected readonly currentPage = computed(
+    () => this.courseFacade.allCourses.value()?.pageIndex || 1,
+  );
+
+  protected readonly totalPages = computed(
+    () => Math.ceil(this.totalCount() / this.pageSize()) || 1,
+  );
 
   protected readonly showingFrom = computed(() =>
-    this.totalCount() === 0 ? 0 : (this.currentPage() - 1) * this.pageSize + 1,
+    this.totalCount() === 0 ? 0 : (this.currentPage() - 1) * this.pageSize() + 1,
   );
 
   protected readonly showingTo = computed(() =>
-    Math.min(this.currentPage() * this.pageSize, this.totalCount()),
+    Math.min(this.currentPage() * this.pageSize(), this.totalCount()),
   );
 
   protected trackByCourseId(_: number, course: ICoueseResponse): number {
@@ -50,13 +65,13 @@ export class CourseTable {
 
   protected prevPage(): void {
     if (this.currentPage() > 1) {
-      this.currentPage.update((p) => p - 1);
+      this.courseFacade.setPageIndex(this.currentPage() - 1);
     }
   }
 
   protected nextPage(): void {
     if (this.currentPage() < this.totalPages()) {
-      this.currentPage.update((p) => p + 1);
+      this.courseFacade.setPageIndex(this.currentPage() + 1);
     }
   }
 
