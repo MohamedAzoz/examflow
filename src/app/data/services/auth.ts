@@ -20,7 +20,7 @@ export class Auth {
     return this.http.post<IResponseAuth>(`${environment.apiUrl}/Authentication/login`, body);
   }
 
-  //   POST
+  //   POST 
   // /api/Authentication/request-email
   public requestEmail(newEmail: string) {
     return this.http.post(`${environment.apiUrl}/Authentication/request-email`, {

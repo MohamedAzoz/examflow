@@ -5,7 +5,6 @@ import { environment } from '../../../environments/environment.development';
   providedIn: 'root',
 })
 export class MonitoringService {
-  // Signal لحفظ مرجع السنتري بعد تحميله
   private sentryInstance = signal<any>(null);
 
   async init() {
@@ -29,7 +28,6 @@ export class MonitoringService {
         enableLogs: !environment.production,
       });
 
-      // حفظ المرجع وتصديره للـ window إذا أردت استخدامه بالطريقة القديمة
       this.sentryInstance.set(Sentry);
       (window as any).Sentry = Sentry; 
       
@@ -38,7 +36,6 @@ export class MonitoringService {
     }
   }
 
-  // دالة مساعدة لالتقاط الأخطاء
   captureException(error: any) {
     const sentry = this.sentryInstance();
     if (sentry) {

@@ -107,17 +107,22 @@ export class AppDatabase {
    * تستخدم 'update' مباشرة لأنها تقوم بـ IDB put (إضافة أو تحديث تلقائي)
    */
   private async writeEncrypted<T>(storeName: string, id: string, value: T): Promise<void> {
-    const payload = await this.encryption.encrypt(value);
-    const entry: EncryptedEntry = {
-      id,
-      payload,
-      updatedAt: Date.now(),
-    };
-
-    // نستخدم firstValueFrom لمرة واحدة فقط لضمان انتهاء الـ Transaction
-    await firstValueFrom(this.db.update(storeName, entry));
+    try {
+      const payload = await this.encryption.encrypt(value);
+      const entry: EncryptedEntry = {
+        id,
+        payload,
+        updatedAt: Date.now(),
+      };
+      await firstValueFrom(this.db.update(storeName, entry));
+    } catch (error: any) {
+      if (error.name === 'InvalidStateError' || error.message.includes('closing')) {
+        console.warn(`DB Write ignored: Connection is closing during [${storeName}:${id}]`);
+        return;
+      }
+      throw error;
+    }
   }
-
   /**
    * دالة القراءة المحسنة:
    * تتعامل مع الأخطاء داخلياً لضمان عدم توقف التطبيق

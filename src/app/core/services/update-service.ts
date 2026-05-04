@@ -25,12 +25,8 @@ export class UpdateService {
           message: 'New update available! Do you want to load it now?',
           header: 'App Update',
           icon: 'pi pi-info-circle',
-          closable: true,
-          closeOnEscape: true,
-          acceptLabel: 'Yes',
-          rejectLabel: 'No',
+          rejectVisible: false,
           accept: () => window.location.reload(),
-          reject: () => false,
         });
       });
   }

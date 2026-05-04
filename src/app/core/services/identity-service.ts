@@ -114,22 +114,22 @@ export class IdentityService {
    * Updates the authentication state reactively.
    * Called by AuthFacade after successful login/register.
    */
-  setAuth(token: string,email:string | null): void {
+  async setAuth(token: string, email: string | null): Promise<void> {
     const decoded = this.jwt.decodeToken(token) as IJWT;
     const authState: PersistedAuthState = {
       token,
       role: decoded.role,
-      userName: decoded.unique_name ,
+      userName: decoded.unique_name,
       userId: decoded.nameid,
       issuedAt: this.toNumberOrNull(decoded.iat),
       notBefore: this.toNumberOrNull(decoded.nbf),
       expiresAt: this.toNumberOrNull(decoded.exp),
-      email:email,
-      hasConfirmedEmail:  email  === null ? false : true,
+      email: email,
+      hasConfirmedEmail: email === null ? false : true,
     };
 
     this.applyAuthState(authState);
-    void this.appDb.saveAuthState(authState);
+    await this.appDb.saveAuthState(authState);
   }
 
   /**
@@ -138,7 +138,7 @@ export class IdentityService {
   clearAuth(): void {
     void this.appDb.clearAuthState();
     void this.theme.resetToDefaultTheme();
- 
+
     this._token.set(null);
     this._role.set(null);
     this._name.set(null);

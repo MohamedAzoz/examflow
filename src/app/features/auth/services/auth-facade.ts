@@ -1,4 +1,4 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Injectable, OnInit, signal } from '@angular/core';
 import { Auth } from '../../../data/services/auth';
 import { Router } from '@angular/router';
 import { Ilogin } from '../../../data/models/auth/ilogin';
@@ -20,7 +20,6 @@ export class AuthFacade {
   private readonly router = inject(Router);
   private readonly identityService = inject(IdentityService);
   private readonly appMessage = inject(AppMessageService);
-  private readonly updateService = inject(UpdateService);
   private readonly timer = inject(Timer);
 
   readonly isLoading = signal<boolean>(false);
@@ -31,11 +30,13 @@ export class AuthFacade {
     this.errorMessage.set(null);
     this.authService.login(body).subscribe({
       next: (response) => {
-        this.identityService.setAuth(response.token, response.email);
         this.isLoading.set(false);
-        this.updateService.init();
-        this.appMessage.addSuccessMessage('You are logged in successfully.');
-        this.router.navigate([this.identityService.dashboardPath()]);
+        this.appMessage.addSuccessMessage(
+          `Welcome ${response.fullName} , You are login successfully.`,
+        );
+        this.identityService.setAuth(response.token, response.email).then(() => {
+          this.router.navigate([this.identityService.dashboardPath()]);
+        });
       },
       error: (error: IErrorResponse | unknown) => {
         this.isLoading.set(false);
